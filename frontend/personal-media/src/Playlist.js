@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import {Audiotrack} from '@material-ui/icons'
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { AudioPlayer } from '@blackbox-vision/mui-audio-player';
+import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 
 const styles = theme => ({
     appBar: {
