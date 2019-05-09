@@ -22,6 +22,17 @@ const getGreyColor = (theme, opacity) => {
 };
 
 export default theme => ({
+  sliderContainer: {
+    width: "100px",
+    padding: "10px",
+  },
+  volumeToolTip: {
+    'background-color': getGreyColor(theme, 0.75),
+  },
+  sliderVol: {
+    paddingTop: "10px",
+    paddingBottom: "10px"
+  },
   'player-container': {
     padding: '0',
   },
@@ -56,6 +67,9 @@ export default theme => ({
       fill: `${getColor(theme, 'secondary', 0.25)} !important`,
       color: `${getColor(theme, 'secondary', 0.25)} !important`,
     },
+  },
+  'player-vol-slider-container': {
+    'background-color': getColor(theme, 'secondary'),
   },
   'player-slider-container': {
     width: 'auto !important',

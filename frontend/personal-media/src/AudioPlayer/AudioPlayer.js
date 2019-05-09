@@ -6,6 +6,7 @@ import React, { Fragment } from 'react';
 import styles from './styles';
 import { attachToEvent, getCurrentTime, getFormattedTime, getIconByPlayerStatus, getPlayerStateFromAction, getProgress, removeFromEvent } from './utils';
 import Player from './utils/constants';
+import Tooltip from '@material-ui/core/Tooltip';
 
 /*
 ts
@@ -62,7 +63,8 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     muteStatus: Player.Status.UNMUTE,
     src:this.props.src,
     title:this.props.title,
-    artist:this.props.artist
+    artist:this.props.artist,
+    volume: 100
   };
 
   componentDidMount() {
@@ -130,7 +132,8 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
       progress,
       current,
       duration,
-      src
+      src,
+      volume
     } = this.state;
 
     const PlayStatusIcon = getIconByPlayerStatus(playStatus);
@@ -145,6 +148,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
           preload="true"
           controls
           hidden
+          volume={volume/100}
         >
           <source src={src} />
         </audio>
@@ -251,13 +255,35 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
             </Grid>
           </Grid>
           <Grid md={1} item>
+          <Tooltip
+          interactive
+          classes={{tooltip: classes.volumeToolTip}}
+          title={
+            <React.Fragment>
+              <div className={classes.sliderContainer}>
+                <Slider
+                  classes={{
+                    root: css(classes['player-slider-container'], slider),
+                    track: css(classes['player-slider-track'], track),
+                    thumb: css(classes['player-slider-thumb'], thumb),
+                  }}
+                  className={classes.sliderVol}
+                  onChange={this.handleVolumeSliderChange}
+                  value={volume}
+                  open={true}
+                  disableFocusListener
+                  disableHoverListener
+                  disableTouchListener
+                />
+              </div>
+            </React.Fragment>
+          }>
             <MuteStatusIcon
               className={css(classes['player-icon-disabled'], muteIcon, {
                 [classes['player-default-icon']]: isMuteEnable,
               })}
-              onClick={() => this.triggerAction(Player.Status.MUTE)}
-              focusable="true"
             />
+            </Tooltip>
           </Grid>
           
         </Grid>
@@ -286,6 +312,16 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
       current: player.currentTime,
       progress: getProgress(player.currentTime, player.duration),
     });
+  };
+
+  handleVolumeSliderChange = (e, value) => {
+    this.setState({
+      volume: value
+    });
+    if(this.player.volume !== this.state.volume/100){
+      this.player.volume = this.state.volume/100;
+
+    }
   };
 
   handleChange = (progress, player) => {

@@ -14,6 +14,7 @@ import { withStyles, createMuiTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 
+
 const theme = createMuiTheme({
     typography: {
       useNextVariants: true,
