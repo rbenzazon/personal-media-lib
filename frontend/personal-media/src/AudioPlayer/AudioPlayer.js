@@ -1,5 +1,5 @@
 import { Grid, Paper, Typography,withStyles } from '@material-ui/core';
-import { Repeat as LoopStatusIcon, VolumeMute as MuteStatusIcon } from '@material-ui/icons';
+import { Repeat as LoopStatusIcon, VolumeMute as MuteStatusIcon , SkipNextRounded as SkipNextIcon, SkipPreviousRounded as SkipPrevIcon} from '@material-ui/icons';
 import { Slider } from '@material-ui/lab';
 import css from 'classnames';
 import React, { Fragment } from 'react';
@@ -43,7 +43,12 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     classNames: {},
     width: '500px',
     height: '50px',
+    onNextClick:()=>{},
+    onPrevClick:()=>{},
     showLoopIcon: true,
+    src:null,
+    title:"",
+    artist:""
   };
 
   player = null;
@@ -55,7 +60,9 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     loopStatus: Player.Status.UNLOOP,
     playStatus: Player.Status.PAUSE,
     muteStatus: Player.Status.UNMUTE,
-    src:"04 - Nirvana - Rape Me.mp3"
+    src:this.props.src,
+    title:this.props.title,
+    artist:this.props.artist
   };
 
   componentDidMount() {
@@ -78,14 +85,21 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
       this.player = null;
     }
   }
+
+  //map a prop to a state update
   componentWillReceiveProps(nextProps) {
-    // You don't have to do this check first, but it can help prevent an unneeded render
     if (nextProps.src !== this.state.src) {
       this.setState({ src: nextProps.src });
       this.player.load();
-      if(this.state.playStatus != Player.Status.PAUSE){
+      if(this.state.playStatus !== Player.Status.PAUSE){
         this.player.play();
       }
+    }
+    if (nextProps.title !== this.state.title) {
+      this.setState({ title: nextProps.title });
+    }
+    if (nextProps.artist !== this.state.artist) {
+      this.setState({ artist: nextProps.artist });
     }
   }
   render() {
@@ -94,10 +108,14 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
       elevation,
       classes,
       showLoopIcon,
+      onNextClick,
+      onPrevClick,
       classNames: {
         player,
         loopIcon,
         playIcon,
+        nextIcon,
+        prevIcon,
         muteIcon,
         slider,
         track,
@@ -130,7 +148,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
         >
           <source src={src} />
         </audio>
-        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={8} container>
+        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={8} container>
           {showLoopIcon && <Grid md={1} item>
             <LoopStatusIcon
               className={css(classes['player-icon-disabled'], loopIcon, {
@@ -140,16 +158,97 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               focusable="true"
             />
           </Grid>}
-          <Grid md={1} item>
-            <PlayStatusIcon
-              className={css(
-                classes['player-default-icon'],
-                classes['player-main-icon'],
-                playIcon
-              )}
-              onClick={() => this.triggerAction(Player.Status.PLAY)}
-              focusable="true"
-            />
+          <Grid item md={2} alignContent="center" justify="center" alignItems="center" container >
+            <Grid md={4} item>
+              <SkipPrevIcon
+                className={css(
+                  classes['player-default-icon'],
+                  classes['player-main-icon'],
+                  prevIcon
+                )}
+                onClick={() => onPrevClick()}
+                focusable="true"
+              />
+            </Grid>
+            <Grid md={4} item>
+              <PlayStatusIcon
+                className={css(
+                  classes['player-default-icon'],
+                  classes['player-main-icon'],
+                  playIcon
+                )}
+                onClick={() => this.triggerAction(Player.Status.PLAY)}
+                focusable="true"
+              />
+            </Grid>
+            <Grid md={4} item>
+              <SkipNextIcon
+                className={css(
+                  classes['player-default-icon'],
+                  classes['player-main-icon'],
+                  nextIcon
+                )}
+                onClick={() => onNextClick()}
+                focusable="true"
+              />
+            </Grid>
+          </Grid>
+          <Grid item md={5} container  alignContent="center" justify="center" alignItems="center" >
+            <Grid item md={12} container alignContent="center" justify="center" alignItems="center"  >
+              <Grid md={6} item>
+                <Typography
+                    className={css(classes['player-text'], text)}
+                    align="center"
+                    noWrap
+                  >
+                  {this.state.title}
+                </Typography>
+              </Grid>
+              <Grid md={6} item>
+                <Typography
+                    className={css(classes['player-text'], text)}
+                    align="center"
+                    noWrap
+                  >
+                  {this.state.artist}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid item md={12} container spacing={8} >
+              <Grid md={3} item>
+                <Typography
+                  className={css(classes['player-text'], text)}
+                  align="center"
+                  noWrap
+                >
+                  {getFormattedTime(current)}
+                </Typography>
+              </Grid>
+              <Grid md={6} item>
+                <Slider
+                  onChange={(_, progress) =>
+                    this.handleChange(progress, this.player)
+                  }
+                  classes={{
+                    root: css(classes['player-slider-container'], slider),
+                    track: css(classes['player-slider-track'], track),
+                    thumb: css(classes['player-slider-thumb'], thumb),
+                  }}
+                  
+                  color="secondary"
+                  value={progress}
+                />
+              </Grid>
+              <Grid md={3} item>
+                <Typography
+                  className={css(classes['player-text'], text)}
+                  align="center"
+                  noWrap
+                >
+                  {getFormattedTime(duration)}
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid md={1} item>
             <MuteStatusIcon
@@ -160,39 +259,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               focusable="true"
             />
           </Grid>
-          <Grid md={2} item>
-            <Typography
-              className={css(classes['player-text'], text)}
-              align="center"
-              noWrap
-            >
-              {getFormattedTime(current)}
-            </Typography>
-          </Grid>
-          <Grid md={5} item>
-            <Slider
-              onChange={(_, progress) =>
-                this.handleChange(progress, this.player)
-              }
-              classes={{
-                root: css(classes['player-slider-container'], slider),
-                track: css(classes['player-slider-track'], track),
-                thumb: css(classes['player-slider-thumb'], thumb),
-              }}
-              
-              color="secondary"
-              value={progress}
-            />
-          </Grid>
-          <Grid md={2} item>
-            <Typography
-              className={css(classes['player-text'], text)}
-              align="center"
-              noWrap
-            >
-              {getFormattedTime(duration)}
-            </Typography>
-          </Grid>
+          
         </Grid>
       </Fragment>
     );

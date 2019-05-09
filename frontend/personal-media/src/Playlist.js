@@ -10,16 +10,22 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import {Audiotrack} from '@material-ui/icons'
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createMuiTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 
+const theme = createMuiTheme({
+    typography: {
+      useNextVariants: true,
+    },
+  });
 const styles = theme => ({
     appBar: {
         top: 'auto',
         bottom: 0,
     }
 });
+
 
 const {tracks} = myData;
 
@@ -30,9 +36,19 @@ export class Playlist extends Component {
         console.log("toto");
         this.setState({selected:track})
     }
+    onNextClick = () =>{
+        console.log("next")
+        const newIndex = tracks.indexOf(this.state.selected)+1;
+        this.setState({selected:tracks[newIndex < tracks.length ? newIndex : 0]})
+    }
+    onPrevClick = () =>{
+        console.log("prev")
+        const newIndex = tracks.indexOf(this.state.selected)-1;
+        this.setState({selected:tracks[newIndex >= 0 ? newIndex : tracks.length-1]})
+    }
     render(){
         const trackList = tracks.map((track) =>
-            <ListItem button>
+            <ListItem key={track} button selected={this.state.selected == track}>
                 <ListItemIcon>
                     <Audiotrack />
                 </ListItemIcon>
@@ -42,7 +58,7 @@ export class Playlist extends Component {
             </ListItem>
         );
         return(
-        <MuiThemeProvider>
+        <MuiThemeProvider theme={theme}>
             <React.Fragment>
                   <AppBar position="static" color="default">
                     <Toolbar>
@@ -55,10 +71,15 @@ export class Playlist extends Component {
                   <AppBar position="fixed" className={this.props.classes.appBar}>
                     <AudioPlayer
                       src={this.state.selected.url}
-                      autoPlay={true}
+                      title={this.state.selected.title}
+                      artist={this.state.selected.artist}
+                      autoPlay={false}
                       rounded={true}
                       elevation={1}
                       width="100%"
+                      showLoopIcon={false}
+                      onPrevClick={() => this.onPrevClick()}
+                      onNextClick={() => this.onNextClick()}
                     />
                   </AppBar>
               </React.Fragment>

@@ -23,7 +23,7 @@ const getGreyColor = (theme, opacity) => {
 
 export default theme => ({
   'player-container': {
-    padding: theme.spacing.unit,
+    padding: '0',
   },
   'player-default-icon': {
     padding: '0px',
@@ -69,5 +69,6 @@ export default theme => ({
   },
   'player-text': {
     color: theme.palette.getContrastText(theme.palette.background.default),
+    margin: '5px'
   },
 });
