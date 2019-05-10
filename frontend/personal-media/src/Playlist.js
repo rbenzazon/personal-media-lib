@@ -26,7 +26,7 @@ export class Playlist extends Component {
     state = {
         currentFolder:tracks,
         parentFolders:[],
-        selected:tracks.children[0]
+        selected:tracks.children.filter(track => !track.children)[0]
     };
 
     /**
@@ -42,22 +42,37 @@ export class Playlist extends Component {
             parents.push(this.state.currentFolder);
             this.setState({currentFolder:track,parentFolders:parents});
         }else{
-            this.setState({selected:track})
+            this.setState({selected:track});
         }
     }
 
     onNextClick = () =>{
-        const newIndex = this.state.currentFolder.indexOf(this.state.selected)+1;
-        this.setState({selected:this.state.currentFolder[newIndex < this.state.currentFolder.length ? newIndex : 0]})
+        const {children} = this.state.currentFolder;
+        const index = children.indexOf(this.state.selected)+1;
+        const boundaries = index === children.length ? 0 : index;
+        for(let newIndex = boundaries;newIndex < children.length;newIndex++){
+            if(!children[newIndex].children){
+                this.setState({selected:children[newIndex]});
+                return;
+            }
+        }
+        
     }
 
     onPrevClick = () =>{
-        console.log("prev")
-        const newIndex = this.state.currentFolder.indexOf(this.state.selected)-1;
-        this.setState({selected:this.state.currentFolder[newIndex >= 0 ? newIndex : this.state.currentFolder.length-1]})
+        const {children} = this.state.currentFolder;
+        const index = children.indexOf(this.state.selected) -1;
+        const boundaries = index < 0 ? children.length-1 : index;
+        for(let newIndex = boundaries;newIndex >= 0;newIndex--){
+            if(!children[newIndex].children){
+                this.setState({selected:children[newIndex]});
+                return;
+            }
+        }
     }
 
     render(){
+
         const trackList = this.state.currentFolder.children.map((track) =>
             <ListItem key={track} button selected={this.state.selected === track}>
                 <ListItemIcon>
@@ -68,6 +83,7 @@ export class Playlist extends Component {
                 </ListItemText>
             </ListItem>
         );
+        
         return(
         <MuiThemeProvider theme={theme}>
             <React.Fragment>

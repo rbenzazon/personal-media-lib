@@ -45,12 +45,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     classNames: {},
     width: '500px',
     height: '50px',
-    onNextClick:()=>{},
-    onPrevClick:()=>{},
     showLoopIcon: true,
-    src:null,
-    title:"",
-    artist:""
   };
 
   player = null;
@@ -70,7 +65,6 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
 
   componentDidMount() {
     attachToEvent(this.player, Player.Events.CAN_PLAY, this.handleCanPlay);
-
     if (this.props.autoPlay) {
       this.triggerAction(Player.Status.PLAY);
     }
@@ -84,7 +78,6 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
         this.handleTimeUpdate
       );
       removeFromEvent(this.player, Player.Events.CAN_PLAY, this.handleCanPlay);
-
       this.player = null;
     }
   }
@@ -94,7 +87,8 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     if (nextProps.src !== this.state.src) {
       this.setState({ src: nextProps.src });
       this.player.load();
-      if(this.state.playStatus !== Player.Status.PAUSE){
+      //if(this.state.playStatus !== Player.Status.PAUSE)
+      {
         this.player.play();
       }
     }
