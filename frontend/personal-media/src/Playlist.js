@@ -1,25 +1,16 @@
 import React, { Component } from 'react';
 import myData from './data.json';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import AppBar from '@material-ui/core/AppBar';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-//import Divider from '@material-ui/core/Divider';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import {AppBar,List,ListItem,ListItemIcon,ListItemText,Toolbar,Typography} from '@material-ui/core';
 import {Audiotrack,Folder as FolderIcon, ArrowBack as BackIcon} from '@material-ui/icons'
-import { withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { withStyles, createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
-
 
 const theme = createMuiTheme({
     typography: {
       useNextVariants: true,
     },
-  });
+});
 const styles = theme => ({
     appBar: {
         top: 'auto',
@@ -27,51 +18,50 @@ const styles = theme => ({
     }
 });
 
-
 const {tracks} = myData;
-let currentFolder = tracks;
-let parentFolders = [];
+
 
 export class Playlist extends Component {
-    state = {selected:currentFolder.children[0]};
-    
+
+    state = {
+        currentFolder:tracks,
+        parentFolders:[],
+        selected:tracks.children[0]
+    };
+
+    /**
+     * @track : undefined, track, track may contain a children array prop
+     */
     onListclick = (track) =>{
-        console.log("toto");
         if(track === undefined){
-            currentFolder = parentFolders.pop();
-            if(currentFolder.children.length >=1){
-                this.setState({selected:currentFolder.children[0]})
-            }else{
-                this.setState({selected:null})
-            }
+            let parents = [...this.state.parentFolders];
+            const newCurrent = parents.splice(parents.length-1, 1)[0];
+            this.setState({currentFolder:newCurrent,parentFolders:parents});
         }else if(track.children){
-            parentFolders.push(currentFolder);
-            currentFolder = track;
-            if(currentFolder.children.length >=1){
-                this.setState({selected:currentFolder.children[0]})
-            }else{
-                this.setState({selected:null})
-            }
+            let parents = [...this.state.parentFolders];
+            parents.push(this.state.currentFolder);
+            this.setState({currentFolder:track,parentFolders:parents});
         }else{
             this.setState({selected:track})
         }
     }
+
     onNextClick = () =>{
-        console.log("next")
-        const newIndex = currentFolder.indexOf(this.state.selected)+1;
-        this.setState({selected:currentFolder[newIndex < currentFolder.length ? newIndex : 0]})
+        const newIndex = this.state.currentFolder.indexOf(this.state.selected)+1;
+        this.setState({selected:this.state.currentFolder[newIndex < this.state.currentFolder.length ? newIndex : 0]})
     }
+
     onPrevClick = () =>{
         console.log("prev")
-        const newIndex = currentFolder.indexOf(this.state.selected)-1;
-        this.setState({selected:currentFolder[newIndex >= 0 ? newIndex : currentFolder.length-1]})
+        const newIndex = this.state.currentFolder.indexOf(this.state.selected)-1;
+        this.setState({selected:this.state.currentFolder[newIndex >= 0 ? newIndex : this.state.currentFolder.length-1]})
     }
+
     render(){
-        const trackList = currentFolder.children.map((track) =>
-            <ListItem key={track} button selected={this.state.selected == track}>
+        const trackList = this.state.currentFolder.children.map((track) =>
+            <ListItem key={track} button selected={this.state.selected === track}>
                 <ListItemIcon>
-                    {track.children && <FolderIcon />}
-                    {!track.children && <Audiotrack />}
+                    {(track.children && <FolderIcon />) || (!track.children && <Audiotrack />)}
                 </ListItemIcon>
                 <ListItemText onClick={() => this.onListclick(track)}>
                     {track.children ? track.title : track.title +" - " +track.album+" - "+track.artist}
@@ -84,18 +74,18 @@ export class Playlist extends Component {
                   <AppBar position="static" color="default">
                     <Toolbar>
                     <Typography variant="h6" color="inherit">
-                      {currentFolder.title}
+                      {this.state.currentFolder.title}
                     </Typography>
                     </Toolbar>
                   </AppBar>
                   <List>
-                  {tracks !== currentFolder && 
+                  {tracks !== this.state.currentFolder && 
                     <ListItem key={'back'} button >
                       <ListItemIcon>
                           <BackIcon/>
                       </ListItemIcon>
                       <ListItemText onClick={() => this.onListclick()}>
-                          back to {parentFolders[parentFolders.length-1].title}
+                          back to {this.state.parentFolders[this.state.parentFolders.length-1].title}
                       </ListItemText>
                   </ListItem>}
                   {trackList}</List>

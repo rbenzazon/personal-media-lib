@@ -7,6 +7,7 @@ import styles from './styles';
 import { attachToEvent, getCurrentTime, getFormattedTime, getIconByPlayerStatus, getPlayerStateFromAction, getProgress, removeFromEvent } from './utils';
 import Player from './utils/constants';
 import Tooltip from '@material-ui/core/Tooltip';
+import PropTypes from 'prop-types'
 
 /*
 ts
@@ -339,5 +340,18 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     }
   };
 }
-
+AudioPlayer.propTypes = {
+  src: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  artist: PropTypes.string.isRequired,
+  onPrevClick: PropTypes.func.isRequired,
+  onNextClick: PropTypes.func.isRequired,
+  width: PropTypes.string,
+  height: PropTypes.string,
+  classes: PropTypes.object,
+  rounded: PropTypes.bool,
+  autoPlay: PropTypes.bool,
+  elevation: PropTypes.number,
+  showLoopIcon: PropTypes.bool,
+}
 export default withStyles(styles, { withTheme: true })(AudioPlayer);
