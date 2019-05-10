@@ -147,8 +147,8 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
         >
           <source src={src} />
         </audio>
-        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={8} container>
-          {showLoopIcon && <Grid md={1} item>
+        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={20} container>
+          {showLoopIcon && <Grid xs={1} item>
             <LoopStatusIcon
               className={css(classes['player-icon-disabled'], loopIcon, {
                 [classes['player-default-icon']]: isLoopEnable,
@@ -157,8 +157,8 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               focusable="true"
             />
           </Grid>}
-          <Grid item md={2} alignContent="center" justify="center" alignItems="center" container >
-            <Grid md={4} item>
+          <Grid item xs={2} alignContent="center" justify="center" alignItems="center" container >
+            <Grid xs={4} item>
               <SkipPrevIcon
                 className={css(
                   classes['player-default-icon'],
@@ -169,7 +169,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                 focusable="true"
               />
             </Grid>
-            <Grid md={4} item>
+            <Grid xs={4} item>
               <PlayStatusIcon
                 className={css(
                   classes['player-default-icon'],
@@ -180,7 +180,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                 focusable="true"
               />
             </Grid>
-            <Grid md={4} item>
+            <Grid xs={4} item>
               <SkipNextIcon
                 className={css(
                   classes['player-default-icon'],
@@ -192,38 +192,38 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               />
             </Grid>
           </Grid>
-          <Grid item md={5} container  alignContent="center" justify="center" alignItems="center" >
-            <Grid item md={12} container alignContent="center" justify="center" alignItems="center"  >
-              <Grid md={6} item>
+          <Grid item xs={8} container  alignContent="center" justify="center" alignItems="center" >
+            <Grid item xs={12} container alignContent="center" justify="flex-start" alignItems="flex-start"  >
+              <Grid xs={6} item>
                 <Typography
                     className={css(classes['player-text'], text)}
-                    align="center"
+                    
                     noWrap
                   >
                   {this.state.title}
                 </Typography>
               </Grid>
-              <Grid md={6} item>
+              <Grid xs={6} item>
                 <Typography
                     className={css(classes['player-text'], text)}
-                    align="center"
+                    
                     noWrap
                   >
                   {this.state.artist}
                 </Typography>
               </Grid>
             </Grid>
-            <Grid item md={12} container spacing={8} >
-              <Grid md={3} item>
+            <Grid item xs={12} container justify="flex-start" >
+              <Grid xs={2} item>
                 <Typography
                   className={css(classes['player-text'], text)}
-                  align="center"
+                  
                   noWrap
                 >
                   {getFormattedTime(current)}
                 </Typography>
               </Grid>
-              <Grid md={6} item>
+              <Grid xs={8} item>
                 <Slider
                   onChange={(_, progress) =>
                     this.handleChange(progress, this.player)
@@ -238,10 +238,10 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   value={progress}
                 />
               </Grid>
-              <Grid md={3} item>
+              <Grid xs={2} item>
                 <Typography
                   className={css(classes['player-text'], text)}
-                  align="center"
+                  align="right"
                   noWrap
                 >
                   {getFormattedTime(duration)}
@@ -249,9 +249,10 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               </Grid>
             </Grid>
           </Grid>
-          <Grid md={1} item>
+          <Grid xs={1} item>
           <Tooltip
           interactive
+          placement="left"
           classes={{tooltip: classes.volumeToolTip}}
           title={
             <React.Fragment>
@@ -269,7 +270,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   disableFocusListener
                   disableHoverListener
                   disableTouchListener
-                />
+                  />
               </div>
             </React.Fragment>
           }>

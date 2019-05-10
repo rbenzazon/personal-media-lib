@@ -35,9 +35,10 @@ export default theme => ({
   },
   'player-container': {
     padding: '0',
+    borderRadius:'0px !important'
   },
   'player-default-icon': {
-    padding: '0px',
+    padding: '0px 10px',
     margin: '0px',
     width: '27px',
     height: '27px',
@@ -69,9 +70,11 @@ export default theme => ({
     },
   },
   'player-vol-slider-container': {
+    
     'background-color': getColor(theme, 'secondary'),
   },
   'player-slider-container': {
+    padding: "10px 0px",
     width: 'auto !important',
     'border-radius': '4px',
   },
