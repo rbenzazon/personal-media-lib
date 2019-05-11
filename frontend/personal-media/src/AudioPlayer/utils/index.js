@@ -19,6 +19,7 @@ export const getFormattedTime = time => {
 };
 
 export const getIconByPlayerStatus = playerStatus => {
+  console.log(playerStatus);
   switch (playerStatus) {
     case Player.Status.PAUSE:
       return PlayIcon;

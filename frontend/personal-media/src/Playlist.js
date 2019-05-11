@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import myData from './data.json';
-import {AppBar,List,ListItem,ListItemIcon,ListItemText,Toolbar,Typography} from '@material-ui/core';
+import {AppBar,List,ListItem,ListItemIcon,ListItemText,Toolbar,Typography,ListItemAvatar,Avatar} from '@material-ui/core';
 import {Audiotrack,Folder as FolderIcon, ArrowBack as BackIcon} from '@material-ui/icons'
 import { withStyles, createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -19,7 +19,6 @@ const styles = theme => ({
 });
 
 const {tracks} = myData;
-
 
 export class Playlist extends Component {
 
@@ -78,8 +77,11 @@ export class Playlist extends Component {
                 <ListItemIcon>
                     {(track.children && <FolderIcon />) || (!track.children && <Audiotrack />)}
                 </ListItemIcon>
+                {track.imageUrl && <ListItemAvatar>
+                    <Avatar src={track.imageUrl} />
+                </ListItemAvatar>}
                 <ListItemText onClick={() => this.onListclick(track)}>
-                    {track.children ? track.title : track.title +" - " +track.album+" - "+track.artist}
+                    {track.children ? track.title : track.title +" - " +track.album+" - "+track.year+" - "+track.artist+" - "+track.trackNumber}
                 </ListItemText>
             </ListItem>
         );

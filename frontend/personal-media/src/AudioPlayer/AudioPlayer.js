@@ -85,7 +85,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
   //map a prop to a state update
   componentWillReceiveProps(nextProps) {
     if (nextProps.src !== this.state.src) {
-      this.setState({ src: nextProps.src });
+      this.setState({ src: nextProps.src ,playStatus:Player.Status.PLAY});
       this.player.load();
       //if(this.state.playStatus !== Player.Status.PAUSE)
       {
@@ -132,7 +132,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     } = this.state;
 
     const PlayStatusIcon = getIconByPlayerStatus(playStatus);
-
+    
     const isLoopEnable = loopStatus === Player.Status.LOOP;
     const isMuteEnable = muteStatus === Player.Status.MUTE;
 
