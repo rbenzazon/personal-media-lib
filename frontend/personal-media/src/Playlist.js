@@ -5,22 +5,45 @@ import {Audiotrack,Folder as FolderIcon, ArrowBack as BackIcon, PermMedia as Sca
 import { withStyles, createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
+import { lighten } from '@material-ui/core/styles/colorManipulator';
+import css from 'classnames';
 
 const theme = createMuiTheme({
     typography: {
       useNextVariants: true,
     },
 });
+const getGreyColor = (theme, opacity) => {
+    const greyColor = theme.palette.grey['500'];
+  
+    if (!opacity) {
+      return greyColor;
+    }
+  
+    return lighten(greyColor, opacity);
+};
 const styles = theme => ({
     appBar: {
         top: 'auto',
         bottom: 0,
-    }
+    },
+    favoriteDisabled:{
+        fill: getGreyColor(theme),
+        color: getGreyColor(theme),
+        '&:hover': {
+        fill: getGreyColor(theme, 0.25),
+        color: getGreyColor(theme, 0.25),
+        },
+    },
 });
 
 const {tracks} = myData;
 
 export class Playlist extends Component {
+    static defaultProps = {
+        classes: {},
+        classNames: {},
+    };
 
     state = {
         currentFolder:tracks,
@@ -53,6 +76,7 @@ export class Playlist extends Component {
 
     onListFavoriteClick = (track) =>{
         track.favorite = track.favorite ?!track.favorite : true;
+        this.setState({currentFolder:this.state.currentFolder});
     }
     onFavoriteClick = () =>{
         this.setState({favoriteTracks: true});
@@ -111,6 +135,12 @@ export class Playlist extends Component {
     }
 
     render(){
+        const {
+            classes,
+            classNames: {
+                favoriteDisabled,
+            },
+        } = this.props;
         const trackList = this.getListData().map((track) =>
             <ListItem key={track} button selected={this.state.selected === track}>
                 <ListItemIcon>
@@ -122,7 +152,7 @@ export class Playlist extends Component {
                 <ListItemText onClick={() => this.onListclick(track)}>
                     {track.children ? track.title : track.title +" - " +track.album+" - "+track.year+" - "+track.artist+" - "+track.trackNumber}
                 </ListItemText>
-                {!track.children && <ListItemIcon onClick={() => this.onListFavoriteClick(track)}>
+                {!track.children && <ListItemIcon className={css({[classes['favoriteDisabled']]: !track.favorite})} onClick={() => this.onListFavoriteClick(track)}>
                     <FavorIcon />
                 </ListItemIcon>}
             </ListItem>
