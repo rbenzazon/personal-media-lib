@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import myData from './data.json';
 import {AppBar,List,ListItem,ListItemIcon,ListItemText,Toolbar,Typography,ListItemAvatar,Avatar,Drawer,IconButton} from '@material-ui/core';
-import {Audiotrack,Folder as FolderIcon, ArrowBack as BackIcon, PermMedia as ScanIcon, Favorite as FavorIcon,Menu as MenuIcon} from '@material-ui/icons'
+import {Audiotrack,Folder as FolderIcon, ArrowBack as BackIcon, PermMedia as ScanIcon, Favorite as FavorIcon,Menu as MenuIcon} from '@material-ui/icons';
+import {Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
 import { withStyles, createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
@@ -51,6 +52,7 @@ export class Playlist extends Component {
         selected:tracks.children.filter(track => !track.children)[0],
         sideDrawer:false,
         favoriteTracks:false,
+        importOpen:false,
     };
 
     /**
@@ -114,6 +116,14 @@ export class Playlist extends Component {
         }
     }
 
+    onImportOpenClick = () =>{
+        this.setState({importOpen:true});
+    }
+
+    onImportCloseClick = () =>{
+        this.setState({importOpen:false});
+    }
+
     mapRecursive = (trackList) =>{
         let output = [];
         trackList.map((track)=>{
@@ -160,7 +170,7 @@ export class Playlist extends Component {
 
         const sideDrawerList = (
             <List>
-            {[{text:'Favorite tracks',icon:<FavorIcon />,click:() => this.onFavoriteClick()},{text:'Add media',icon:<ScanIcon/>,click:() => this.onFavoriteClick()}].map((item) => (
+            {[{text:'Favorite tracks',icon:<FavorIcon />,click:() => this.onFavoriteClick()},{text:'Add media',icon:<ScanIcon/>,click:() => this.onImportOpenClick()}].map((item) => (
                 <ListItem button key={item.text} onClick={item.click}>
                     <ListItemIcon>{item.icon}</ListItemIcon>
                     <ListItemText primary={item.text} />
@@ -227,6 +237,27 @@ export class Playlist extends Component {
                         onNextClick={() => this.onNextClick()}
                     />
                 </AppBar>
+                <Dialog
+                    open={this.state.importOpen}
+                    onClose={() => this.onImportCloseClick()}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                    <DialogTitle id="alert-dialog-title">Import media</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                        Select files from your local storage
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.onImportCloseClick()} color="primary">
+                        Cancel
+                        </Button>
+                        <Button onClick={() => this.onImportCloseClick()} color="primary" autoFocus>
+                        Browse
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </React.Fragment>
         </MuiThemeProvider>
         );
