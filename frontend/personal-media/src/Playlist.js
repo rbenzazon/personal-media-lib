@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import myData from './data.json';
-import {AppBar,List,ListItem,ListItemIcon,ListItemText,Toolbar,Typography,ListItemAvatar,Avatar} from '@material-ui/core';
-import {Audiotrack,Folder as FolderIcon, ArrowBack as BackIcon} from '@material-ui/icons'
+import {AppBar,List,ListItem,ListItemIcon,ListItemText,Toolbar,Typography,ListItemAvatar,Avatar,Drawer,IconButton} from '@material-ui/core';
+import {Audiotrack,Folder as FolderIcon, ArrowBack as BackIcon, PermMedia as ScanIcon, Favorite as FavorIcon,Menu as MenuIcon} from '@material-ui/icons'
 import { withStyles, createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
@@ -25,7 +25,9 @@ export class Playlist extends Component {
     state = {
         currentFolder:tracks,
         parentFolders:[],
-        selected:tracks.children.filter(track => !track.children)[0]
+        selected:tracks.children.filter(track => !track.children)[0],
+        sideDrawer:false,
+        favoriteTracks:false,
     };
 
     /**
@@ -44,6 +46,20 @@ export class Playlist extends Component {
             this.setState({selected:track});
         }
     }
+
+    onListFavoriteClick = (track) =>{
+        track.favorite = track.favorite ?!track.favorite : true;
+    }
+    onFavoriteClick = () =>{
+        this.setState({favoriteTracks: true});
+    }
+
+    toggleDrawer = (open) => () => {
+        //if(this.state.sideDrawer !== open){
+            console.log(open);
+            this.setState({sideDrawer: open});
+        //}
+    };
 
     onNextClick = () =>{
         const {children} = this.state.currentFolder;
@@ -70,9 +86,28 @@ export class Playlist extends Component {
         }
     }
 
-    render(){
+    mapRecursive = (trackList) =>{
+        let output = [];
+        trackList.map((track)=>{
+            output.push(track);
+            if(track.children){
+                output = [...this.mapRecursive(track.children)];
+            }
+        });
+        return output;
+    }
 
-        const trackList = this.state.currentFolder.children.map((track) =>
+    getListData = () =>{
+        if(this.state.favoriteTracks){
+            console.log("favoriteTracks");
+            return this.mapRecursive(tracks.children).filter((track)=>track.favorite);
+        }else{
+            return this.state.currentFolder.children;
+        }
+    }
+
+    render(){
+        const trackList = this.getListData().map((track) =>
             <ListItem key={track} button selected={this.state.selected === track}>
                 <ListItemIcon>
                     {(track.children && <FolderIcon />) || (!track.children && <Audiotrack />)}
@@ -83,45 +118,73 @@ export class Playlist extends Component {
                 <ListItemText onClick={() => this.onListclick(track)}>
                     {track.children ? track.title : track.title +" - " +track.album+" - "+track.year+" - "+track.artist+" - "+track.trackNumber}
                 </ListItemText>
+                {!track.children && <ListItemIcon onClick={() => this.onListFavoriteClick(track)}>
+                    <FavorIcon />
+                </ListItemIcon>}
             </ListItem>
+        );
+
+        const sideDrawerList = (
+            <List>
+            {[{text:'Favorite tracks',icon:<FavorIcon />,click:() => this.onFavoriteClick()},{text:'Add media',icon:<ScanIcon/>,click:() => this.onFavoriteClick()}].map((item) => (
+                <ListItem button key={item.text} onClick={item.click}>
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.text} />
+                </ListItem>
+            ))}
+            </List>
         );
         
         return(
         <MuiThemeProvider theme={theme}>
             <React.Fragment>
-                  <AppBar position="static" color="default">
+                <AppBar position="static" color="default">
                     <Toolbar>
-                    <Typography variant="h6" color="inherit">
-                      {this.state.currentFolder.title}
-                    </Typography>
+                        <IconButton aria-label="Open menu" onClick={this.toggleDrawer(true)} >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography variant="h6" color="inherit">
+                        {this.state.currentFolder.title}
+                        </Typography>
                     </Toolbar>
-                  </AppBar>
-                  <List>
-                  {tracks !== this.state.currentFolder && 
+                </AppBar>
+                <List>
+                    {tracks !== this.state.currentFolder && 
                     <ListItem key={'back'} button >
-                      <ListItemIcon>
-                          <BackIcon/>
-                      </ListItemIcon>
-                      <ListItemText onClick={() => this.onListclick()}>
-                          back to {this.state.parentFolders[this.state.parentFolders.length-1].title}
-                      </ListItemText>
-                  </ListItem>}
-                  {trackList}</List>
-                  <AppBar position="fixed" className={this.props.classes.appBar}>
+                        <ListItemIcon>
+                            <BackIcon/>
+                        </ListItemIcon>
+                        <ListItemText onClick={() => this.onListclick()}>
+                            back to {this.state.parentFolders[this.state.parentFolders.length-1].title}
+                        </ListItemText>
+                    </ListItem>}
+                    {trackList}
+                </List>
+                <Drawer open={this.state.sideDrawer} onClose={this.toggleDrawer(false)}>
+                    <div
+                        tabIndex={0}
+                        role="button"
+                        onClick={this.toggleDrawer(false)}
+                        onKeyDown={this.toggleDrawer(false)}
+                    >
+                        {sideDrawerList}
+                    </div>
+                </Drawer>
+                <AppBar position="fixed" className={this.props.classes.appBar}>
                     <AudioPlayer
-                      src={this.state.selected.url}
-                      title={this.state.selected.title}
-                      artist={this.state.selected.artist}
-                      autoPlay={false}
-                      rounded={true}
-                      elevation={1}
-                      width="100%"
-                      showLoopIcon={false}
-                      onPrevClick={() => this.onPrevClick()}
-                      onNextClick={() => this.onNextClick()}
+                        src={this.state.selected.url}
+                        title={this.state.selected.title}
+                        artist={this.state.selected.artist}
+                        autoPlay={false}
+                        rounded={true}
+                        elevation={1}
+                        width="100%"
+                        showLoopIcon={false}
+                        onPrevClick={() => this.onPrevClick()}
+                        onNextClick={() => this.onNextClick()}
                     />
-                  </AppBar>
-              </React.Fragment>
+                </AppBar>
+            </React.Fragment>
         </MuiThemeProvider>
         );
     }

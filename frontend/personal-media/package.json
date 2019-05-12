@@ -14,6 +14,7 @@
     "@types/react-dom": "^16.8.4",
     "material-ui": "^0.20.2",
     "react": "^16.8.6",
+    "react-device-detect": "^1.6.2",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.0",
     "typescript": "^3.4.5"

@@ -7,7 +7,8 @@ import styles from './styles';
 import { attachToEvent, getCurrentTime, getFormattedTime, getIconByPlayerStatus, getPlayerStateFromAction, getProgress, removeFromEvent } from './utils';
 import Player from './utils/constants';
 import Tooltip from '@material-ui/core/Tooltip';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
+import {BrowserView,MobileView,isBrowser,isMobile} from "react-device-detect";
 
 /*
 ts
@@ -87,10 +88,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     if (nextProps.src !== this.state.src) {
       this.setState({ src: nextProps.src ,playStatus:Player.Status.PLAY});
       this.player.load();
-      //if(this.state.playStatus !== Player.Status.PAUSE)
-      {
-        this.player.play();
-      }
+      this.triggerAction(Player.Status.PLAY);
     }
     if (nextProps.title !== this.state.title) {
       this.setState({ title: nextProps.title });
@@ -157,7 +155,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               focusable="true"
             />
           </Grid>}
-          <Grid item xs={2} alignContent="center" justify="center" alignItems="center" container >
+          <Grid item xs={isMobile ? 5 : 2} alignContent="center" justify="center" alignItems="center" container >
             <Grid xs={4} item>
               <SkipPrevIcon
                 className={css(
@@ -192,9 +190,9 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               />
             </Grid>
           </Grid>
-          <Grid item xs={8} container  alignContent="center" justify="center" alignItems="center" >
+          <Grid item xs={isMobile ? 4 : 8} container  alignContent="center" justify="center" alignItems="center" >
             <Grid item xs={12} container alignContent="center" justify="flex-start" alignItems="flex-start"  >
-              <Grid xs={6} item>
+              <Grid xs={isMobile?12:6} item>
                 <Typography
                     className={css(classes['player-text'], text)}
                     
@@ -203,7 +201,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   {this.state.title}
                 </Typography>
               </Grid>
-              <Grid xs={6} item>
+              {!isMobile && <Grid xs={6} item>
                 <Typography
                     className={css(classes['player-text'], text)}
                     
@@ -211,10 +209,10 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   >
                   {this.state.artist}
                 </Typography>
-              </Grid>
+              </Grid>}
             </Grid>
             <Grid item xs={12} container justify="flex-start" >
-              <Grid xs={2} item>
+              <Grid xs={isMobile?6:2} item>
                 <Typography
                   className={css(classes['player-text'], text)}
                   
@@ -223,7 +221,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   {getFormattedTime(current)}
                 </Typography>
               </Grid>
-              <Grid xs={8} item>
+              {!isMobile && <Grid xs={8} item>
                 <Slider
                   onChange={(_, progress) =>
                     this.handleChange(progress, this.player)
@@ -238,7 +236,8 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   value={progress}
                 />
               </Grid>
-              <Grid xs={2} item>
+              }
+              <Grid xs={isMobile ? 6 : 2} item>
                 <Typography
                   className={css(classes['player-text'], text)}
                   align="right"
@@ -249,8 +248,9 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               </Grid>
             </Grid>
           </Grid>
-          <Grid xs={1} item>
+          <Grid xs={isMobile ? 3 : 1} item>
           <Tooltip
+          {... isMobile ? {disableHoverListener:true,enterTouchDelay:50}:{}}
           interactive
           placement="left"
           classes={{tooltip: classes.volumeToolTip}}
