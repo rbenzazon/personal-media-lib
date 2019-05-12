@@ -145,7 +145,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
         >
           <source src={src} />
         </audio>
-        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={20} container>
+        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={16} container>
           {showLoopIcon && <Grid xs={1} item>
             <LoopStatusIcon
               className={css(classes['player-icon-disabled'], loopIcon, {
