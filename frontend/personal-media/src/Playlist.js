@@ -62,7 +62,7 @@ export class Playlist extends Component {
     };
 
     onNextClick = () =>{
-        const {children} = this.state.currentFolder;
+        const children = this.getListData();
         const index = children.indexOf(this.state.selected)+1;
         const boundaries = index === children.length ? 0 : index;
         for(let newIndex = boundaries;newIndex < children.length;newIndex++){
@@ -75,7 +75,7 @@ export class Playlist extends Component {
     }
 
     onPrevClick = () =>{
-        const {children} = this.state.currentFolder;
+        const children = this.getListData();
         const index = children.indexOf(this.state.selected) -1;
         const boundaries = index < 0 ? children.length-1 : index;
         for(let newIndex = boundaries;newIndex >= 0;newIndex--){
