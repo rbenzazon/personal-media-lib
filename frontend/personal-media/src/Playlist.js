@@ -47,6 +47,10 @@ export class Playlist extends Component {
         }
     }
 
+    onBackClickFavorite = () =>{
+        this.setState({favoriteTracks: false});
+    }
+
     onListFavoriteClick = (track) =>{
         track.favorite = track.favorite ?!track.favorite : true;
     }
@@ -134,6 +138,8 @@ export class Playlist extends Component {
             ))}
             </List>
         );
+        const {favoriteTracks} = this.state;
+
         
         return(
         <MuiThemeProvider theme={theme}>
@@ -144,19 +150,26 @@ export class Playlist extends Component {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" color="inherit">
-                        {this.state.currentFolder.title}
+                        {favoriteTracks ? 'Favorite tracks' : this.state.currentFolder.title}
                         </Typography>
                     </Toolbar>
                 </AppBar>
                 <List>
-                    {tracks !== this.state.currentFolder && 
+                    {(tracks !== this.state.currentFolder || this.state.favoriteTracks) && 
                     <ListItem key={'back'} button >
                         <ListItemIcon>
                             <BackIcon/>
                         </ListItemIcon>
-                        <ListItemText onClick={() => this.onListclick()}>
-                            back to {this.state.parentFolders[this.state.parentFolders.length-1].title}
-                        </ListItemText>
+                        {favoriteTracks === false && 
+                            <ListItemText onClick={() => this.onListclick()}>
+                                back to {this.state.parentFolders[this.state.parentFolders.length-1].title}
+                            </ListItemText>
+                        }
+                        {favoriteTracks && 
+                            <ListItemText onClick={() => this.onBackClickFavorite()}>
+                                back to {this.state.currentFolder.title}
+                            </ListItemText>
+                        }
                     </ListItem>}
                     {trackList}
                 </List>
