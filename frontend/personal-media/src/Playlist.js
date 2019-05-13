@@ -8,7 +8,8 @@ import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import css from 'classnames';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 
 const theme = createMuiTheme({
     typography: {
@@ -54,9 +55,9 @@ export class Playlist extends Component {
             parentFolders:[],
             selected:tracks.children.filter(track => !track.children)[0],
             sideDrawer:false,
-            favoriteTracks:false,
+            favoriteTracks:props.match.path == "/favorite",
             importOpen:false,
-            displayedItems:this.getListData(tracks,false),
+            displayedItems:this.getListData(tracks,props.match.path == "/favorite"),
         };
     }
     
@@ -102,7 +103,7 @@ export class Playlist extends Component {
 
     toggleDrawer = (open) => () => {
         //if(this.state.sideDrawer !== open){
-            console.log(open);
+
             this.setState({sideDrawer: open});
         //}
     };
@@ -185,12 +186,28 @@ export class Playlist extends Component {
 
         const sideDrawerList = (
             <List>
-            {[{text:'Favorite tracks',icon:<FavorIcon />,click:() => this.onFavoriteClick()},{text:'Add media',icon:<ScanIcon/>,click:() => this.onImportOpenClick()}].map((item) => (
-                <ListItem button key={item.text} onClick={item.click}>
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText primary={item.text} />
-                </ListItem>
-            ))}
+            {
+                [{text:'Favorite tracks',icon:<FavorIcon />,click:null},{text:'Add media',icon:<ScanIcon/>,click:() => this.onImportOpenClick()}].map((item) => {
+                if(item.click){
+                    return (
+                    <ListItem button key={item.text} onClick={item.click}>
+                        <ListItemIcon>{item.icon}</ListItemIcon>
+                        <ListItemText primary={item.text} />
+                    </ListItem>
+                    )
+                }else{
+                    return (
+                    <Link to="/favorite" style={{ textDecoration: 'none' }}>
+                        <ListItem button key={item.text} onClick={item.click}>
+                            <ListItemIcon>{item.icon}</ListItemIcon>
+                            <ListItemText primary={item.text} />
+                        </ListItem>
+                    </Link>
+                    )
+                }
+                
+            })
+            }
             </List>
         );
         const {favoriteTracks} = this.state;
@@ -210,22 +227,29 @@ export class Playlist extends Component {
                     </Toolbar>
                 </AppBar>
                 <List>
-                    {(tracks !== this.state.currentFolder || this.state.favoriteTracks) && 
-                    <ListItem key={'back'} button >
-                        <ListItemIcon>
-                            <BackIcon/>
-                        </ListItemIcon>
-                        {favoriteTracks === false && 
+                    {tracks !== this.state.currentFolder && !favoriteTracks && 
+                        <ListItem key={'back'} button >
+                            <ListItemIcon>
+                                <BackIcon/>
+                            </ListItemIcon>
                             <ListItemText onClick={() => this.onListclick()}>
                                 back to {this.state.parentFolders[this.state.parentFolders.length-1].title}
                             </ListItemText>
-                        }
-                        {favoriteTracks && 
-                            <ListItemText onClick={() => this.onBackClickFavorite()}>
-                                back to {this.state.currentFolder.title}
-                            </ListItemText>
-                        }
-                    </ListItem>}
+                        </ListItem>
+                    }
+                    {favoriteTracks && 
+                        <Link to="/" style={{ textDecoration: 'none' }}>
+                            <ListItem key={'back'} button >
+                                <ListItemIcon>
+                                    <BackIcon/>
+                                </ListItemIcon>
+                            
+                                <ListItemText>
+                                    back to {this.state.currentFolder.title}
+                                </ListItemText>
+                            </ListItem>
+                        </Link>
+                    }
                     {trackList}
                 </List>
                 <Drawer open={this.state.sideDrawer} onClose={this.toggleDrawer(false)}>

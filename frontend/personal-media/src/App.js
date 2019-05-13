@@ -1,10 +1,14 @@
 import React from 'react';
 import Playlist from './Playlist';
+import { Route } from "react-router-dom";
+
 
 function App() {
-  // <!--<AppBar title="toto"/>-->
   return (
-    <Playlist/>
-  );
+      <React.Fragment>
+        <Route exact path='/' render={(props) => <Playlist {...props} />} />
+        <Route exact path='/favorite' render={(props) => <Playlist {...props} />} />
+      </React.Fragment>
+        );
 }
 export default App;
