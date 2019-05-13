@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import css from 'classnames';
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 const theme = createMuiTheme({
     typography: {
@@ -46,42 +47,57 @@ export class Playlist extends Component {
         classNames: {},
     };
 
-    state = {
-        currentFolder:tracks,
-        parentFolders:[],
-        selected:tracks.children.filter(track => !track.children)[0],
-        sideDrawer:false,
-        favoriteTracks:false,
-        importOpen:false,
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            currentFolder:tracks,
+            parentFolders:[],
+            selected:tracks.children.filter(track => !track.children)[0],
+            sideDrawer:false,
+            favoriteTracks:false,
+            importOpen:false,
+            displayedItems:this.getListData(tracks,false),
+        };
+    }
+    
 
     /**
      * @track : undefined, track, track may contain a children array prop
      */
     onListclick = (track) =>{
         if(track === undefined){
-            let parents = [...this.state.parentFolders];
-            const newCurrent = parents.splice(parents.length-1, 1)[0];
-            this.setState({currentFolder:newCurrent,parentFolders:parents});
+            this.navigateUp();
         }else if(track.children){
-            let parents = [...this.state.parentFolders];
-            parents.push(this.state.currentFolder);
-            this.setState({currentFolder:track,parentFolders:parents});
+            this.navigateToFolder(track);
         }else{
             this.setState({selected:track});
         }
     }
 
+    navigateUp = () => {
+        let parents = [...this.state.parentFolders];
+        const newCurrent = parents.splice(parents.length-1, 1)[0];
+        this.setState({currentFolder:newCurrent,parentFolders:parents,displayedItems:this.getListData(newCurrent,false)});
+    }
+
+    navigateToFolder = (track) => {
+        if(track.children){
+            let parents = [...this.state.parentFolders];
+            parents.push(this.state.currentFolder);
+            this.setState({currentFolder:track,parentFolders:parents,displayedItems:this.getListData(track,false)});
+        }
+    }
+
     onBackClickFavorite = () =>{
-        this.setState({favoriteTracks: false});
+        this.setState({favoriteTracks: false,displayedItems:this.getListData(this.state.currentFolder,false)});
     }
 
     onListFavoriteClick = (track) =>{
         track.favorite = track.favorite ?!track.favorite : true;
-        this.setState({currentFolder:this.state.currentFolder});
+        this.setState({displayedItems:this.getListData(this.state.currentFolder,this.state.favoriteTracks)});
     }
     onFavoriteClick = () =>{
-        this.setState({favoriteTracks: true});
+        this.setState({favoriteTracks: true,displayedItems:this.getListData(this.state.currentFolder,true)});
     }
 
     toggleDrawer = (open) => () => {
@@ -92,7 +108,7 @@ export class Playlist extends Component {
     };
 
     onNextClick = () =>{
-        const children = this.getListData();
+        const children = this.state.displayedItems;
         const index = children.indexOf(this.state.selected)+1;
         const boundaries = index === children.length ? 0 : index;
         for(let newIndex = boundaries;newIndex < children.length;newIndex++){
@@ -105,7 +121,7 @@ export class Playlist extends Component {
     }
 
     onPrevClick = () =>{
-        const children = this.getListData();
+        const children = this.state.displayedItems;
         const index = children.indexOf(this.state.selected) -1;
         const boundaries = index < 0 ? children.length-1 : index;
         for(let newIndex = boundaries;newIndex >= 0;newIndex--){
@@ -134,13 +150,12 @@ export class Playlist extends Component {
         });
         return output;
     }
-
-    getListData = () =>{
-        if(this.state.favoriteTracks){
-            console.log("favoriteTracks");
+    //todo remove it from render()
+    getListData = (currentFolder,favoriteTracks) =>{
+        if(favoriteTracks){
             return this.mapRecursive(tracks.children).filter((track)=>track.favorite);
         }else{
-            return this.state.currentFolder.children;
+            return [...currentFolder.children];
         }
     }
 
@@ -151,7 +166,7 @@ export class Playlist extends Component {
                 favoriteDisabled,
             },
         } = this.props;
-        const trackList = this.getListData().map((track) =>
+        const trackList = this.state.displayedItems.map((track) =>
             <ListItem key={track} button selected={this.state.selected === track}>
                 <ListItemIcon>
                     {(track.children && <FolderIcon />) || (!track.children && <Audiotrack />)}
