@@ -9,6 +9,7 @@ import Player from './utils/constants';
 import Tooltip from '@material-ui/core/Tooltip';
 import PropTypes from 'prop-types';
 import {BrowserView,MobileView,isBrowser,isMobile} from "react-device-detect";
+import {PlaylistContext} from '../PlaylistContext';
 
 /*
 ts
@@ -38,6 +39,7 @@ export type PROPS_WITH_STYLES = React.Component & AudioPlayerProps & AudioPlayer
 
 class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
   static displayName = "AudioPlayer";
+  static contextType = PlaylistContext;
 
   static defaultProps = {
     elevation: 1,
@@ -58,10 +60,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     loopStatus: Player.Status.UNLOOP,
     playStatus: Player.Status.PAUSE,
     muteStatus: Player.Status.UNMUTE,
-    src:this.props.src,
-    title:this.props.title,
-    artist:this.props.artist,
-    volume: 100
+    volume: 100,
   };
 
   componentDidMount() {
@@ -84,7 +83,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
   }
 
   //map a prop to a state update
-  componentWillReceiveProps(nextProps) {
+  /*componentWillReceiveProps(nextProps) {
     if (nextProps.src !== this.state.src) {
       this.setState({ src: nextProps.src ,playStatus:Player.Status.PLAY});
       this.player.load();
@@ -96,15 +95,13 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     if (nextProps.artist !== this.state.artist) {
       this.setState({ artist: nextProps.artist });
     }
-  }
+  }*/
   render() {
     const {
       rounded,
       elevation,
       classes,
       showLoopIcon,
-      onNextClick,
-      onPrevClick,
       classNames: {
         player,
         loopIcon,
@@ -125,26 +122,27 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
       progress,
       current,
       duration,
-      src,
-      volume
+      volume,
     } = this.state;
 
     const PlayStatusIcon = getIconByPlayerStatus(playStatus);
     
     const isLoopEnable = loopStatus === Player.Status.LOOP;
     const isMuteEnable = muteStatus === Player.Status.MUTE;
-
+    //{this.player != undefined && this.player.load() && this.player.play() && console.log(context.selected)}
     return (
+      <PlaylistContext.Consumer>{(context) => (
       <Fragment>
         <audio
-          ref={node => (this.player = node)}
+          ref={node => {context.setPlayerRef(node);this.player = node}}
           preload="true"
           controls
           hidden
           volume={volume/100}
         >
-          <source src={src} />
+          <source src={context.selected.url} />
         </audio>
+        
         <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={16} container>
           {showLoopIcon && <Grid xs={1} item>
             <LoopStatusIcon
@@ -163,7 +161,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   classes['player-main-icon'],
                   prevIcon
                 )}
-                onClick={() => onPrevClick()}
+                onClick={() => context.onPrevClick()}
                 focusable="true"
               />
             </Grid>
@@ -185,7 +183,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   classes['player-main-icon'],
                   nextIcon
                 )}
-                onClick={() => onNextClick()}
+                onClick={() => context.onNextClick()}
                 focusable="true"
               />
             </Grid>
@@ -198,7 +196,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                     
                     noWrap
                   >
-                  {this.state.title}
+                  {context.selected.title}
                 </Typography>
               </Grid>
               {!isMobile && <Grid xs={6} item>
@@ -207,7 +205,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                     
                     noWrap
                   >
-                  {this.state.artist}
+                  {context.selected.artist}
                 </Typography>
               </Grid>}
             </Grid>
@@ -284,6 +282,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
           
         </Grid>
       </Fragment>
+      )}</PlaylistContext.Consumer>
     );
   }
 
@@ -336,11 +335,6 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
   };
 }
 AudioPlayer.propTypes = {
-  src: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  artist: PropTypes.string.isRequired,
-  onPrevClick: PropTypes.func.isRequired,
-  onNextClick: PropTypes.func.isRequired,
   width: PropTypes.string,
   height: PropTypes.string,
   classes: PropTypes.object,
