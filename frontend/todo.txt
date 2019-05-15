@@ -1,0 +1,5 @@
+header de liste / tableau ?
+debug identical keys
+continue playlist / loop
+install routes on the folder navigation
+done make list data use states

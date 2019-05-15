@@ -7,12 +7,24 @@ export const PlaylistContext = createContext();
 export class PlaylistProvider extends React.Component {
   constructor(props){
     super(props);
-    this.getListData = (currentFolder,favoriteTracks) => {
+    this.getListData = (currentFolder,favoriteTracks,searchKeyWord) => {
+      let tmpTracks;
       if(favoriteTracks){
-          return this.mapRecursive(tracks.children).filter((track)=>track.favorite);
+        tmpTracks = this.mapRecursive(tracks.children).filter((track)=>track.favorite);
       }else{
-          return [...currentFolder.children];
+        tmpTracks = [...currentFolder.children];
       }
+      if(searchKeyWord && searchKeyWord != ''){
+        tmpTracks = tmpTracks.filter(track=>{
+          let result = false;
+          let searchableFields = track.children ? ['title'] : ['title','artist','album'];
+          for(let prop of searchableFields){
+            result = result || track[prop].search(new RegExp(searchKeyWord, "i")) != -1;
+          }
+          return result;
+        });
+      }
+      return tmpTracks;
     }
     this.mapRecursive = (trackList) => {
       let output = [];
@@ -33,6 +45,9 @@ export class PlaylistProvider extends React.Component {
       importOpen:false,
       displayedItems:this.getListData(tracks,props.match.path == "/favorite"),
       playerRef:undefined,
+      searchDisplay:false,
+      searchKeyword:'',
+      searchedKeyword:'',
       onListClick : (track) => {
         console.log("onListClick");
         if(track === undefined){
@@ -47,13 +62,21 @@ export class PlaylistProvider extends React.Component {
       navigateToFolder : (track) =>{
         console.log("navigateToFolder");
         if(track.children){
-          this.setState(state => ({currentFolder:track,parentFolders:[...state.parentFolders,state.currentFolder],displayedItems:this.getListData(track,false)}));
+          this.setState(state => ({
+            currentFolder:track,
+            parentFolders:[...state.parentFolders,state.currentFolder],
+            displayedItems:this.getListData(track,false)
+          }));
         }
       },
       navigateUp : () => {
         let parents = [...this.state.parentFolders];
         const newCurrent = parents.splice(parents.length-1, 1)[0];
-        this.setState(state => ({currentFolder:newCurrent,parentFolders:parents,displayedItems:this.getListData(newCurrent,false)}));
+        this.setState(state => ({
+          currentFolder:newCurrent,
+          parentFolders:parents,
+          displayedItems:this.getListData(newCurrent,false)
+        }));
       },
       toggleDrawer : (open) => {
         //if(this.state.sideDrawer !== open){
@@ -97,14 +120,54 @@ export class PlaylistProvider extends React.Component {
         }
       },
       setFavoriteTracks: (value) =>{
-        this.setState(state=>({favoriteTracks:value,displayedItems:this.getListData(state.currentFolder,value)}))
+        this.setState(state=>({
+          favoriteTracks:value,
+          displayedItems:this.getListData(state.currentFolder,value)
+        }))
       },
       setImportOpen:(value) =>{
         this.setState({importOpen:value});
       },
       onListFavoriteClick : (track) =>{
         track.favorite = track.favorite ?!track.favorite : true;
-        this.setState(state =>({displayedItems:this.getListData(state.currentFolder,state.favoriteTracks)}));
+        this.setState(state =>({
+          displayedItems:this.getListData(state.currentFolder,state.favoriteTracks)
+        }));
+      },
+      onSearchKeyPress: (e) => {
+        if (e.key === 'Enter') {
+          console.log('Enter key pressed');
+          this.state.displaySearch();
+          
+          // write your functionality here
+        }
+      },
+      displaySearch:() =>{
+        if (this.state.searchKeyword != '' )
+        {
+          if(this.state.searchKeyword != this.state.searchedKeyword){
+            this.setState(state => ({
+              searchedKeyword:state.searchKeyword,
+              searchDisplay:true,
+              displayedItems:this.getListData(state.currentFolder,state.favoriteTracks,state.searchKeyword),
+            }));
+          }
+        }else{
+          this.state.clearSearch();
+        }
+      },
+      onSearchChange: (value) => {
+        this.setState(state => ({searchKeyword:value}));
+        console.log('search is '+this.state.searchKeyword);
+      },
+      clearSearch: () => {
+        this.setState(state => ({
+          searchKeyword:'',
+          searchedKeyword:'',
+          searchDisplay:false,
+          displayedItems:this.getListData(state.currentFolder,state.favoriteTracks),
+        }));
+        console.log('clear search');
       },
     };
     //this.setState({displayedItems:,});

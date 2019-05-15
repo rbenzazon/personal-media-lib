@@ -1,7 +1,7 @@
 import React, { Component,useContext } from 'react';
 import myData from './data.json';
-import {AppBar,List,ListItem,ListItemIcon,ListItemText,Toolbar,Typography,ListItemAvatar,Avatar,Drawer,IconButton} from '@material-ui/core';
-import {Audiotrack,Folder as FolderIcon, ArrowBack as BackIcon, PermMedia as ScanIcon, Favorite as FavorIcon,Menu as MenuIcon} from '@material-ui/icons';
+import {Paper,InputBase,AppBar,List,ListItem,ListItemIcon,ListItemText,Toolbar,Typography,ListItemAvatar,Avatar,Drawer,IconButton} from '@material-ui/core';
+import {Audiotrack,Clear as ClearIcon,Search as SearchIcon ,Folder as FolderIcon, ArrowBack as BackIcon, PermMedia as ScanIcon, Favorite as FavorIcon,Menu as MenuIcon} from '@material-ui/icons';
 import {Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
 import { withStyles, createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -10,7 +10,7 @@ import { lighten } from '@material-ui/core/styles/colorManipulator';
 import css from 'classnames';
 import { Link } from "react-router-dom";
 import {PlaylistContext} from './PlaylistContext';
-
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const theme = createMuiTheme({
     typography: {
@@ -38,6 +38,20 @@ const styles = theme => ({
         fill: getGreyColor(theme, 0.25),
         color: getGreyColor(theme, 0.25),
         },
+    },
+    search: {
+        margin: '0em 3em',
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        width: 400,
+    },
+    searchIcon: {
+        padding: 10,
+    },
+    input: {
+        marginLeft: 8,
+        flex: 1,
     },
 });
 
@@ -69,6 +83,30 @@ export class Playlist extends Component {
                         <Typography variant="h6" color="inherit">
                         {context.favoriteTracks ? 'Favorite tracks' : context.currentFolder.title}
                         </Typography>
+                        <Paper className={classes.search} elevation={1}>
+                            <IconButton 
+                                className={classes.searchIcon}
+                                aria-label="Search"
+                                onClick={() => context.displaySearch()}
+                            >
+                                <SearchIcon />
+                            </IconButton>
+                            <InputBase
+                                onKeyPress={(e) => context.onSearchKeyPress(e)}
+                                onChange={(e) => context.onSearchChange(e.target.value)}
+                                value={context.searchKeyword}
+                                placeholder="Search…"
+                                className={classes.input}
+                            />
+                            <IconButton color="primary"
+                                className={classes.searchIcon}
+                                aria-label="clear search"
+                                onClick={() => context.clearSearch()}
+                                disabled={context.searchDisplay == false}
+                            >
+                                <ClearIcon />
+                            </IconButton>
+                        </Paper>
                     </Toolbar>
                 </AppBar>
                 <List>
