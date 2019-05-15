@@ -8,7 +8,7 @@ import { attachToEvent, getCurrentTime, getFormattedTime, getIconByPlayerStatus,
 import Player from './utils/constants';
 import Tooltip from '@material-ui/core/Tooltip';
 import PropTypes from 'prop-types';
-import {BrowserView,MobileView,isBrowser,isMobile} from "react-device-detect";
+import {isMobile} from "react-device-detect";
 import {PlaylistContext} from '../PlaylistContext';
 
 /*

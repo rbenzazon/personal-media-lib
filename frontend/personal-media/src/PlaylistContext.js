@@ -1,4 +1,4 @@
-import React, { useState,createContext } from 'react';
+import React, { createContext } from 'react';
 import myData from './data.json';
 const {tracks} = myData;
 
@@ -14,12 +14,12 @@ export class PlaylistProvider extends React.Component {
       }else{
         tmpTracks = [...currentFolder.children];
       }
-      if(searchKeyWord && searchKeyWord != ''){
+      if(searchKeyWord && searchKeyWord !== ''){
         tmpTracks = tmpTracks.filter(track=>{
           let result = false;
           let searchableFields = track.children ? ['title'] : ['title','artist','album'];
           for(let prop of searchableFields){
-            result = result || track[prop].search(new RegExp(searchKeyWord, "i")) != -1;
+            result = result || track[prop].search(new RegExp(searchKeyWord, "i")) !== -1;
           }
           return result;
         });
@@ -41,9 +41,9 @@ export class PlaylistProvider extends React.Component {
       parentFolders:[],
       selected:tracks.children.filter(track => !track.children)[0],
       sideDrawer:false,
-      favoriteTracks:props.match.path == "/favorite",
+      favoriteTracks:props.match.path === "/favorite",
       importOpen:false,
-      displayedItems:this.getListData(tracks,props.match.path == "/favorite"),
+      displayedItems:this.getListData(tracks,props.match.path === "/favorite"),
       playerRef:undefined,
       searchDisplay:false,
       searchKeyword:'',
@@ -109,12 +109,12 @@ export class PlaylistProvider extends React.Component {
         }
       },
       setPlayerRef: (node) =>{
-        if(node != this.state.playerRef && node != null){
+        if(node !== this.state.playerRef && node !== null){
           this.setState({playerRef:node});
         }
       },
       restartPlayer: () =>{
-        if(this.state.playerRef != undefined){
+        if(this.state.playerRef !== undefined){
           this.state.playerRef.load();
           this.state.playerRef.play();
         }
@@ -143,9 +143,9 @@ export class PlaylistProvider extends React.Component {
         }
       },
       displaySearch:() =>{
-        if (this.state.searchKeyword != '' )
+        if (this.state.searchKeyword !== '' )
         {
-          if(this.state.searchKeyword != this.state.searchedKeyword){
+          if(this.state.searchKeyword !== this.state.searchedKeyword){
             this.setState(state => ({
               searchedKeyword:state.searchKeyword,
               searchDisplay:true,

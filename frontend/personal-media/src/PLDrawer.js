@@ -28,8 +28,6 @@ export class PLDrawer extends Component {
     render() {
         const {
             classes,
-            classNames: {
-            },
         } = this.props;
     return (
         <PlaylistContext.Consumer>{(context) => (
@@ -52,8 +50,8 @@ export class PLDrawer extends Component {
                             )
                         }else{
                             return (
-                            <Link to="/favorite" style={{ textDecoration: 'none' }}>
-                                <ListItem button key={item.text} onClick={item.click}>
+                            <Link to="/favorite" key={item.text} style={{ textDecoration: 'none' }}>
+                                <ListItem button  onClick={item.click}>
                                     <ListItemIcon>{item.icon}</ListItemIcon>
                                     <ListItemText primary={item.text} />
                                 </ListItem>

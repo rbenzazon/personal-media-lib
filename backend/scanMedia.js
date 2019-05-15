@@ -1,6 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 const NodeID3 = require('node-id3');
+const uuidv4 = require('uuid/v4');
+ 
 
 
 var files = {tracks:{title:"My List",children:[]}};
@@ -61,6 +63,7 @@ scanRecursive = (folderPath,children) =>{
             itemDesc.children = [];
             scanRecursive(folderPath+"/"+item.name,itemDesc.children);
         }
+        itemDesc.id = uuidv4();
         children.push(itemDesc);
     }
     children.sort((a,b) => {

@@ -50,7 +50,7 @@ export class PlayList extends Component {
         <PlaylistContext.Consumer>{(context) => (
             <List>
                 {context.parentFolders.length >=1 && !context.favoriteTracks && 
-                    <ListItem key={'back'} button >
+                    <ListItem key={'back'} button key={-1}>
                         <ListItemIcon>
                             <BackIcon/>
                         </ListItemIcon>
@@ -61,7 +61,7 @@ export class PlayList extends Component {
                 }
                 {context.favoriteTracks && 
                     <Link to="/" style={{ textDecoration: 'none' }}>
-                        <ListItem key={'back'} button >
+                        <ListItem key={'back'} button key="-2">
                             <ListItemIcon>
                                 <BackIcon/>
                             </ListItemIcon>
@@ -73,7 +73,7 @@ export class PlayList extends Component {
                     </Link>
                 }
                 {context.displayedItems.map((track) =>
-                    <ListItem key={track} button selected={context.selected === track}>
+                    <ListItem key={track.id} button selected={context.selected === track}>
                         <ListItemIcon>
                             {(track.children && <FolderIcon />) || (!track.children && <Audiotrack />)}
                         </ListItemIcon>

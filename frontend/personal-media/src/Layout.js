@@ -32,8 +32,6 @@ export class Layout extends Component {
     render(){
         const {
             classes,
-            classNames: {
-            },
         } = this.props;
         return(
         <MuiThemeProvider theme={theme}>

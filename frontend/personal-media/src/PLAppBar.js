@@ -3,7 +3,6 @@ import {PlaylistContext} from './PlaylistContext';
 import {Clear as ClearIcon,Search as SearchIcon ,Menu as MenuIcon} from '@material-ui/icons';
 import { withStyles,createMuiTheme } from '@material-ui/core/styles';
 import {Paper,InputBase,AppBar,Toolbar,Typography,IconButton} from '@material-ui/core';
-import { lighten } from '@material-ui/core/styles/colorManipulator';
 
 
 const theme = createMuiTheme({
@@ -11,15 +10,6 @@ const theme = createMuiTheme({
       useNextVariants: true,
     },
 });
-const getGreyColor = (theme, opacity) => {
-    const greyColor = theme.palette.grey['500'];
-  
-    if (!opacity) {
-      return greyColor;
-    }
-  
-    return lighten(greyColor, opacity);
-};
 const styles = theme => ({
     search: {
         margin: '0em 3em',
@@ -41,13 +31,10 @@ export class PLAppBar extends Component {
     static contextType = PlaylistContext;
     static defaultProps = {
         classes: {},
-        classNames: {},
     };
     render() {
         const {
             classes,
-            classNames: {
-            },
         } = this.props;
         return (
         <PlaylistContext.Consumer>{(context) => (
@@ -78,7 +65,7 @@ export class PLAppBar extends Component {
                             className={classes.searchIcon}
                             aria-label="clear search"
                             onClick={() => context.clearSearch()}
-                            disabled={context.searchDisplay == false}
+                            disabled={context.searchDisplay === false}
                         >
                             <ClearIcon />
                         </IconButton>
