@@ -14,7 +14,8 @@ export class PlaylistProvider extends React.Component {
     parentFolders:[],
     selected:tracks.children.filter(track => !track.children)[0],
     sideDrawer:false,
-    favoriteTracks:this.props.match.path === "/favorite",/**/
+    favoriteTracks:false,/**/
+    playlistTracks:false,
     importOpen:false,
     displayedItems:[],
     playerRef:undefined,
@@ -27,6 +28,8 @@ export class PlaylistProvider extends React.Component {
     playlistAddOpen:false,
     createPlaylistOpen:false,
     createPlaylistName:'',
+    match:null,
+    currentPlaylist:null,
   }
   constructor(props){
     super(props);
@@ -56,23 +59,27 @@ export class PlaylistProvider extends React.Component {
     this.displaySearch = this.displaySearch.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.clearSearch = this.clearSearch.bind(this);
+    this.onLayoutMount = this.onLayoutMount.bind(this);
+    this.getPlaylistRef = this.getPlaylistRef.bind(this);
     
   }
-  componentDidMount(){
-    this.setState(state => ({
-      displayedItems:this.getListData(state.currentFolder,state.playLists),
-    }));
+
+  getPlaylistRef(name,playLists){
+    for(let playlist of playLists){
+      if(name === playlist.title){
+        return playlist;
+      }
+    }
+    return false;
   }
-  getListData(currentFolder,playLists,searchKeyWord){
+
+  getListData(currentFolder,playLists,searchKeyWord,match){
     let tmpTracks;
-    if(this.props.match.path === "/favorite"){
+    let currentMatch = match? match:this.state.match;
+    if(currentMatch.path === "/favorite"){
       tmpTracks = this.mapRecursive(tracks.children).filter((track)=>track.favorite);
-    }else if(playLists && this.props.match.path === "/playlist/:playlistName"){
-      for(let playlist of playLists){
-        if(this.props.match.params.playlistName === playlist.title){
-          tmpTracks = [...playlist.children];
-        }
-      } 
+    }else if(playLists && currentMatch.path === "/playlist/:playlistName"){
+      tmpTracks = [...this.getPlaylistRef(currentMatch.params.playlistName,playLists).children];
     }else{
       tmpTracks = [...currentFolder.children];
     }
@@ -261,13 +268,25 @@ export class PlaylistProvider extends React.Component {
       displayedItems:this.getListData(state.currentFolder,state.playLists),
     }));
   }
-
-  
-
-  
-  
-  
-
+  onLayoutMount(match){
+    //if(this.state.match === null)
+    {
+      let newPlaylist = this.getPlaylistRef(match.params.playlistName,this.state.playLists);
+      this.setState(state => ({
+        currentPlaylist:newPlaylist !== false?newPlaylist:null,
+        favoriteTracks:match.path === "/favorite",
+        playlistTracks:this.getPlaylistRef(match.params.playlistName,state.playLists) !== false,
+        match:match,
+        displayedItems:this.getListData(state.currentFolder,state.playLists,null,match),
+      }));
+    }/*else{
+      this.setState(state => ({
+        favoriteTracks:match.path === "/favorite",
+        match:match,
+        displayedItems:this.getListData(state.currentFolder,state.playLists,null,match),
+      }));
+    }*/
+  }
 
   render (){
     return (
@@ -299,6 +318,7 @@ export class PlaylistProvider extends React.Component {
         displaySearch:this.displaySearch,
         onSearchChange:this.onSearchChange,
         clearSearch:this.clearSearch,
+        onLayoutMount:this.onLayoutMount,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>

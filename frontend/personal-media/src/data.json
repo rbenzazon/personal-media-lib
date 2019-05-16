@@ -1,6 +1,6 @@
 {
 	"tracks": {
-		"title": "My List",
+		"title": "My media",
 		"children": [{
 				"title": "testFolder",
 				"children": [{
@@ -12,9 +12,9 @@
 						"composer": "Kurt Cobain",
 						"publisher": "Universal Music Group",
 						"trackNumber": "1",
-						"url": "testFolder/01 - Nirvana - Serve The Servants.mp3",
-						"imageUrl": "testFolder/01 - Nirvana - Serve The Servants.mp3.jpg",
-						"id": "6f63d29a-73bc-40d3-ba41-ced6ef029798"
+						"url": "/testFolder/01 - Nirvana - Serve The Servants.mp3",
+						"imageUrl": "/testFolder/01 - Nirvana - Serve The Servants.mp3.jpg",
+						"id": "bfda0067-df7d-4e1d-ab42-5f94d85bdbf8"
 					}, {
 						"title": "Scentless Apprentice",
 						"album": "In Utero",
@@ -24,9 +24,9 @@
 						"composer": "Dave Grohl; Krist Novoselic; Kurt Cobain",
 						"publisher": "Universal Music Group",
 						"trackNumber": "2",
-						"url": "testFolder/02 - Nirvana - Scentless Apprentice.mp3",
-						"imageUrl": "testFolder/02 - Nirvana - Scentless Apprentice.mp3.jpg",
-						"id": "d6bfc4da-6708-4409-9344-ea23838bf45d"
+						"url": "/testFolder/02 - Nirvana - Scentless Apprentice.mp3",
+						"imageUrl": "/testFolder/02 - Nirvana - Scentless Apprentice.mp3.jpg",
+						"id": "4e9817f7-f4fb-4571-b119-853142661201"
 					}, {
 						"title": "Heart Shaped Box",
 						"album": "In Utero",
@@ -36,12 +36,12 @@
 						"composer": "Kurt Cobain",
 						"publisher": "Universal Music Group",
 						"trackNumber": "3",
-						"url": "testFolder/03 - Nirvana - Heart Shaped Box.mp3",
-						"imageUrl": "testFolder/03 - Nirvana - Heart Shaped Box.mp3.jpg",
-						"id": "15f7a7ac-ea8e-4258-984f-1ccf7b63fc30"
+						"url": "/testFolder/03 - Nirvana - Heart Shaped Box.mp3",
+						"imageUrl": "/testFolder/03 - Nirvana - Heart Shaped Box.mp3.jpg",
+						"id": "0ef8f933-1cb3-49fe-92b2-d6b7c3e32a48"
 					}
 				],
-				"id": "db75f864-253f-4210-9f57-57e55339ca63"
+				"id": "8789770d-8075-48bb-8384-013f00d5a483"
 			}, {
 				"title": "Rape Me",
 				"album": "In Utero",
@@ -51,9 +51,9 @@
 				"composer": "Kurt Cobain",
 				"publisher": "Universal Music Group",
 				"trackNumber": "4",
-				"url": "04 - Nirvana - Rape Me.mp3",
-				"imageUrl": "04 - Nirvana - Rape Me.mp3.jpg",
-				"id": "c6ebb307-7db8-4377-8251-b8022dc003e0"
+				"url": "/04 - Nirvana - Rape Me.mp3",
+				"imageUrl": "/04 - Nirvana - Rape Me.mp3.jpg",
+				"id": "39ed5474-bfa4-47c2-81a8-502b669261b6"
 			}, {
 				"title": "Frances Farmer Will Have Her Revenge On Seattle",
 				"album": "In Utero",
@@ -63,9 +63,9 @@
 				"composer": "Kurt Cobain",
 				"publisher": "Universal Music Group",
 				"trackNumber": "5",
-				"url": "05 - Nirvana - Frances Farmer Will Have Her Revenge On Seattle.mp3",
-				"imageUrl": "05 - Nirvana - Frances Farmer Will Have Her Revenge On Seattle.mp3.jpg",
-				"id": "fded26e4-8705-414e-bde8-ab506c8ee42f"
+				"url": "/05 - Nirvana - Frances Farmer Will Have Her Revenge On Seattle.mp3",
+				"imageUrl": "/05 - Nirvana - Frances Farmer Will Have Her Revenge On Seattle.mp3.jpg",
+				"id": "c813b26a-ecb8-4c53-b0cf-4c1e06e5575a"
 			}, {
 				"title": "Dumb",
 				"album": "In Utero",
@@ -75,9 +75,9 @@
 				"composer": "Kurt Cobain",
 				"publisher": "Universal Music Group",
 				"trackNumber": "6",
-				"url": "06 - Nirvana - Dumb.mp3",
-				"imageUrl": "06 - Nirvana - Dumb.mp3.jpg",
-				"id": "6d7b10c4-84b5-4ba5-8849-6dcce1f75a33"
+				"url": "/06 - Nirvana - Dumb.mp3",
+				"imageUrl": "/06 - Nirvana - Dumb.mp3.jpg",
+				"id": "29a986b9-534d-46b0-acba-f2f513b4ef20"
 			}, {
 				"title": "Very Ape",
 				"album": "In Utero",
@@ -87,9 +87,9 @@
 				"composer": "Kurt Cobain",
 				"publisher": "Universal Music Group",
 				"trackNumber": "7",
-				"url": "07 - Nirvana - Very Ape.mp3",
-				"imageUrl": "07 - Nirvana - Very Ape.mp3.jpg",
-				"id": "f6d8176a-d8ef-4b7e-98a3-3e127675f7ac"
+				"url": "/07 - Nirvana - Very Ape.mp3",
+				"imageUrl": "/07 - Nirvana - Very Ape.mp3.jpg",
+				"id": "7a48ea63-0195-4e82-80a6-9c5bae60fc7d"
 			}, {
 				"title": "Milk It",
 				"album": "In Utero",
@@ -99,9 +99,9 @@
 				"composer": "Kurt Cobain",
 				"publisher": "Universal Music Group",
 				"trackNumber": "8",
-				"url": "08 - Nirvana - Milk It.mp3",
-				"imageUrl": "08 - Nirvana - Milk It.mp3.jpg",
-				"id": "0a3f3e88-3dd5-4a50-9bca-de642d80dd6d"
+				"url": "/08 - Nirvana - Milk It.mp3",
+				"imageUrl": "/08 - Nirvana - Milk It.mp3.jpg",
+				"id": "bee12331-a896-4466-a48f-b98a13bbdd34"
 			}, {
 				"title": "Pennyroyal Tea",
 				"album": "In Utero",
@@ -111,9 +111,9 @@
 				"composer": "Kurt Cobain",
 				"publisher": "Universal Music Group",
 				"trackNumber": "9",
-				"url": "09 - Nirvana - Pennyroyal Tea.mp3",
-				"imageUrl": "09 - Nirvana - Pennyroyal Tea.mp3.jpg",
-				"id": "931b73e6-2b50-4db4-865a-f285378f77fa"
+				"url": "/09 - Nirvana - Pennyroyal Tea.mp3",
+				"imageUrl": "/09 - Nirvana - Pennyroyal Tea.mp3.jpg",
+				"id": "60ac4eaa-a77c-4ce8-bcb7-416e3ca0cca6"
 			}, {
 				"title": "Radio Friendly Unit Shifter",
 				"album": "In Utero",
@@ -123,9 +123,9 @@
 				"composer": "Kurt Cobain",
 				"publisher": "Universal Music Group",
 				"trackNumber": "10",
-				"url": "10 - Nirvana - Radio Friendly Unit Shifter.mp3",
-				"imageUrl": "10 - Nirvana - Radio Friendly Unit Shifter.mp3.jpg",
-				"id": "6e5c9586-c435-490b-9155-6d1585c01c57"
+				"url": "/10 - Nirvana - Radio Friendly Unit Shifter.mp3",
+				"imageUrl": "/10 - Nirvana - Radio Friendly Unit Shifter.mp3.jpg",
+				"id": "3096843d-8f7f-4a49-8349-d13d6041298e"
 			}, {
 				"title": "Tourette's",
 				"album": "In Utero",
@@ -135,9 +135,9 @@
 				"composer": "Kurt Cobain",
 				"publisher": "Universal Music Group",
 				"trackNumber": "11",
-				"url": "11 - Nirvana - Tourette's.mp3",
-				"imageUrl": "11 - Nirvana - Tourette's.mp3.jpg",
-				"id": "0e04d164-3a1a-4cff-a6c5-8221576633f1"
+				"url": "/11 - Nirvana - Tourette's.mp3",
+				"imageUrl": "/11 - Nirvana - Tourette's.mp3.jpg",
+				"id": "1c2b4a68-1d24-4d4a-9d34-df5687c5596b"
 			}, {
 				"title": "All Apologies",
 				"album": "In Utero",
@@ -147,9 +147,9 @@
 				"composer": "Kurt Cobain",
 				"publisher": "Universal Music Group",
 				"trackNumber": "12",
-				"url": "12 - Nirvana - All Apologies.mp3",
-				"imageUrl": "12 - Nirvana - All Apologies.mp3.jpg",
-				"id": "96ee526a-d21a-4a85-ad68-bc182bfc6d64"
+				"url": "/12 - Nirvana - All Apologies.mp3",
+				"imageUrl": "/12 - Nirvana - All Apologies.mp3.jpg",
+				"id": "214985cb-83ee-43b7-846c-116b5a4a0ea4"
 			}
 		]
 	}

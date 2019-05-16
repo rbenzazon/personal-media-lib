@@ -90,7 +90,7 @@ export class PlayList extends Component {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {context.state.parentFolders.length >=1 && !context.state.favoriteTracks && 
+                {context.state.parentFolders.length >=1 && !context.state.favoriteTracks && !context.state.playlistTracks &&
                     <TableRow key={'back_folder'} >
                         <TableCell className={classes.cell} button onClick={() => context.navigateUp()}>
                             <BackIcon/>
@@ -100,7 +100,7 @@ export class PlayList extends Component {
                         </TableCell>
                     </TableRow>
                 }
-                {context.state.favoriteTracks && 
+                {(context.state.favoriteTracks || context.state.playlistTracks) &&
                     <TableRow key={'back_favorite'} hover>
                         <TableCell className={classes.cell}>
                             <Link to="/" style={{ textDecoration: 'none' }}>

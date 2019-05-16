@@ -5,7 +5,7 @@ const uuidv4 = require('uuid/v4');
  
 
 
-var files = {tracks:{title:"My List",children:[]}};
+var files = {tracks:{title:"My media",children:[]}};
  
 if (process.argv.length <= 2) {
     console.log("Usage: " + __filename + " path/to/directory");
@@ -50,7 +50,7 @@ scanRecursive = (folderPath,children) =>{
                 composer:tags.composer,
                 publisher:tags.publisher,
                 trackNumber:tags.trackNumber,
-                url:url.substring(pathToScan.length+1),
+                url:url.substring(pathToScan.length),
             };
             if(tags.image && tags.image.imageBuffer){
                 itemDesc.imageUrl = itemDesc.url+".jpg";

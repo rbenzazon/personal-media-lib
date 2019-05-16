@@ -70,7 +70,7 @@ export class PLAppBar extends Component {
                         <MenuIcon />
                     </IconButton>
                     <Typography className={classes.appBarTitle} variant="h6" color="inherit">
-                    {context.state.favoriteTracks ? 'Favorite tracks' : context.state.currentFolder.title}
+                    {context.state.favoriteTracks ? 'Favorite tracks' : (context.state.playlistTracks? context.state.currentPlaylist.title: context.state.currentFolder.title)}
                     </Typography>
                     <Paper className={classes.search} elevation={1}>
                         <IconButton 

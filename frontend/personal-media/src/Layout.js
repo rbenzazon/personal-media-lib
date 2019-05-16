@@ -27,6 +27,15 @@ const styles = theme => ({
     },
 });
 
+class Dummy extends Component {
+    componentDidMount() {
+      this.props.onLayoutMount(this.props.match);
+    }
+    render() {
+      return null;
+    }
+}
+
 export class Layout extends Component {
     static contextType = PlaylistContext;
     static defaultProps = {
@@ -42,8 +51,8 @@ export class Layout extends Component {
         
         <MuiThemeProvider theme={theme}>
             <PlaylistContext.Consumer>{(context) => (
-                
             <React.Fragment>
+                <Dummy onLayoutMount={context.onLayoutMount} match={this.props.match}/>
                 
                 <PLAppBar />
                 <PlayList />
@@ -90,11 +99,11 @@ export class Layout extends Component {
                         </DialogContentText>
                         {context.state.playLists.length > 0 &&
                         <Select
-                            value={context.playlistToAdd}
+                            value={context.state.playlistToAdd}
                             onChange={(e) => context.onPlaylistToAddChange(e.target.value)}
                         >
                             {context.state.playLists.map((item)=>{return(
-                            <MenuItem value={item}>{item.title}</MenuItem>
+                            <MenuItem selected={context.state.playlistToAdd === item} value={item}>{item.title}</MenuItem>
                             )})}
                         </Select>
                         }
