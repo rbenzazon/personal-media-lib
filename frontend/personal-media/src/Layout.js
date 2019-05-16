@@ -1,6 +1,6 @@
 import React, { Component} from 'react';
 import {AppBar} from '@material-ui/core';
-import {Select,MenuItem,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
+import {Paper,Select,MenuItem,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
 import { withStyles, createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
@@ -55,8 +55,11 @@ export class Layout extends Component {
                 <Dummy onLayoutMount={context.onLayoutMount} match={this.props.match}/>
                 
                 <PLAppBar />
-                <PlayList />
                 <PLDrawer />
+                
+                <PlayList />
+                
+                
                 <AppBar position="fixed" className={classes.appBar}>
                     <AudioPlayer
                         autoPlay={false}

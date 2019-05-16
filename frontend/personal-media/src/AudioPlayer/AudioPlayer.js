@@ -163,7 +163,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               focusable="true"
             />}
           </Grid>
-          <Grid item xs={isMobile ? 5 : 2} alignContent="center" justify="center" alignItems="center" container >
+          <Grid item xs={isMobile ? 3 : 2} alignContent="center" justify="center" alignItems="center" container >
             <Grid xs={4} item>
               <SkipPrevIcon
                 className={css(

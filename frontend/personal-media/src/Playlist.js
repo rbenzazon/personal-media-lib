@@ -46,7 +46,7 @@ const styles = theme => ({
     },
     cell:{
         cursor: "pointer",
-        padding: "4px 12px !important",
+        padding: "0.3em 0.5em !important",
     },
     button: {
         padding: "4px 12px !important",
@@ -59,6 +59,9 @@ const styles = theme => ({
             color: `${getColor(theme, 'primary', 0.25)} !important`,
         },
     },
+    table:{
+        marginBottom: '5em',
+    }
 });
 
 
@@ -77,7 +80,7 @@ export class PlayList extends Component {
     } = this.props;
     return (
         <PlaylistContext.Consumer>{(context) => (
-            <Table >
+            <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
                         <TableCell className={classes.cell}></TableCell>
@@ -85,7 +88,6 @@ export class PlayList extends Component {
                         <TableCell className={classes.cell}>Artist</TableCell>
                         <TableCell className={classes.cell}>Album</TableCell>
                         <TableCell className={classes.cell}>Year</TableCell>
-                        <TableCell className={classes.cell}>#</TableCell>
                         <TableCell className={classes.cell}>Fav.</TableCell>
                     </TableRow>
                 </TableHead>
@@ -121,22 +123,18 @@ export class PlayList extends Component {
                             <Avatar src={track.imageUrl} />}
                         {(track.children && <FolderIcon />)}
                         </TableCell>
-                        <TableCell className={classes.cell} onClick={() => context.onListClick(track)} colSpan={track.children ? 6 : 1}>
+                        <TableCell className={classes.cell} onClick={() => context.onListClick(track)} colSpan={track.children ? 5 : 1}>
                             {track.title}
                         </TableCell>
-                        {track.children === undefined &&<TableCell className={classes.cell}>
+                        {track.children === undefined &&<TableCell className={classes.cell} onClick={() => context.onListClick(track)} >
                             {track.artist}
                         </TableCell>}
-                        {track.children === undefined &&<TableCell className={classes.cell}>
+                        {track.children === undefined &&<TableCell className={classes.cell} onClick={() => context.onListClick(track)} >
                             {track.album}
                         </TableCell>}
                         {track.children === undefined &&<TableCell className={classes.button} onClick={()=>context.onAddToPlaylist(track)}>
                             <AddIcon />
                         </TableCell>}
-                        {track.children === undefined &&<TableCell className={classes.cell}>
-                            {track.trackNumber}
-                        </TableCell>}
-                        
                         {!track.children && <TableCell className={css(
                             {[classes['favoriteDisabled']]: !track.favorite},
                             {[classes['button']]: track.favorite},
