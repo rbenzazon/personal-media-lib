@@ -10,6 +10,7 @@ function App() {
         <React.Fragment>
           <Route exact path='/' render={(props) => <PlaylistProvider {...props} ><Layout  /></PlaylistProvider>} />
           <Route exact path='/favorite' render={(props) => <PlaylistProvider {...props} ><Layout  /></PlaylistProvider>} />
+          <Route path='/playlist/:playlistName' render={(props) => <PlaylistProvider {...props} ><Layout  /></PlaylistProvider>} />
         </React.Fragment>
       
         );

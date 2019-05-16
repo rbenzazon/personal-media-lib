@@ -4,13 +4,22 @@ const {tracks} = myData;
 
 export const PlaylistContext = createContext();
 
+
+
 export class PlaylistProvider extends React.Component {
+
   constructor(props){
     super(props);
-    this.getListData = (currentFolder,favoriteTracks,searchKeyWord) => {
+    this.getListData = (currentFolder,playLists,searchKeyWord) => {
       let tmpTracks;
-      if(favoriteTracks){
+      if(props.match.path === "/favorite"){
         tmpTracks = this.mapRecursive(tracks.children).filter((track)=>track.favorite);
+      }else if(playLists && props.match.path === "/playlist/:playlistName"){
+        for(let playlist of playLists){
+          if(props.match.params.playlistName === playlist.title){
+            tmpTracks = [...playlist.children];
+          }
+        } 
       }else{
         tmpTracks = [...currentFolder.children];
       }
@@ -37,6 +46,7 @@ export class PlaylistProvider extends React.Component {
       return output;
     }
     this.state = {
+      match:this.props.match,
       currentFolder:tracks,
       loopPlayList:true,
       loopTrack:false,
@@ -45,13 +55,49 @@ export class PlaylistProvider extends React.Component {
       sideDrawer:false,
       favoriteTracks:props.match.path === "/favorite",
       importOpen:false,
-      displayedItems:this.getListData(tracks,props.match.path === "/favorite"),
+      
       playerRef:undefined,
       searchDisplay:false,
       searchKeyword:'',
+      playLists:[{title:'my playlist',children:[]}],
       searchedKeyword:'',
+      trackToAdd:null,
+      playlistToAdd:null,
+      playlistAddOpen:false,
+      createPlaylistOpen:false,
+      createPlaylistName:'',
+      onPlaylistToAddChange:(value)=>{
+        this.setState({playlistToAdd:value});
+      },
+      onCreatePlaylistOpenClose:(value)=>{
+        this.setState({createPlaylistOpen:value});
+      },
+      onPlaylistNameChange:(name)=>{
+        this.setState({createPlaylistName:name});
+      },
+      createPlaylist:()=>{
+        let newPlaylist = {title:this.state.createPlaylistName,children:[]};
+        if(this.state.trackToAdd !== null){
+          newPlaylist.children.push(this.state.trackToAdd);
+        }
+        const newPlaylists = [...this.state.playLists,newPlaylist];
+        this.setState({playLists:newPlaylists,trackToAdd:null,createPlaylistName:'',createPlaylistOpen:false});
+      },
+      addToPlaylist:()=>{
+        this.state.playlistToAdd.children.push(this.state.trackToAdd);
+        let newPlayLists = JSON.parse(JSON.stringify(this.state.playLists))
+        //let newPlaylist = {title:this.state.playlistToAdd.title,children:[...this.state.playlistToAdd,[this.state.trackToAdd]]}
+        console.log("test")
+        //
+        this.setState({playLists:newPlayLists,trackToAdd:null,playlistToAdd:null,playlistAddOpen:false});
+      },
+      onAddToPlaylistClose:()=>{
+        this.setState({playlistAddOpen:false});
+      },
+      onAddToPlaylist:(track)=>{
+        this.setState({trackToAdd:track,playlistAddOpen:true});
+      },
       onListClick : (track) => {
-        console.log("onListClick");
         if(track === undefined){
           this.state.navigateUp();
         }else if(track.children){
@@ -62,12 +108,11 @@ export class PlaylistProvider extends React.Component {
         }
       },
       navigateToFolder : (track) =>{
-        console.log("navigateToFolder");
         if(track.children){
           this.setState(state => ({
             currentFolder:track,
             parentFolders:[...state.parentFolders,state.currentFolder],
-            displayedItems:this.getListData(track,false)
+            displayedItems:this.getListData(track)
           }));
         }
       },
@@ -77,7 +122,7 @@ export class PlaylistProvider extends React.Component {
         this.setState(state => ({
           currentFolder:newCurrent,
           parentFolders:parents,
-          displayedItems:this.getListData(newCurrent,false)
+          displayedItems:this.getListData(newCurrent)
         }));
       },
       toggleDrawer : (open) => {
@@ -142,7 +187,7 @@ export class PlaylistProvider extends React.Component {
       setFavoriteTracks: (value) =>{
         this.setState(state=>({
           favoriteTracks:value,
-          displayedItems:this.getListData(state.currentFolder,value)
+          displayedItems:this.getListData(state.currentFolder,state.playLists)
         }))
       },
       setImportOpen:(value) =>{
@@ -151,15 +196,12 @@ export class PlaylistProvider extends React.Component {
       onListFavoriteClick : (track) =>{
         track.favorite = track.favorite ?!track.favorite : true;
         this.setState(state =>({
-          displayedItems:this.getListData(state.currentFolder,state.favoriteTracks)
+          displayedItems:this.getListData(state.currentFolder,state.playLists)
         }));
       },
       onSearchKeyPress: (e) => {
         if (e.key === 'Enter') {
-          console.log('Enter key pressed');
           this.state.displaySearch();
-          
-          // write your functionality here
         }
       },
       displaySearch:() =>{
@@ -169,7 +211,7 @@ export class PlaylistProvider extends React.Component {
             this.setState(state => ({
               searchedKeyword:state.searchKeyword,
               searchDisplay:true,
-              displayedItems:this.getListData(state.currentFolder,state.favoriteTracks,state.searchKeyword),
+              displayedItems:this.getListData(state.currentFolder,state.playLists,state.searchKeyword),
             }));
           }
         }else{
@@ -178,19 +220,17 @@ export class PlaylistProvider extends React.Component {
       },
       onSearchChange: (value) => {
         this.setState(state => ({searchKeyword:value}));
-        console.log('search is '+this.state.searchKeyword);
       },
       clearSearch: () => {
         this.setState(state => ({
           searchKeyword:'',
           searchedKeyword:'',
           searchDisplay:false,
-          displayedItems:this.getListData(state.currentFolder,state.favoriteTracks),
+          displayedItems:this.getListData(state.currentFolder,state.playLists),
         }));
-        console.log('clear search');
       },
     };
-    //this.setState({displayedItems:,});
+    this.state.displayedItems=this.getListData(this.state.currentFolder,this.state.playLists);
   }
   
   
@@ -208,4 +248,5 @@ export class PlaylistProvider extends React.Component {
     );
   }
 }
+
 

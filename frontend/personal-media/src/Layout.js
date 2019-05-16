@@ -1,13 +1,18 @@
 import React, { Component} from 'react';
 import {AppBar} from '@material-ui/core';
-import {Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
+import {Select,MenuItem,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
 import { withStyles, createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
-import {PlaylistContext} from './PlaylistContext';
+import {PlaylistContext,PlaylistProvider} from './PlaylistContext';
 import PLAppBar from './PLAppBar'
 import PlayList from './PlayList';
 import PLDrawer from './PLDrawer'
+
+function Log(value) {
+    console.log(value);
+    return null;
+}
 
 const theme = createMuiTheme({
     typography: {
@@ -34,9 +39,12 @@ export class Layout extends Component {
             classes,
         } = this.props;
         return(
+        
         <MuiThemeProvider theme={theme}>
             <PlaylistContext.Consumer>{(context) => (
+                
             <React.Fragment>
+                <Log name={context} />
                 <PLAppBar />
                 <PlayList />
                 <PLDrawer />
@@ -50,6 +58,61 @@ export class Layout extends Component {
                         onAudioEnd={()=>context.onAudioEnd()}
                     />
                 </AppBar>
+                <Dialog
+                    open={context.createPlaylistOpen}
+                    onClose={() => context.onCreatePlaylistClose()}
+                    aria-labelledby="add to playlist"
+                    aria-describedby="add this track to a playlist"
+                    >
+                    <DialogTitle id="alert-dialog-title">Create a playlist</DialogTitle>
+                    <DialogContent>
+                        <input placeholder="Enter a name" value={context.createPlaylistName} onChange={(e) => context.onPlaylistNameChange(e.target.value)}></input>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => context.onCreatePlaylistClose()} color="secondary">
+                        Cancel
+                        </Button>
+                        <Button onClick={() => context.createPlaylist()} color="primary" autoFocus>
+                        Create
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog
+                    open={context.playlistAddOpen}
+                    onClose={() => context.onAddToPlaylistClose()}
+                    aria-labelledby="add to playlist"
+                    aria-describedby="add this track to a playlist"
+                    >
+                    <DialogTitle id="alert-dialog-title">Add to playlist</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                        choose a playlist in which to add this track
+                        </DialogContentText>
+                        {context.playLists.length > 0 &&
+                        <Select
+                            value={context.playlistToAdd}
+                            onChange={(e) => context.onPlaylistToAddChange(e.target.value)}
+                        >
+                            {context.playLists.map((item)=>{return(
+                            <MenuItem value={item}>{item.title}</MenuItem>
+                            )})}
+                        </Select>
+                        }
+                        {context.playLists.length == 0 &&
+                            <Button onClick={() => {context.onAddToPlaylistClose();context.onCreatePlaylistOpenClose(true)}} color="primary" autoFocus>
+                            Create playlist
+                            </Button>
+                        }
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => context.onAddToPlaylistClose()} color="secondary">
+                        Cancel
+                        </Button>
+                        <Button onClick={() => context.addToPlaylist()} color="primary" autoFocus>
+                        Add
+                        </Button>
+                    </DialogActions>
+                </Dialog>
                 <Dialog
                     open={context.importOpen}
                     onClose={() => context.setImportOpen(false)}
@@ -74,6 +137,7 @@ export class Layout extends Component {
             </React.Fragment>
             )}</PlaylistContext.Consumer>
         </MuiThemeProvider>
+        
         );
     }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {List,ListItem,ListItemIcon,ListItemText,Drawer} from '@material-ui/core';
-import { PermMedia as ScanIcon, Favorite as FavorIcon} from '@material-ui/icons';
+import { PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
 import { withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import {PlaylistContext} from './PlaylistContext';
@@ -40,7 +40,11 @@ export class PLDrawer extends Component {
                 >
                     <List>
                     {
-                        [{text:'Favorite tracks',icon:<FavorIcon />,click:null},{text:'Add media',icon:<ScanIcon/>,click:() => context.setImportOpen(true)}].map((item) => {
+                        [
+                        {text:'Favorite tracks',icon:<FavorIcon />,click:null},
+                        {text:'Add media',icon:<ScanIcon/>,click:() => context.setImportOpen(true)},
+                        {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.onCreatePlaylistOpenClose(true)}
+                        ].map((item) => {
                         if(item.click){
                             return (
                             <ListItem button key={item.text} onClick={item.click}>
@@ -58,9 +62,18 @@ export class PLDrawer extends Component {
                             </Link>
                             )
                         }
-                        
                     })
                     }
+                    {context.playLists.map(item=>{
+                            return (
+                            <Link to={"/playlist/"+item.title} key={item.title} style={{ textDecoration: 'none' }}>
+                                <ListItem button >
+                                    <ListItemIcon><PlaylistIcon /></ListItemIcon>
+                                    <ListItemText primary={item.title} ></ListItemText>
+                                </ListItem>
+                            </Link>
+                            )
+                    })}
                     </List>
                 </div>
             </Drawer>
