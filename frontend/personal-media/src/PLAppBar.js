@@ -61,8 +61,7 @@ const styles = theme => ({
         padding: isMobile ? '0em 0.3em' : '0em 1em',
     },
     appBar: {
-        top: 'auto',
-        bottom: 0,
+        boxShadow: 'none',
     },
 });
 
@@ -77,7 +76,7 @@ export class PLAppBar extends Component {
         } = this.props;
         return (
         <PlaylistContext.Consumer>{(context) => (
-            <AppBar position="static" color="default">
+            <AppBar position="static" color="default" className={classes.appBar}>
                 <Toolbar className={classes.toolBar}>
                     <IconButton className={classes.menuButton} aria-label="Open menu" onClick={() => context.toggleDrawer(true)} >
                         <MenuIcon />

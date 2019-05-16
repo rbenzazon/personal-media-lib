@@ -74,7 +74,7 @@ export default theme => ({
     'background-color': getColor(theme, 'secondary'),
   },
   'player-slider-container': {
-    padding: "10px 0px",
+    padding: "1em 0px",
     width: 'auto !important',
     'border-radius': '4px',
   },

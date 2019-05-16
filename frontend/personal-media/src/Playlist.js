@@ -61,7 +61,10 @@ const styles = theme => ({
     },
     table:{
         marginBottom: '5em',
-    }
+    },
+    tableHeadTr:{
+        height:'48px',
+    },
 });
 
 
@@ -81,8 +84,8 @@ export class PlayList extends Component {
     return (
         <PlaylistContext.Consumer>{(context) => (
             <Table className={classes.table}>
-                <TableHead>
-                    <TableRow>
+                <TableHead >
+                    <TableRow className={classes.tableHeadTr}>
                         <TableCell className={classes.cell}></TableCell>
                         <TableCell className={classes.cell}>Title / name</TableCell>
                         <TableCell className={classes.cell}>Artist</TableCell>
