@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {PlaylistContext} from './PlaylistContext';
-import {List,ListItem,ListItemIcon,ListItemText,ListItemAvatar,Avatar} from '@material-ui/core';
+import {List,ListItem,ListItemIcon,ListItemText,ListItemAvatar,Avatar, TableBody,Table,TableRow,TableCell,TableHead} from '@material-ui/core';
 import {Audiotrack,Folder as FolderIcon, ArrowBack as BackIcon, Favorite as FavorIcon} from '@material-ui/icons';
 import { Link } from "react-router-dom";
 import { withStyles, createMuiTheme } from '@material-ui/core/styles';
@@ -30,6 +30,10 @@ const styles = theme => ({
         color: getGreyColor(theme, 0.25),
         },
     },
+    cell:{
+        cursor: "pointer",
+        padding: "4px 12px !important",
+    },
 });
 
 
@@ -48,46 +52,77 @@ export class PlayList extends Component {
     } = this.props;
     return (
         <PlaylistContext.Consumer>{(context) => (
-            <List>
+            <Table >
+                <TableHead>
+                    <TableRow>
+                        <TableCell className={classes.cell}></TableCell>
+                        <TableCell className={classes.cell}>Title / name</TableCell>
+                        <TableCell className={classes.cell}>Artist</TableCell>
+                        <TableCell className={classes.cell}>Album</TableCell>
+                        <TableCell className={classes.cell}>Year</TableCell>
+                        <TableCell className={classes.cell}>#</TableCell>
+                        <TableCell className={classes.cell}>Fav.</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
                 {context.parentFolders.length >=1 && !context.favoriteTracks && 
-                    <ListItem key={'back_folder'} button key={-1}>
-                        <ListItemIcon>
+                    <TableRow key={'back_folder'} >
+                        <TableCell className={classes.cell} button onClick={() => context.navigateUp()}>
                             <BackIcon/>
-                        </ListItemIcon>
-                        <ListItemText onClick={() => {context.navigateUp();console.log(context);}}>
+                        </TableCell>
+                        <TableCell className={classes.cell} button onClick={() => context.navigateUp()} colspan="6">
                             back to {context.parentFolders[context.parentFolders.length-1].title}
-                        </ListItemText>
-                    </ListItem>
+                        </TableCell>
+                    </TableRow>
                 }
                 {context.favoriteTracks && 
-                    <Link to="/" style={{ textDecoration: 'none' }}>
-                        <ListItem key={'back_favorite'} button key="-2">
-                            <ListItemIcon>
+                    <TableRow key={'back_favorite'} hover>
+                        <TableCell className={classes.cell}>
+                            <Link to="/" style={{ textDecoration: 'none' }}>
                                 <BackIcon/>
-                            </ListItemIcon>
-                        
-                            <ListItemText>
+                            </Link>
+                        </TableCell>
+                        <TableCell className={classes.cell} colspan="6">
+                            <Link to="/" style={{ textDecoration: 'none' }}>
                                 back to {context.currentFolder.title}
-                            </ListItemText>
-                        </ListItem>
-                    </Link>
+                            </Link>
+                        </TableCell>
+                    </TableRow>
                 }
                 {context.displayedItems.map((track) =>
-                    <ListItem key={track.id} button selected={context.selected === track}>
-                        <ListItemIcon>
-                            {(track.children && <FolderIcon />) || (!track.children && <Audiotrack />)}
-                        </ListItemIcon>
-                        {track.imageUrl && <ListItemAvatar>
-                            <Avatar src={track.imageUrl} />
-                        </ListItemAvatar>}
-                        <ListItemText onClick={() => {context.onListClick(track);console.log(context)}}>
-                            {track.children ? track.title : track.title +" - " +track.album+" - "+track.year+" - "+track.artist+" - "+track.trackNumber}
-                        </ListItemText>
-                        {!track.children && <ListItemIcon className={css({[classes['favoriteDisabled']]: !track.favorite})} onClick={() => context.onListFavoriteClick(track)}>
+                    <TableRow key={track.id} selected={context.selected === track} hover>
+                        <TableCell className={classes.cell} onClick={() => context.onListClick(track)}>
+                        {track.imageUrl &&
+                            <Avatar src={track.imageUrl} />}
+                        {(track.children && <FolderIcon />)}
+                        </TableCell>
+                        <TableCell className={classes.cell} onClick={() => context.onListClick(track)} colspan={track.children ? 6 : 1}>
+                            {track.title}
+                        </TableCell>
+                        {track.children === undefined &&<TableCell className={classes.cell}>
+                            {track.artist}
+                        </TableCell>}
+                        {track.children === undefined &&<TableCell className={classes.cell}>
+                            {track.album}
+                        </TableCell>}
+                        {track.children === undefined &&<TableCell className={classes.cell}>
+                            {track.year}
+                        </TableCell>}
+                        {track.children === undefined &&<TableCell className={classes.cell}>
+                            {track.trackNumber}
+                        </TableCell>}
+                        
+                        {!track.children && <TableCell className={css(
+                            {[classes['favoriteDisabled']]: !track.favorite},
+                            classes.cell
+                            )} 
+                            onClick={() => context.onListFavoriteClick(track)}
+                            >
                             <FavorIcon />
-                        </ListItemIcon>}
-                    </ListItem>)}
-            </List>
+                        </TableCell>}
+                    </TableRow>)}
+                </TableBody>
+            </Table>
         )}</PlaylistContext.Consumer>
     )
   }
