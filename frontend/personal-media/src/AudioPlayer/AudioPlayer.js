@@ -1,5 +1,5 @@
 import { Grid, Paper, Typography,withStyles } from '@material-ui/core';
-import { Repeat as LoopStatusIcon, VolumeMute as MuteStatusIcon , SkipNextRounded as SkipNextIcon, SkipPreviousRounded as SkipPrevIcon} from '@material-ui/icons';
+import { Repeat as LoopPlaylistIcon,RepeatOne as LoopTrackIcon, VolumeMute as MuteStatusIcon , SkipNextRounded as SkipNextIcon, SkipPreviousRounded as SkipPrevIcon} from '@material-ui/icons';
 import { Slider } from '@material-ui/lab';
 import css from 'classnames';
 import React, { Fragment } from 'react';
@@ -57,14 +57,19 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
     current: 0,
     progress: 0,
     duration: 0,
-    loopStatus: Player.Status.UNLOOP,
     playStatus: Player.Status.PAUSE,
     muteStatus: Player.Status.UNMUTE,
     volume: 100,
   };
-
+  onAudioEnd = () => {
+    console.log('onAudioEnd');
+    this.props.onAudioEnd();
+  }
   componentDidMount() {
     attachToEvent(this.player, Player.Events.CAN_PLAY, this.handleCanPlay);
+    if(this.props.onAudioEnd !== undefined){
+      attachToEvent(this.player, Player.Events.ENDED, this.onAudioEnd);
+    }
     if (this.props.autoPlay) {
       this.triggerAction(Player.Status.PLAY);
     }
@@ -78,6 +83,9 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
         this.handleTimeUpdate
       );
       removeFromEvent(this.player, Player.Events.CAN_PLAY, this.handleCanPlay);
+      if(this.props.onAudioEnd !== undefined){
+        removeFromEvent(this.player, Player.Events.ENDED, this.onAudioEnd);
+      }
       this.player = null;
     }
   }
@@ -101,10 +109,8 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
       rounded,
       elevation,
       classes,
-      showLoopIcon,
       classNames: {
         player,
-        loopIcon,
         playIcon,
         nextIcon,
         prevIcon,
@@ -116,7 +122,6 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
       },
     } = this.props;
     const {
-      loopStatus,
       playStatus,
       muteStatus,
       progress,
@@ -127,7 +132,6 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
 
     const PlayStatusIcon = getIconByPlayerStatus(playStatus);
     
-    const isLoopEnable = loopStatus === Player.Status.LOOP;
     const isMuteEnable = muteStatus === Player.Status.MUTE;
     //{this.player != undefined && this.player.load() && this.player.play() && console.log(context.selected)}
     return (
@@ -144,15 +148,21 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
         </audio>
         
         <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={16} container>
-          {showLoopIcon && <Grid xs={1} item>
-            <LoopStatusIcon
-              className={css(classes['player-icon-disabled'], loopIcon, {
-                [classes['player-default-icon']]: isLoopEnable,
+          <Grid xs={1} item>
+            {context.loopTrack === false && <LoopPlaylistIcon
+              className={css({
+                [classes['player-default-icon']]: context.loopPlayList,
+                [classes['player-icon-disabled']]: context.loopPlayList === false,
               })}
-              onClick={() => this.triggerAction(Player.Status.LOOP)}
+              onClick={() => context.toggleLoopStatus()}
               focusable="true"
-            />
-          </Grid>}
+            />}
+            {context.loopTrack && <LoopTrackIcon
+              className={css(classes['player-default-icon'])}
+              onClick={() => context.toggleLoopStatus()}
+              focusable="true"
+            />}
+          </Grid>
           <Grid item xs={isMobile ? 5 : 2} alignContent="center" justify="center" alignItems="center" container >
             <Grid xs={4} item>
               <SkipPrevIcon
@@ -169,7 +179,6 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               <PlayStatusIcon
                 className={css(
                   classes['player-default-icon'],
-                  classes['player-main-icon'],
                   playIcon
                 )}
                 onClick={() => this.triggerAction(Player.Status.PLAY)}
@@ -188,7 +197,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               />
             </Grid>
           </Grid>
-          <Grid item xs={isMobile ? 4 : 8} container  alignContent="center" justify="center" alignItems="center" >
+          <Grid item xs={isMobile ? 4 : 7} container  alignContent="center" justify="center" alignItems="center" >
             <Grid item xs={12} container alignContent="center" justify="flex-start" alignItems="flex-start"  >
               <Grid xs={isMobile?12:6} item>
                 <Typography
@@ -279,7 +288,6 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
             />
             </Tooltip>
           </Grid>
-          
         </Grid>
       </Fragment>
       )}</PlaylistContext.Consumer>
@@ -342,5 +350,7 @@ AudioPlayer.propTypes = {
   autoPlay: PropTypes.bool,
   elevation: PropTypes.number,
   showLoopIcon: PropTypes.bool,
+  onAudioEnd: PropTypes.func,
+  toggleLoopStatus: PropTypes.func,
 }
 export default withStyles(styles, { withTheme: true })(AudioPlayer);

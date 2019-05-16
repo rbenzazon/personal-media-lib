@@ -50,7 +50,7 @@ export default theme => ({
     },
   },
   'player-icon-disabled': {
-    padding: '0px',
+    padding: '0px 10px',
     margin: '0px',
     width: '27px',
     height: '27px',

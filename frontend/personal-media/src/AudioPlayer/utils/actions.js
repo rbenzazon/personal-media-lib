@@ -36,31 +36,10 @@ export const muteAudio = player => {
     return null;
 };
 
-export const loopAudio = player => {
-    if (player) {
-        let loopStatus = null;
-
-        if (player.loop) {
-            player.loop = false;
-            loopStatus = Player.Status.UNLOOP;
-        } else {
-            player.loop = true;
-            loopStatus = Player.Status.LOOP;
-        }
-
-        return { loopStatus };
-    }
-
-    return null;
-};
-
 export const getPlayerStateFromAction = (player, action) => {
     let newState = null;
 
     switch (action) {
-        case Player.Status.LOOP:
-            newState = loopAudio(player);
-            break;
         case Player.Status.MUTE:
             newState = muteAudio(player);
             break;

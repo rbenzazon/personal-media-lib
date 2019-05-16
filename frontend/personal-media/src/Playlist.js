@@ -50,7 +50,7 @@ export class PlayList extends Component {
         <PlaylistContext.Consumer>{(context) => (
             <List>
                 {context.parentFolders.length >=1 && !context.favoriteTracks && 
-                    <ListItem key={'back'} button key={-1}>
+                    <ListItem key={'back_folder'} button key={-1}>
                         <ListItemIcon>
                             <BackIcon/>
                         </ListItemIcon>
@@ -61,7 +61,7 @@ export class PlayList extends Component {
                 }
                 {context.favoriteTracks && 
                     <Link to="/" style={{ textDecoration: 'none' }}>
-                        <ListItem key={'back'} button key="-2">
+                        <ListItem key={'back_favorite'} button key="-2">
                             <ListItemIcon>
                                 <BackIcon/>
                             </ListItemIcon>

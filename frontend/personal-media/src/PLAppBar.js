@@ -4,7 +4,18 @@ import {Clear as ClearIcon,Search as SearchIcon ,Menu as MenuIcon} from '@materi
 import { withStyles,createMuiTheme } from '@material-ui/core/styles';
 import {Paper,InputBase,AppBar,Toolbar,Typography,IconButton} from '@material-ui/core';
 
+import { lighten } from '@material-ui/core/styles/colorManipulator';
 
+const getColor = (theme, type, opacity) => {
+  const color =
+    theme.palette[type][theme.palette.type === 'light' ? 'main' : 'dark'];
+
+  if (!opacity) {
+    return color;
+  }
+
+  return lighten(color, opacity);
+};
 const theme = createMuiTheme({
     typography: {
       useNextVariants: true,
@@ -25,6 +36,21 @@ const styles = theme => ({
         marginLeft: 8,
         flex: 1,
     },
+    menuButton: {
+        padding: '0px 10px',
+        margin: '0px',
+        width: '27px',
+        height: '27px',
+        fill: `${getColor(theme, 'primary')} !important`,
+        color: `${getColor(theme, 'primary')} !important`,
+        '&:hover': {
+            fill: `${getColor(theme, 'primary', 0.25)} !important`,
+            color: `${getColor(theme, 'primary', 0.25)} !important`,
+        },
+    },
+    appBarTitle:{
+        padding: '0px 20px',
+    },
 });
 
 export class PLAppBar extends Component {
@@ -40,10 +66,10 @@ export class PLAppBar extends Component {
         <PlaylistContext.Consumer>{(context) => (
             <AppBar position="static" color="default">
                 <Toolbar>
-                    <IconButton aria-label="Open menu" onClick={() => context.toggleDrawer(true)} >
+                    <IconButton className={classes.menuButton} aria-label="Open menu" onClick={() => context.toggleDrawer(true)} >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" color="inherit">
+                    <Typography className={classes.appBarTitle} variant="h6" color="inherit">
                     {context.favoriteTracks ? 'Favorite tracks' : context.currentFolder.title}
                     </Typography>
                     <Paper className={classes.search} elevation={1}>

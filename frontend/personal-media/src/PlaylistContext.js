@@ -38,6 +38,8 @@ export class PlaylistProvider extends React.Component {
     }
     this.state = {
       currentFolder:tracks,
+      loopPlayList:true,
+      loopTrack:false,
       parentFolders:[],
       selected:tracks.children.filter(track => !track.children)[0],
       sideDrawer:false,
@@ -117,6 +119,24 @@ export class PlaylistProvider extends React.Component {
         if(this.state.playerRef !== undefined){
           this.state.playerRef.load();
           this.state.playerRef.play();
+        }
+      },
+      onAudioEnd: () =>{
+        if(this.state.playerRef !== undefined){
+          if(this.state.loopPlayList){
+            this.state.onNextClick();
+          }else if(this.state.loopTrack){
+            this.state.restartPlayer();
+          }
+        }
+      },
+      toggleLoopStatus:() =>{
+        if(this.state.loopPlayList){
+          this.setState({loopTrack:true,loopPlayList:false});
+        }else if(this.state.loopTrack){
+          this.setState({loopTrack:false,loopPlayList:false});
+        }else{
+          this.setState({loopTrack:false,loopPlayList:true});
         }
       },
       setFavoriteTracks: (value) =>{

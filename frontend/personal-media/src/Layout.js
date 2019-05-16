@@ -47,6 +47,7 @@ export class Layout extends Component {
                         elevation={1}
                         width="100%"
                         showLoopIcon={false}
+                        onAudioEnd={()=>context.onAudioEnd()}
                     />
                 </AppBar>
                 <Dialog

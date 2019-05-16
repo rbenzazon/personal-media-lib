@@ -1,5 +1,24 @@
+add search from criteria ? done
+	-add search field in appbar
+	-add clear button on search field
+	-add context support (displayedItemFromSearch)
+	
+check theme color and usage
 header de liste / tableau ?
-debug identical keys
-continue playlist / loop
+	-title, artist, album, track num, year
+	-add sorting
+	-add playing animated ison
+	-add play/pause button
+	-add button to add to playlist
+
+add playlist feature
+	-add "create playlist" button
+	-add playlist on side drawer as accordion item 
+debug identical keys = add id from json script to use as unique key ? done
+continue playlist / loop 
+		-add loop setting to context
+		-add playback complete from player to context to play next song or loop
+		-reinstall loop button and hook it to context
 install routes on the folder navigation
-done make list data use states
+
+
