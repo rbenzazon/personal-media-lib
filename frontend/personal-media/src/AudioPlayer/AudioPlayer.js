@@ -144,20 +144,20 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
           hidden
           volume={volume/100}
         >
-          <source src={context.selected.url} />
+          <source src={context.state.selected.url} />
         </audio>
         
         <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={16} container>
           <Grid xs={1} item>
-            {context.loopTrack === false && <LoopPlaylistIcon
+            {context.state.loopTrack === false && <LoopPlaylistIcon
               className={css({
-                [classes['player-default-icon']]: context.loopPlayList,
-                [classes['player-icon-disabled']]: context.loopPlayList === false,
+                [classes['player-default-icon']]: context.state.loopPlayList,
+                [classes['player-icon-disabled']]: context.state.loopPlayList === false,
               })}
               onClick={() => context.toggleLoopStatus()}
               focusable="true"
             />}
-            {context.loopTrack && <LoopTrackIcon
+            {context.state.loopTrack && <LoopTrackIcon
               className={css(classes['player-default-icon'])}
               onClick={() => context.toggleLoopStatus()}
               focusable="true"
@@ -205,7 +205,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                     
                     noWrap
                   >
-                  {context.selected.title}
+                  {context.state.selected.title}
                 </Typography>
               </Grid>
               {!isMobile && <Grid xs={6} item>
@@ -214,7 +214,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                     
                     noWrap
                   >
-                  {context.selected.artist}
+                  {context.state.selected.artist}
                 </Typography>
               </Grid>}
             </Grid>

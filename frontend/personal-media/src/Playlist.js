@@ -90,17 +90,17 @@ export class PlayList extends Component {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {context.parentFolders.length >=1 && !context.favoriteTracks && 
+                {context.state.parentFolders.length >=1 && !context.state.favoriteTracks && 
                     <TableRow key={'back_folder'} >
                         <TableCell className={classes.cell} button onClick={() => context.navigateUp()}>
                             <BackIcon/>
                         </TableCell>
                         <TableCell className={classes.cell} button onClick={() => context.navigateUp()} colSpan="6">
-                            back to {context.parentFolders[context.parentFolders.length-1].title}
+                            back to {context.state.parentFolders[context.state.parentFolders.length-1].title}
                         </TableCell>
                     </TableRow>
                 }
-                {context.favoriteTracks && 
+                {context.state.favoriteTracks && 
                     <TableRow key={'back_favorite'} hover>
                         <TableCell className={classes.cell}>
                             <Link to="/" style={{ textDecoration: 'none' }}>
@@ -109,13 +109,13 @@ export class PlayList extends Component {
                         </TableCell>
                         <TableCell className={classes.cell} colSpan="6">
                             <Link to="/" style={{ textDecoration: 'none' }}>
-                                back to {context.currentFolder.title}
+                                back to {context.state.currentFolder.title}
                             </Link>
                         </TableCell>
                     </TableRow>
                 }
-                {context.displayedItems.map((track) =>
-                    <TableRow key={track.id} selected={context.selected === track} hover>
+                {context.state.displayedItems.map((track) =>
+                    <TableRow key={track.id} selected={context.state.selected === track} hover>
                         <TableCell className={classes.cell} onClick={() => context.onListClick(track)}>
                         {track.imageUrl &&
                             <Avatar src={track.imageUrl} />}

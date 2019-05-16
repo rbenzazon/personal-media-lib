@@ -70,7 +70,7 @@ export class PLAppBar extends Component {
                         <MenuIcon />
                     </IconButton>
                     <Typography className={classes.appBarTitle} variant="h6" color="inherit">
-                    {context.favoriteTracks ? 'Favorite tracks' : context.currentFolder.title}
+                    {context.state.favoriteTracks ? 'Favorite tracks' : context.state.currentFolder.title}
                     </Typography>
                     <Paper className={classes.search} elevation={1}>
                         <IconButton 
@@ -83,7 +83,7 @@ export class PLAppBar extends Component {
                         <InputBase
                             onKeyPress={(e) => context.onSearchKeyPress(e)}
                             onChange={(e) => context.onSearchChange(e.target.value)}
-                            value={context.searchKeyword}
+                            value={context.state.searchKeyword}
                             placeholder="Search…"
                             className={classes.input}
                         />
@@ -91,7 +91,7 @@ export class PLAppBar extends Component {
                             className={classes.searchIcon}
                             aria-label="clear search"
                             onClick={() => context.clearSearch()}
-                            disabled={context.searchDisplay === false}
+                            disabled={context.state.searchDisplay === false}
                         >
                             <ClearIcon />
                         </IconButton>

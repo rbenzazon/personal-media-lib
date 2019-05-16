@@ -44,7 +44,7 @@ export class Layout extends Component {
             <PlaylistContext.Consumer>{(context) => (
                 
             <React.Fragment>
-                <Log name={context} />
+                
                 <PLAppBar />
                 <PlayList />
                 <PLDrawer />
@@ -59,14 +59,14 @@ export class Layout extends Component {
                     />
                 </AppBar>
                 <Dialog
-                    open={context.createPlaylistOpen}
+                    open={context.state.createPlaylistOpen}
                     onClose={() => context.onCreatePlaylistClose()}
                     aria-labelledby="add to playlist"
                     aria-describedby="add this track to a playlist"
                     >
                     <DialogTitle id="alert-dialog-title">Create a playlist</DialogTitle>
                     <DialogContent>
-                        <input placeholder="Enter a name" value={context.createPlaylistName} onChange={(e) => context.onPlaylistNameChange(e.target.value)}></input>
+                        <input placeholder="Enter a name" value={context.state.createPlaylistName} onChange={(e) => context.onPlaylistNameChange(e.target.value)}></input>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => context.onCreatePlaylistClose()} color="secondary">
@@ -78,7 +78,7 @@ export class Layout extends Component {
                     </DialogActions>
                 </Dialog>
                 <Dialog
-                    open={context.playlistAddOpen}
+                    open={context.state.playlistAddOpen}
                     onClose={() => context.onAddToPlaylistClose()}
                     aria-labelledby="add to playlist"
                     aria-describedby="add this track to a playlist"
@@ -88,17 +88,17 @@ export class Layout extends Component {
                         <DialogContentText id="alert-dialog-description">
                         choose a playlist in which to add this track
                         </DialogContentText>
-                        {context.playLists.length > 0 &&
+                        {context.state.playLists.length > 0 &&
                         <Select
                             value={context.playlistToAdd}
                             onChange={(e) => context.onPlaylistToAddChange(e.target.value)}
                         >
-                            {context.playLists.map((item)=>{return(
+                            {context.state.playLists.map((item)=>{return(
                             <MenuItem value={item}>{item.title}</MenuItem>
                             )})}
                         </Select>
                         }
-                        {context.playLists.length == 0 &&
+                        {context.state.playLists.length == 0 &&
                             <Button onClick={() => {context.onAddToPlaylistClose();context.onCreatePlaylistOpenClose(true)}} color="primary" autoFocus>
                             Create playlist
                             </Button>
@@ -114,7 +114,7 @@ export class Layout extends Component {
                     </DialogActions>
                 </Dialog>
                 <Dialog
-                    open={context.importOpen}
+                    open={context.state.importOpen}
                     onClose={() => context.setImportOpen(false)}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"

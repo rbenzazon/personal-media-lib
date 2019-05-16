@@ -31,7 +31,7 @@ export class PLDrawer extends Component {
         } = this.props;
     return (
         <PlaylistContext.Consumer>{(context) => (
-            <Drawer open={context.sideDrawer} onClose={() => context.toggleDrawer(false)}>
+            <Drawer open={context.state.sideDrawer} onClose={() => context.toggleDrawer(false)}>
                 <div
                     tabIndex={0}
                     role="button"
@@ -64,7 +64,7 @@ export class PLDrawer extends Component {
                         }
                     })
                     }
-                    {context.playLists.map(item=>{
+                    {context.state.playLists.map(item=>{
                             return (
                             <Link to={"/playlist/"+item.title} key={item.title} style={{ textDecoration: 'none' }}>
                                 <ListItem button >
