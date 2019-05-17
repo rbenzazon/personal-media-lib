@@ -42,7 +42,7 @@ scanRecursive = (folderPath,children) =>{
             //let buffer = fs.readFileSync(url);
             let tags = NodeID3.read(url);
             itemDesc = {
-                title:tags.title,
+                title:tags.title?tags.title:item.name,
                 album:tags.album,
                 year:tags.year,
                 artist:tags.artist,

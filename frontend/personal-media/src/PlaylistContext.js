@@ -81,14 +81,18 @@ export class PlaylistProvider extends React.Component {
     }else if(playLists && currentMatch.path === "/playlist/:playlistName"){
       tmpTracks = [...this.getPlaylistRef(currentMatch.params.playlistName,playLists).children];
     }else{
-      tmpTracks = [...currentFolder.children];
+      if(searchKeyWord && searchKeyWord !== ''){
+        tmpTracks = this.mapRecursive(tracks.children);
+      }else{
+        tmpTracks = [...currentFolder.children];
+      }
     }
     if(searchKeyWord && searchKeyWord !== ''){
       tmpTracks = tmpTracks.filter(track=>{
         let result = false;
         let searchableFields = track.children ? ['title'] : ['title','artist','album'];
         for(let prop of searchableFields){
-          result = result || track[prop].search(new RegExp(searchKeyWord, "i")) !== -1;
+          result = result || track[prop] && track[prop].search(new RegExp(searchKeyWord, "i")) !== -1;
         }
         return result;
       });
@@ -97,11 +101,17 @@ export class PlaylistProvider extends React.Component {
   }
   mapRecursive(trackList){
     let output = [];
+    console.log("entering new folder");
     trackList.map((track)=>{
-        output.push(track);
-        if(track.children){
-            output = [...this.mapRecursive(track.children)];
+        if(!track.children){
+          console.log("adding track "+track.title)
+          output.push(track);
+        }else{
+          console.log("adding folder "+track.title)
+          let folder = this.mapRecursive(track.children);
+          output = [...output,...folder];
         }
+       
     });
     return output;
   }

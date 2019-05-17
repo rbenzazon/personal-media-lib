@@ -5,20 +5,21 @@ add search from criteria ? done
 	
 check theme color and usage
 header de liste / tableau ?
-	-title, artist, album, track num, year
+	-title, artist, album, track num, year: done
 	-add sorting
 	-add playing animated ison
 	-add play/pause button
-	-add button to add to playlist
+	-add button to add to playlist:done
 
 add playlist feature
-	-add "create playlist" button
+	-add "create playlist" button:done
 	-add playlist on side drawer as accordion item 
 debug identical keys = add id from json script to use as unique key ? done
-continue playlist / loop 
+continue playlist / loop done
 		-add loop setting to context
 		-add playback complete from player to context to play next song or loop
 		-reinstall loop button and hook it to context
 install routes on the folder navigation
 
-
+const noteList = document.querySelectorAll('.rating-other-user-rating span:not(.point-scale)').map(span=>parseInt(span.textContent));
+const average2 = noteList4.reduce( ( p, c ) => p + c, 0 ) / noteList4.length;

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 import {PlaylistContext,PlaylistProvider} from './PlaylistContext';
 import PLAppBar from './PLAppBar'
-import PlayList from './PlayList';
+import PlayList from './Playlist';
 import PLDrawer from './PLDrawer'
 
 function Log(value) {
