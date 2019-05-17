@@ -147,7 +147,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
           <source src={context.state.selected.url} />
         </audio>
         
-        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={16} container>
+        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={8} container>
           
           <Grid item xs={isMobile ? 5 : 3} alignContent="center" justify="center" alignItems="center" container >
             <Grid xs={3} item>

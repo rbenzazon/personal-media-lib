@@ -34,17 +34,7 @@ const getGreyColor = (theme, opacity) => {
     return lighten(greyColor, opacity);
 };
 const styles = theme => ({
-    favoriteDisabled:{
-        padding:'0.2em 0em 0em 0em',
-        width:'1.3em',
-        height:'1.3em',
-        fill: getGreyColor(theme),
-        color: getGreyColor(theme),
-        '&:hover': {
-        fill: getGreyColor(theme, 0.25),
-        color: getGreyColor(theme, 0.25),
-        },
-    },
+    
     cell:{
         cursor: "pointer",
         padding: "0.7em 0.7em !important",
@@ -53,6 +43,11 @@ const styles = theme => ({
     imageCell:{
         padding: "0.7em 0.7em !important",
         maxWidth:isMobile?'1em':'2em',
+    },
+    mainCell:{
+        cursor: "pointer",
+        padding: "0 !important",
+        minWidth:isMobile?'3em':'10em',
     },
     artistCell:{
         cursor: "pointer",
@@ -73,16 +68,31 @@ const styles = theme => ({
     trackIcon:{
         width:'1.2em',
         height:'1.2em',
+        margin:'0 10%',
     },
     trackImage:{
         width:'1.5em',
         height:'1.5em',
+        margin:'0 10%',
     },
     trackTitle:{
         margin:'0.5em 0em 0.5em 0em',
     },
+    favoriteDisabled:{
+        padding:'0.2em 0em 0em 0em',
+        width:'1.3em',
+        height:'1.3em',
+        margin:'0 10%',
+        fill: getGreyColor(theme),
+        color: getGreyColor(theme),
+        '&:hover': {
+        fill: getGreyColor(theme, 0.25),
+        color: getGreyColor(theme, 0.25),
+        },
+    },
     button: {
         padding:'0.2em 0em 0em 0em',
+        margin:'0 10%',
         width:'1.3em',
         height:'1.3em',
         fill: `${getColor(theme, 'primary')} !important`,
@@ -93,13 +103,16 @@ const styles = theme => ({
         },
     },
     table:{
-        marginBottom: '5em',
+        marginBottom: '4em',
     },
     tableHeadTr:{
-        height:'48px',
+        height:'2em',
     },
     grow: {
         flexGrow: 1,
+    },
+    titleGridItem:{
+        padding:'0.6em 0em 0.5em 0em',
     },
 });
 
@@ -131,7 +144,7 @@ export class PlayList extends Component {
                 <TableBody>
                     {context.state.parentFolders.length >=1 && !context.state.favoriteTracks && !context.state.playlistTracks &&
                     <TableRow key={'back_folder'} >
-                        <TableCell className={classes.cell} >
+                        <TableCell className={classes.cell} colSpan={isMobile?2:3}>
                             <Grid alignContent="center" justify="flex-start" alignItems="center" container button onClick={() => context.navigateUp()}>
                                 <Grid item xs={isMobile?2:1} >
                                     <BackIcon/>
@@ -145,7 +158,7 @@ export class PlayList extends Component {
                     }
                     {(context.state.favoriteTracks || context.state.playlistTracks) &&
                     <TableRow key={'back_favorite'} hover>
-                        <TableCell className={classes.cell} colSpan={isMobile?2:3}>
+                        <TableCell className={classes.mainCell} colSpan={isMobile?2:3}>
                             <Link to="/" >
                                 <Grid alignContent="center" justify="flex-start" alignItems="center" container >
                                     <Grid item xs={isMobile?2:1} >
@@ -161,18 +174,18 @@ export class PlayList extends Component {
                     }
                     {context.state.displayedItems.map((track) =>
                     <TableRow key={track.id} selected={context.state.selected === track} hover>
-                        <TableCell className={classes.cell} colSpan={track.children ? 3 : 1}>
-                            <Grid alignContent="center" justify="flex-start" alignItems="center" container >
-                                <Grid item xs={isMobile?2:1} onClick={() => context.onListClick(track)}>
+                        <TableCell className={classes.mainCell} colSpan={track.children ? 3 : 1}>
+                            <Grid alignContent="center" justify="center" alignItems="center" container>
+                                <Grid item xs={track.children?(isMobile?2:2):(isMobile?2:2)} onClick={() => context.onListClick(track)}>
                                     {track.imageUrl &&
                                     <Avatar className={classes.trackImage} src={track.imageUrl} />}
                                     {!track.imageUrl && !track.children &&
-                                    <TrackIcon />}
+                                    <TrackIcon className={classes.trackIcon} />}
                                     {track.children && 
                                     <FolderIcon className={classes.trackIcon} />}
                                 </Grid>
                                 {!track.children && 
-                                <Grid item xs={isMobile?2:1}>
+                                <Grid item xs={isMobile?2:2}>
                                     <FavorIcon 
                                         className={css(
                                             {[classes['favoriteDisabled']]: !track.favorite},
@@ -183,10 +196,10 @@ export class PlayList extends Component {
                                 </Grid>
                                 }
                                 {!track.children &&
-                                <Grid item xs={isMobile?2:1}>
+                                <Grid item xs={isMobile?2:2}>
                                     <AddIcon className={classes.button} onClick={()=>context.onAddToPlaylist(track)} />
                                 </Grid>}
-                                <Grid item xs={track.children?(isMobile?8:9):(isMobile?6:9)} onClick={() => context.onListClick(track)} >
+                                <Grid item className={classes.titleGridItem} xs={track.children?(isMobile?10:10):(isMobile?6:6)} onClick={() => context.onListClick(track)} >
                                     <span className={classes.trackTitle} >{track.title}</span>
                                 </Grid>
                             </Grid>
