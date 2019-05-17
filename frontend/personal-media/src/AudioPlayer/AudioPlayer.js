@@ -148,61 +148,56 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
         </audio>
         
         <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={16} container>
-          <Grid xs={1} item>
-            {context.state.loopTrack === false && <LoopPlaylistIcon
-              className={css({
-                [classes['player-default-icon']]: context.state.loopPlayList,
-                [classes['player-icon-disabled']]: context.state.loopPlayList === false,
-              })}
-              onClick={() => context.toggleLoopStatus()}
-              focusable="true"
-            />}
-            {context.state.loopTrack && <LoopTrackIcon
-              className={css(classes['player-default-icon'])}
-              onClick={() => context.toggleLoopStatus()}
-              focusable="true"
-            />}
-          </Grid>
-          <Grid item xs={isMobile ? 3 : 2} alignContent="center" justify="center" alignItems="center" container >
-            <Grid xs={4} item>
+          
+          <Grid item xs={isMobile ? 5 : 3} alignContent="center" justify="center" alignItems="center" container >
+            <Grid xs={3} item>
+              {context.state.loopTrack === false && <LoopPlaylistIcon
+                className={css({
+                  [classes['player-default-icon']]: context.state.loopPlayList,
+                  [classes['player-icon-disabled']]: context.state.loopPlayList === false,
+                })}
+                onClick={() => context.toggleLoopStatus()}
+                focusable="true"
+              />}
+              {context.state.loopTrack && 
+              <LoopTrackIcon
+                className={css(classes['player-default-icon'])}
+                onClick={() => context.toggleLoopStatus()}
+                focusable="true"
+              />}
+            </Grid>
+            <Grid xs={3} item onClick={() => context.onPrevClick()} focusable="true">
               <SkipPrevIcon
                 className={css(
                   classes['player-default-icon'],
                   classes['player-main-icon'],
                   prevIcon
                 )}
-                onClick={() => context.onPrevClick()}
-                focusable="true"
               />
             </Grid>
-            <Grid xs={4} item>
+            <Grid xs={3} item onClick={() => this.triggerAction(Player.Status.PLAY)} focusable="true">
               <PlayStatusIcon
                 className={css(
                   classes['player-default-icon'],
                   playIcon
                 )}
-                onClick={() => this.triggerAction(Player.Status.PLAY)}
-                focusable="true"
               />
             </Grid>
-            <Grid xs={4} item>
+            <Grid xs={3} item onClick={() => context.onNextClick()} focusable="true">
               <SkipNextIcon
                 className={css(
                   classes['player-default-icon'],
                   classes['player-main-icon'],
                   nextIcon
                 )}
-                onClick={() => context.onNextClick()}
-                focusable="true"
               />
             </Grid>
           </Grid>
-          <Grid item xs={isMobile ? 4 : 7} container  alignContent="center" justify="center" alignItems="center" >
+          <Grid item xs={isMobile ? 5 : 7} container  alignContent="center" justify="center" alignItems="center" >
             <Grid item xs={12} container alignContent="center" justify="flex-start" alignItems="flex-start"  >
               <Grid xs={isMobile?12:6} item>
                 <Typography
                     className={css(classes['player-text'], text)}
-                    
                     noWrap
                   >
                   {context.state.selected.title}
@@ -211,7 +206,6 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               {!isMobile && <Grid xs={6} item>
                 <Typography
                     className={css(classes['player-text'], text)}
-                    
                     noWrap
                   >
                   {context.state.selected.artist}
@@ -222,7 +216,6 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               <Grid xs={isMobile?6:2} item>
                 <Typography
                   className={css(classes['player-text'], text)}
-                  
                   noWrap
                 >
                   {getFormattedTime(current)}
@@ -255,7 +248,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               </Grid>
             </Grid>
           </Grid>
-          <Grid xs={isMobile ? 3 : 1} item>
+          <Grid xs={isMobile ? 2 : 2} item>
           <Tooltip
           {... isMobile ? {disableHoverListener:true,enterTouchDelay:50}:{}}
           interactive

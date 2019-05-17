@@ -101,17 +101,12 @@ export class PlaylistProvider extends React.Component {
   }
   mapRecursive(trackList){
     let output = [];
-    console.log("entering new folder");
     trackList.map((track)=>{
         if(!track.children){
-          console.log("adding track "+track.title)
           output.push(track);
         }else{
-          console.log("adding folder "+track.title)
-          let folder = this.mapRecursive(track.children);
-          output = [...output,...folder];
+          output = [...output,...this.mapRecursive(track.children)];
         }
-       
     });
     return output;
   }
@@ -136,8 +131,6 @@ export class PlaylistProvider extends React.Component {
     this.state.playlistToAdd.children.push(this.state.trackToAdd);
     let newPlayLists = JSON.parse(JSON.stringify(this.state.playLists))
     //let newPlaylist = {title:this.state.playlistToAdd.title,children:[...this.state.playlistToAdd,[this.state.trackToAdd]]}
-    console.log("test")
-    //
     this.setState({playLists:newPlayLists,trackToAdd:null,playlistToAdd:null,playlistAddOpen:false});
   }
   onAddToPlaylistClose(){
@@ -279,23 +272,14 @@ export class PlaylistProvider extends React.Component {
     }));
   }
   onLayoutMount(match){
-    //if(this.state.match === null)
-    {
-      let newPlaylist = this.getPlaylistRef(match.params.playlistName,this.state.playLists);
-      this.setState(state => ({
-        currentPlaylist:newPlaylist !== false?newPlaylist:null,
-        favoriteTracks:match.path === "/favorite",
-        playlistTracks:this.getPlaylistRef(match.params.playlistName,state.playLists) !== false,
-        match:match,
-        displayedItems:this.getListData(state.currentFolder,state.playLists,null,match),
-      }));
-    }/*else{
-      this.setState(state => ({
-        favoriteTracks:match.path === "/favorite",
-        match:match,
-        displayedItems:this.getListData(state.currentFolder,state.playLists,null,match),
-      }));
-    }*/
+    let newPlaylist = this.getPlaylistRef(match.params.playlistName,this.state.playLists);
+    this.setState(state => ({
+      currentPlaylist:newPlaylist !== false?newPlaylist:null,
+      favoriteTracks:match.path === "/favorite",
+      playlistTracks:this.getPlaylistRef(match.params.playlistName,state.playLists) !== false,
+      match:match,
+      displayedItems:this.getListData(state.currentFolder,state.playLists,null,match),
+    }));
   }
 
   render (){
