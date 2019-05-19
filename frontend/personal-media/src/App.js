@@ -4,7 +4,8 @@ import { Route } from "react-router-dom";
 import {PlaylistProvider } from './PlaylistContext';
 
 
-function App(props) {
+function App(props){
+
   return (
         <PlaylistProvider >
         <React.Fragment>
@@ -14,5 +15,8 @@ function App(props) {
         </React.Fragment>
         </PlaylistProvider>
         );
+  
 }
+
 export default App;
+

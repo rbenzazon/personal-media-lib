@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {PlaylistContext} from './PlaylistContext';
 import {Clear as ClearIcon,Search as SearchIcon ,Menu as MenuIcon} from '@material-ui/icons';
-import { withStyles,createMuiTheme } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import {Paper,InputBase,AppBar,Toolbar,Typography,IconButton} from '@material-ui/core';
 import {isMobile} from "react-device-detect";
 
@@ -17,11 +17,6 @@ const getColor = (theme, type, opacity) => {
 
   return lighten(color, opacity);
 };
-const theme = createMuiTheme({
-    typography: {
-      useNextVariants: true,
-    },
-});
 const styles = theme => ({
     search: {
         margin: isMobile ? '0em 0.2em' : '0em 0.5em',

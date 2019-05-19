@@ -1,24 +1,13 @@
 import React, { Component} from 'react';
 import {AppBar} from '@material-ui/core';
-import {Paper,Select,MenuItem,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
-import { withStyles, createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
+import {Select,MenuItem,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 import {PlaylistContext,PlaylistProvider} from './PlaylistContext';
-import PLAppBar from './PLAppBar'
+import PLAppBar from './PLAppBar';
 import PlayList from './Playlist';
-import PLDrawer from './PLDrawer'
-
-function Log(value) {
-    console.log(value);
-    return null;
-}
-
-const theme = createMuiTheme({
-    typography: {
-      useNextVariants: true,
-    },
-});
+import PLDrawer from './PLDrawer';
 
 const styles = theme => ({
     appBar: {
@@ -49,7 +38,7 @@ export class Layout extends Component {
         } = this.props;
         return(
         
-        <MuiThemeProvider theme={theme}>
+        
             <PlaylistContext.Consumer>{(context) => (
             <React.Fragment>
                 <Dummy onLayoutMount={context.onLayoutMount} match={this.props.match}/>
@@ -148,7 +137,7 @@ export class Layout extends Component {
                 </Dialog>
             </React.Fragment>
             )}</PlaylistContext.Consumer>
-        </MuiThemeProvider>
+        
         
         );
     }

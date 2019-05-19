@@ -3,7 +3,7 @@ import {PlaylistContext} from './PlaylistContext';
 import {Grid,Avatar, TableBody,Table,TableRow,TableCell,TableHead} from '@material-ui/core';
 import {Audiotrack as TrackIcon,Folder as FolderIcon, ArrowBack as BackIcon, Favorite as FavorIcon, AddCircle as AddIcon} from '@material-ui/icons';
 import { Link } from "react-router-dom";
-import { withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import {isMobile} from "react-device-detect";
 import css from 'classnames';
@@ -19,11 +19,6 @@ const getColor = (theme, type, opacity) => {
   return lighten(color, opacity);
 };
 
-const theme = createMuiTheme({
-    typography: {
-      useNextVariants: true,
-    },
-});
 const getGreyColor = (theme, opacity) => {
     const greyColor = theme.palette.grey['500'];
   

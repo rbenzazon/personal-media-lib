@@ -1,21 +1,11 @@
 import React, { Component } from 'react';
 import {List,ListItem,ListItemIcon,ListItemText,Drawer} from '@material-ui/core';
 import { PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
-import { withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import {PlaylistContext} from './PlaylistContext';
 
-const theme = createMuiTheme({
-    typography: {
-      useNextVariants: true,
-    },
-});
-
 const styles = theme => ({
-    appBar: {
-        top: 'auto',
-        bottom: 0,
-    },
 });
 
 export class PLDrawer extends Component {
