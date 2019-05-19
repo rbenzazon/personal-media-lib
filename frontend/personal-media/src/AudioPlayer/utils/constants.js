@@ -9,5 +9,9 @@ export default {
         PAUSE: "pause",
         MUTE: "mute",
         UNMUTE: "unmute",
+        LOOP_TRACK: "loopTrack",
+        LOOP_LIST: "loopList",
+        NO_LOOP: "noLoop",
+        RANDOM: "random",
     }
 };

@@ -1,5 +1,6 @@
 import React, { createContext } from 'react';
 import myData from './data.json';
+import Player from './AudioPlayer/utils/constants';
 const {tracks} = myData;
 
 export const PlaylistContext = createContext();
@@ -9,8 +10,8 @@ export const PlaylistContext = createContext();
 export class PlaylistProvider extends React.Component {
   state = {
     currentFolder:tracks,
-    loopPlayList:true,
-    loopTrack:false,
+    playerLoopStatus:Player.Status.LOOP_LIST,
+    playerStatus:Player.Status.PAUSE,
     parentFolders:[],
     selected:tracks.children.filter(track => !track.children)[0],
     sideDrawer:false,
@@ -63,6 +64,8 @@ export class PlaylistProvider extends React.Component {
     this.onSearchOpen = this.onSearchOpen.bind(this)
     this.onLayoutMount = this.onLayoutMount.bind(this);
     this.getPlaylistRef = this.getPlaylistRef.bind(this);
+    this.playRandomTrack = this.playRandomTrack.bind(this);
+    
     
   }
 
@@ -175,16 +178,26 @@ export class PlaylistProvider extends React.Component {
         this.setState({sideDrawer: open});
     //}
   }
+  playRandomTrack(){
+    const children = this.state.displayedItems.filter(track=>track !== this.state.selected && !track.children);
+    let newTrack = children[Math.round(Math.random()*children.length)];
+    this.setState({selected:newTrack});
+    this.restartPlayer();
+  }
   onNextClick(){
-    const children = this.state.displayedItems;
-    const index = children.indexOf(this.state.selected)+1;
-    const boundaries = index === children.length ? 0 : index;
-    for(let newIndex = boundaries;newIndex < children.length;newIndex++){
-        if(!children[newIndex].children){
-            this.setState({selected:children[newIndex]});
-            this.restartPlayer();
-            return;
-        }
+    if(this.state.playerLoopStatus == Player.Status.RANDOM){
+      this.playRandomTrack();
+    }else{
+      const children = this.state.displayedItems;
+      const index = children.indexOf(this.state.selected)+1;
+      const boundaries = index === children.length ? 0 : index;
+      for(let newIndex = boundaries;newIndex < children.length;newIndex++){
+          if(!children[newIndex].children){
+              this.setState({selected:children[newIndex]});
+              this.restartPlayer();
+              return;
+          }
+      }
     }
   }
   onPrevClick(){
@@ -212,21 +225,36 @@ export class PlaylistProvider extends React.Component {
   }
   onAudioEnd(){
     if(this.state.playerRef !== undefined){
-      if(this.state.loopPlayList){
-        this.onNextClick();
-      }else if(this.state.loopTrack){
-        this.restartPlayer();
+      switch(this.state.playerLoopStatus){
+        case Player.Status.LOOP_LIST :
+          this.onNextClick();
+        break;
+        case Player.Status.LOOP_TRACK :
+          this.restartPlayer();
+        break;
+        case Player.Status.RANDOM :
+          this.playRandomTrack();
+        break;
       }
     }
   }
   toggleLoopStatus(){
-    if(this.state.loopPlayList){
-      this.setState({loopTrack:true,loopPlayList:false});
-    }else if(this.state.loopTrack){
-      this.setState({loopTrack:false,loopPlayList:false});
-    }else{
-      this.setState({loopTrack:false,loopPlayList:true});
+    let newLoopStatus;
+    switch(this.state.playerLoopStatus){
+      case Player.Status.LOOP_LIST :
+        newLoopStatus = Player.Status.LOOP_TRACK;
+      break;
+      case Player.Status.LOOP_TRACK :
+        newLoopStatus = Player.Status.NO_LOOP;
+      break;
+      case Player.Status.NO_LOOP :
+        newLoopStatus = Player.Status.RANDOM;
+      break;
+      case Player.Status.RANDOM :
+        newLoopStatus = Player.Status.LOOP_LIST;
+      break;
     }
+    this.setState({playerLoopStatus:newLoopStatus});
   }
   setFavoriteTracks(value){
     this.setState(state=>({

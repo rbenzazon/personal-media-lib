@@ -1,5 +1,5 @@
 import { Grid, Paper, Typography,withStyles } from '@material-ui/core';
-import { Repeat as LoopPlaylistIcon,RepeatOne as LoopTrackIcon, VolumeMute as MuteStatusIcon , SkipNextRounded as SkipNextIcon, SkipPreviousRounded as SkipPrevIcon} from '@material-ui/icons';
+import { Shuffle as ShuffleIcon, Repeat as LoopPlaylistIcon,RepeatOne as LoopTrackIcon, VolumeMute as MuteStatusIcon , SkipNextRounded as SkipNextIcon, SkipPreviousRounded as SkipPrevIcon} from '@material-ui/icons';
 import { Slider } from '@material-ui/lab';
 import css from 'classnames';
 import React, { Fragment } from 'react';
@@ -151,16 +151,22 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
           
           <Grid item xs={isMobile ? 5 : 3} alignContent="center" justify="center" alignItems="center" container >
             <Grid xs={3} item>
-              {context.state.loopTrack === false && <LoopPlaylistIcon
+              {(context.state.playerLoopStatus === Player.Status.LOOP_LIST || context.state.playerLoopStatus === Player.Status.NO_LOOP) && <LoopPlaylistIcon
                 className={css({
-                  [classes['player-default-icon']]: context.state.loopPlayList,
-                  [classes['player-icon-disabled']]: context.state.loopPlayList === false,
+                  [classes['player-default-icon']]: context.state.playerLoopStatus === Player.Status.LOOP_LIST,
+                  [classes['player-icon-disabled']]: context.state.playerLoopStatus === Player.Status.NO_LOOP,
                 })}
                 onClick={() => context.toggleLoopStatus()}
                 focusable="true"
               />}
-              {context.state.loopTrack && 
+              {context.state.playerLoopStatus === Player.Status.LOOP_TRACK && 
               <LoopTrackIcon
+                className={css(classes['player-default-icon'])}
+                onClick={() => context.toggleLoopStatus()}
+                focusable="true"
+              />}
+              {context.state.playerLoopStatus === Player.Status.RANDOM && 
+              <ShuffleIcon
                 className={css(classes['player-default-icon'])}
                 onClick={() => context.toggleLoopStatus()}
                 focusable="true"
