@@ -33,7 +33,13 @@ const styles = theme => ({
     cell:{
         cursor: "pointer",
         padding: "0.7em 0.7em !important",
-        
+        color:theme.palette.secondary.dark,
+    },
+    secondaryColor:{
+        color:theme.palette.secondary.dark,
+    },
+    primaryColor:{
+        color:theme.palette.primary.dark,
     },
     imageCell:{
         padding: "0.7em 0.7em !important",
@@ -148,11 +154,17 @@ export class PlayList extends Component {
                     {context.state.parentFolders.length >=1 && !context.state.favoriteTracks && !context.state.playlistTracks &&
                     <TableRow key={'back_folder'} >
                         <TableCell className={classes.cell} colSpan={isMobile?2:3}>
-                            <Grid alignContent="center" justify="flex-start" alignItems="center" container button onClick={() => context.navigateUp()}>
+                            <Grid   alignContent="center"
+                                    justify="flex-start"
+                                    alignItems="center"
+                                    container button
+                                    onClick={() => context.navigateUp()}
+                                    
+                                    >
                                 <Grid item xs={isMobile?2:1} >
-                                    <BackIcon/>
+                                    <BackIcon className={classes.secondaryColor} />
                                 </Grid>
-                                <Grid item xs={isMobile?10:11} >
+                                <Grid item xs={isMobile?10:11} className={classes.primaryColor}>
                                     back to {context.state.parentFolders[context.state.parentFolders.length-1].title}
                                 </Grid>
                             </Grid>
@@ -165,9 +177,9 @@ export class PlayList extends Component {
                             <Link to="/" >
                                 <Grid alignContent="center" justify="flex-start" alignItems="center" container >
                                     <Grid item xs={isMobile?2:1} >
-                                        <BackIcon/>
+                                        <BackIcon className={classes.secondaryColor} />
                                     </Grid>
-                                    <Grid item xs={isMobile?10:11} style={{ textDecoration: 'none' }}>
+                                    <Grid item xs={isMobile?10:11} style={{ textDecoration: 'none' }} className={classes.primaryColor}>
                                         back to {context.state.currentFolder.title}
                                     </Grid>
                                 </Grid>
