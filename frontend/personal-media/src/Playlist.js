@@ -43,6 +43,7 @@ const styles = theme => ({
         cursor: "pointer",
         padding: "0 !important",
         minWidth:isMobile?'3em':'10em',
+        color:theme.palette.secondary.dark,
     },
     artistCell:{
         cursor: "pointer",
@@ -51,6 +52,7 @@ const styles = theme => ({
         'text-overflow': 'ellipsis',
         'white-space': 'nowrap',
         overflow: 'hidden',
+        color:theme.palette.secondary.contrastText,
     },
     albumCell:{
         cursor: "pointer",
@@ -59,6 +61,7 @@ const styles = theme => ({
         'text-overflow': 'ellipsis',
         'white-space': 'nowrap',
         overflow: 'hidden',
+        color:theme.palette.secondary.contrastText,
     },
     trackIcon:{
         width:'1.2em',
@@ -72,6 +75,10 @@ const styles = theme => ({
     },
     trackTitle:{
         margin:'0.5em 0em 0.5em 0em',
+        color:theme.palette.secondary.contrastText,
+    },
+    trackTitleSelected:{
+        color:theme.palette.primary.dark,
     },
     favoriteDisabled:{
         padding:'0.2em 0em 0em 0em',
@@ -99,6 +106,7 @@ const styles = theme => ({
     },
     table:{
         marginBottom: '4em',
+        backgroundColor: theme.palette.background.paper,
     },
     tableHeadTr:{
         height:'2em',
@@ -194,8 +202,14 @@ export class PlayList extends Component {
                                 <Grid item xs={isMobile?2:2}>
                                     <AddIcon className={classes.button} onClick={()=>context.onAddToPlaylist(track)} />
                                 </Grid>}
+                                
                                 <Grid item className={classes.titleGridItem} xs={track.children?(isMobile?10:10):(isMobile?6:6)} onClick={() => context.onListClick(track)} >
-                                    <span className={classes.trackTitle} >{track.title}</span>
+                                    <span 
+                                        className={css(
+                                            {[classes['trackTitleSelected']]: context.state.selected === track},
+                                            classes['trackTitle'],
+                                        )} 
+                                    >{track.title}</span>
                                 </Grid>
                             </Grid>
                         </TableCell>

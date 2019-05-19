@@ -13,6 +13,7 @@ const styles = theme => ({
     appBar: {
         top: 'auto',
         bottom: 0,
+        backgroundColor: theme.palette.background.default,
     },
 });
 
@@ -53,7 +54,7 @@ export class Layout extends Component {
                     <AudioPlayer
                         autoPlay={false}
                         rounded={true}
-                        elevation={1}
+                        //elevation={1}
                         width="100%"
                         showLoopIcon={false}
                         onAudioEnd={()=>context.onAudioEnd()}

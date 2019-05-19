@@ -10,7 +10,25 @@ const theme = createMuiTheme({
     typography: {
       useNextVariants: true,
     },
-    
+    palette: {
+        type: 'dark',
+        background:{
+            paper:'#303030',
+            default:'#212121',
+        },
+        primary:{
+            dark:'#baa0ea',
+            main:'#baa0ea',
+            contrastText:'#e0e0e0',
+            light:'#e0e0e0',
+        },
+        secondary:{
+            dark:'#ce9178',
+            main:'#baa0ea',
+            contrastText:'#e0e0e0',
+            light:'#e0e0e0',
+        }
+    },
 });
 
 ReactDOM.render(

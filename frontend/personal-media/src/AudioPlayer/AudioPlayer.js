@@ -195,7 +195,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
           </Grid>
           <Grid item xs={isMobile ? 5 : 7} container  alignContent="center" justify="center" alignItems="center" >
             <Grid item xs={12} container alignContent="center" justify="flex-start" alignItems="flex-start"  >
-              <Grid xs={isMobile?12:6} item>
+              <Grid xs={7} item>
                 <Typography
                     className={css(classes['player-text'], text)}
                     noWrap
@@ -203,7 +203,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   {context.state.selected.title}
                 </Typography>
               </Grid>
-              {!isMobile && <Grid xs={6} item>
+              {!isMobile && <Grid xs={5} item>
                 <Typography
                     className={css(classes['player-text'], text)}
                     noWrap
@@ -211,17 +211,25 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   {context.state.selected.artist}
                 </Typography>
               </Grid>}
-            </Grid>
-            <Grid item xs={12} container justify="flex-start" >
-              <Grid xs={isMobile?6:2} item>
+              {isMobile && <Grid xs={5} item>
                 <Typography
                   className={css(classes['player-text'], text)}
                   noWrap
                 >
                   {getFormattedTime(current)}
                 </Typography>
-              </Grid>
-              {!isMobile && <Grid xs={8} item>
+              </Grid>}
+            </Grid>
+            <Grid item xs={12} container justify="flex-start" >
+              {!isMobile && <Grid xs={4} item>
+                <Typography
+                  className={css(classes['player-text'], text)}
+                  noWrap
+                >
+                  {getFormattedTime(current)}/{getFormattedTime(duration)}
+                </Typography>
+              </Grid>}
+              <Grid xs={isMobile?12:8} item>
                 <Slider
                   onChange={(_, progress) =>
                     this.handleChange(progress, this.player)
@@ -236,16 +244,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                   value={progress}
                 />
               </Grid>
-              }
-              <Grid xs={isMobile ? 6 : 2} item>
-                <Typography
-                  className={css(classes['player-text'], text)}
-                  align="right"
-                  noWrap
-                >
-                  {getFormattedTime(duration)}
-                </Typography>
-              </Grid>
+              
             </Grid>
           </Grid>
           <Grid xs={isMobile ? 2 : 2} item>

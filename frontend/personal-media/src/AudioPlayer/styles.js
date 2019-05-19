@@ -34,6 +34,7 @@ export default theme => ({
     paddingBottom: "10px"
   },
   'player-container': {
+    backgroundColor:'transparent',
     padding: '0',
     borderRadius:'0px !important'
   },
@@ -85,7 +86,7 @@ export default theme => ({
     'background-color': getColor(theme, 'secondary'),
   },
   'player-text': {
-    color: theme.palette.getContrastText(theme.palette.background.default),
+    color: theme.palette.secondary.contrastText,
     margin: '5px'
   },
 });

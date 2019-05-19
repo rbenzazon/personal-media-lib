@@ -21,8 +21,9 @@ export class PlaylistProvider extends React.Component {
     playerRef:undefined,
     searchDisplay:false,
     searchKeyword:'',
-    playLists:[{title:'my playlist',children:[]}],
     searchedKeyword:'',
+    searchOpen:false,
+    playLists:[{title:'my playlist',children:[]}],
     trackToAdd:null,
     playlistToAdd:null,
     playlistAddOpen:false,
@@ -59,6 +60,7 @@ export class PlaylistProvider extends React.Component {
     this.displaySearch = this.displaySearch.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.clearSearch = this.clearSearch.bind(this);
+    this.onSearchOpen = this.onSearchOpen.bind(this)
     this.onLayoutMount = this.onLayoutMount.bind(this);
     this.getPlaylistRef = this.getPlaylistRef.bind(this);
     
@@ -129,7 +131,7 @@ export class PlaylistProvider extends React.Component {
   }
   addToPlaylist(){
     this.state.playlistToAdd.children.push(this.state.trackToAdd);
-    let newPlayLists = JSON.parse(JSON.stringify(this.state.playLists))
+    let newPlayLists = [...this.state.playLists];
     //let newPlaylist = {title:this.state.playlistToAdd.title,children:[...this.state.playlistToAdd,[this.state.trackToAdd]]}
     this.setState({playLists:newPlayLists,trackToAdd:null,playlistToAdd:null,playlistAddOpen:false});
   }
@@ -241,6 +243,13 @@ export class PlaylistProvider extends React.Component {
       displayedItems:this.getListData(state.currentFolder,state.playLists)
     }));
   }
+  onSearchOpen(value){
+    if(value){
+      this.setState({searchOpen:true});
+    }else{
+      this.clearSearch();
+    }
+  }
   onSearchKeyPress(e){
     if (e.key === 'Enter') {
       this.displaySearch();
@@ -268,6 +277,7 @@ export class PlaylistProvider extends React.Component {
       searchKeyword:'',
       searchedKeyword:'',
       searchDisplay:false,
+      searchOpen:false,
       displayedItems:this.getListData(state.currentFolder,state.playLists),
     }));
   }
@@ -313,6 +323,7 @@ export class PlaylistProvider extends React.Component {
         onSearchChange:this.onSearchChange,
         clearSearch:this.clearSearch,
         onLayoutMount:this.onLayoutMount,
+        onSearchOpen:this.onSearchOpen,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>
