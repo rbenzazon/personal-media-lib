@@ -16,10 +16,18 @@ const styles = theme => ({
         backgroundColor: theme.palette.background.default,
     },
     nestedItem:{
-        paddingLeft:'3em',
+        paddingLeft:'2rem',
     },
     nestedText:{
-        fontSize:'0.9em !important',
+        fontSize:'0.9rem !important',
+        maxWidth:'100%',
+        'text-overflow': 'ellipsis',
+        'white-space': 'nowrap',
+        overflow: 'hidden',
+    },
+    list:{
+        marginBottom: '4rem',
+        backgroundColor: theme.palette.background.paper,
     },
 });
 
@@ -40,10 +48,10 @@ export class HomeLayout extends Component {
     }
 
     artistsClick(){
-        this.setState({artistsOpen:true,albumsOpen:false});
+        this.setState(state=>{return {artistsOpen:!state.artistsOpen,albumsOpen:false}});
     }
     albumsClick(){
-        this.setState({artistsOpen:false,albumsOpen:true});
+        this.setState(state=>{return {albumsOpen:!state.albumsOpen,artistsOpen:false}});
     }
 
     render(){
@@ -57,27 +65,27 @@ export class HomeLayout extends Component {
             <React.Fragment>
                 <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
                 <PLAppBar />
-                <List>
+                <List className={classes.list}>
                     <ListItem button onClick={this.artistsClick} >
-                        <ListItemText inset primary="Artists" />
+                        <ListItemText primary="Artists" />
                     </ListItem>
                     <Collapse in={this.state.artistsOpen}>
                         <List component="div" disablePadding >
                             {context.getAllTrackPropValues("artist").map(artist =>
                             <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/artist/"+artist)}>
-                                <ListItemText inset primary={artist} classes={{ primary: classes.nestedText }}/>
+                                <ListItemText primary={artist} classes={{ primary: classes.nestedText }}/>
                             </ListItem>
                             )}
                         </List>
                     </Collapse>
                     <ListItem button onClick={this.albumsClick} >
-                        <ListItemText inset primary="Albums" />
+                        <ListItemText primary="Albums" />
                     </ListItem>
                     <Collapse in={this.state.albumsOpen} disablePadding>
                         <List component="div" disablePadding >
                             {context.getAllTrackPropValues("album").map(album =>
                             <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/album/"+album)}>
-                                <ListItemText inset primary={album} classes={{ primary: classes.nestedText }} />
+                                <ListItemText primary={album} classes={{ primary: classes.nestedText }} />
                             </ListItem>
                             )}
                         </List>
