@@ -65,6 +65,7 @@ export class HomeLayout extends Component {
             <React.Fragment>
                 <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
                 <PLAppBar />
+                <div style={{padding:'20px'}}>
                 <List className={classes.list}>
                     <ListItem button onClick={this.artistsClick} >
                         <ListItemText primary="Artists" />
@@ -91,6 +92,7 @@ export class HomeLayout extends Component {
                         </List>
                     </Collapse>
                 </List>
+                </div>
                 <PLDrawer />
                 <AppBar position="fixed" className={classes.appBar}>
                     <AudioPlayer
