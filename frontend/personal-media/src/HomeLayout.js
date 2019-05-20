@@ -4,17 +4,11 @@ import {Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button,
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {PlaylistContext} from './PlaylistContext';
-import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 import PLAppBar from './PLAppBar';
 import PLDrawer from './PLDrawer';
 import RouteDispatch from './RouteDispatch';
 
 const styles = theme => ({
-    appBar: {
-        top: 'auto',
-        bottom: 0,
-        backgroundColor: theme.palette.background.default,
-    },
     nestedItem:{
         paddingLeft:'2rem',
     },
@@ -94,16 +88,7 @@ export class HomeLayout extends Component {
                 </List>
                 </div>
                 <PLDrawer />
-                <AppBar position="fixed" className={classes.appBar}>
-                    <AudioPlayer
-                        autoPlay={false}
-                        rounded={true}
-                        //elevation={1}
-                        width="100%"
-                        showLoopIcon={false}
-                        onAudioEnd={()=>context.onAudioEnd()}
-                    />
-                </AppBar>
+                
                 <Dialog
                     open={context.state.createPlaylistOpen}
                     onClose={() => context.onCreatePlaylistClose()}

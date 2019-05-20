@@ -34,7 +34,7 @@ const styles = theme => ({
     cell:{
         cursor: "pointer",
         padding: "0.7em 0.7em !important",
-        color:theme.palette.secondary.dark,
+        color:getGreyColor(theme),
     },
     secondaryColor:{
         color:theme.palette.secondary.dark,
@@ -46,10 +46,13 @@ const styles = theme => ({
         padding: "0.7em 0.7em !important",
         maxWidth:isMobile?'1em':'2em',
     },
+    gridIcons:{
+        maxWidth: "50px",
+    },
     mainCell:{
         cursor: "pointer",
         padding: "0 !important",
-        minWidth:isMobile?'3em':'10em',
+        //minWidth:isMobile?'3em':'10em',
         color:theme.palette.secondary.dark,
     },
     artistCell:{
@@ -64,13 +67,14 @@ const styles = theme => ({
     albumCell:{
         cursor: "pointer",
         padding: "0.7em 0.7em !important",
-        maxWidth:isMobile?'5em':'8em',
+        maxWidth:isMobile?'5em':'6em',
         'text-overflow': 'ellipsis',
         'white-space': 'nowrap',
         overflow: 'hidden',
         color:theme.palette.secondary.contrastText,
     },
     trackIcon:{
+        color:getGreyColor(theme),
         width:'1.2em',
         height:'1.2em',
         margin:'0 10%',
@@ -190,18 +194,26 @@ export class Playlist extends Component {
                         <TableCell className={classes.mainCell} colSpan={track.children ? 3 : 1}>
                             <Grid alignContent="center" justify="center" alignItems="center" container>
                                 {!track.children && 
-                                <Grid item xs={track.children?(isMobile?2:2):(isMobile?2:2)} onClick={() => context.onListClick(track)}>
+                                <Grid item 
+                                    xs={2}
+                                    onClick={() => context.onListClick(track)}
+                                    className={classes.gridIcons}
+                                    >
                                     {track.imageUrl &&
                                     <Avatar className={classes.trackImage} src={track.imageUrl} />}
                                     {!track.imageUrl &&
                                     <TrackIcon className={classes.trackIcon} />}
                                 </Grid>}
                                 {track.children && 
-                                <Grid item xs={track.children?(isMobile?2:2):(isMobile?2:2)} onClick={()=>context.linkTo(context.getFolderPath(track))}>
+                                <Grid item 
+                                xs={2}
+                                onClick={()=>context.linkTo(context.getFolderPath(track))}
+                                className={classes.gridIcons}
+                                >
                                     <FolderIcon className={classes.trackIcon} />
                                 </Grid>}
                                 {!track.children && 
-                                <Grid item xs={isMobile?2:2}>
+                                <Grid item xs={2} className={classes.gridIcons}>
                                     <FavorIcon 
                                         className={css(
                                             {[classes['favoriteDisabled']]: !track.favorite},
@@ -212,11 +224,11 @@ export class Playlist extends Component {
                                 </Grid>
                                 }
                                 {!track.children &&
-                                <Grid item xs={isMobile?2:2}>
+                                <Grid item xs={2} className={classes.gridIcons}>
                                     <AddIcon className={classes.button} onClick={()=>context.onAddToPlaylist(track)} />
                                 </Grid>}
                                 {track.children &&
-                                <Grid item className={classes.titleGridItem} xs={track.children?(isMobile?10:10):(isMobile?6:6)} onClick={()=>context.linkTo(context.getFolderPath(track))}>
+                                <Grid item className={classes.titleGridItem} xs={10} onClick={()=>context.linkTo(context.getFolderPath(track))}>
                                     <span 
                                         className={css(
                                             {[classes['trackTitleSelected']]: context.state.selected === track},
@@ -225,7 +237,7 @@ export class Playlist extends Component {
                                     >{track.title}</span>
                                 </Grid>}
                                 {!track.children &&
-                                <Grid item className={classes.titleGridItem} xs={track.children?(isMobile?10:10):(isMobile?6:6)} onClick={() => context.onListClick(track)} >
+                                <Grid item className={classes.titleGridItem} xs={6} onClick={() => context.onListClick(track)} >
                                     <span 
                                         className={css(
                                             {[classes['trackTitleSelected']]: context.state.selected === track},

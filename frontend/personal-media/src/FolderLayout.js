@@ -1,10 +1,9 @@
 import React, { Component} from 'react';
-import {AppBar} from '@material-ui/core';
 import {Select,MenuItem,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
-import {PlaylistContext,PlaylistProvider} from './PlaylistContext';
+import {PlaylistContext} from './PlaylistContext';
 import PLAppBar from './PLAppBar';
 import Playlist from './Playlist';
 import PLDrawer from './PLDrawer';
@@ -47,18 +46,6 @@ export class FolderLayout extends Component {
                 <PLDrawer />
                 
                 <Playlist />
-                
-                
-                <AppBar position="fixed" className={classes.appBar}>
-                    <AudioPlayer
-                        autoPlay={false}
-                        rounded={true}
-                        //elevation={1}
-                        width="100%"
-                        showLoopIcon={false}
-                        onAudioEnd={()=>context.onAudioEnd()}
-                    />
-                </AppBar>
                 <Dialog
                     open={context.state.createPlaylistOpen}
                     onClose={() => context.onCreatePlaylistClose()}

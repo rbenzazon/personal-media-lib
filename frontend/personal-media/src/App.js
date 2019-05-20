@@ -3,7 +3,7 @@ import FolderLayout from './FolderLayout';
 import HomeLayout from './HomeLayout';
 import { Route } from "react-router-dom";
 import {PlaylistProvider } from './PlaylistContext';
-
+import APAppBar from './APAppBar';
 
 function App(props){
 
@@ -18,6 +18,7 @@ function App(props){
           <Route exact path='/playlist/:playlistName' render={(props) => <FolderLayout {...props} />} />
           <Route exact path='/artist/:artistName' render={(props) => <FolderLayout {...props} />} />
           <Route exact path='/album/:albumName' render={(props) => <FolderLayout {...props} />} />
+          <APAppBar />
         </React.Fragment>
         </PlaylistProvider>
         );

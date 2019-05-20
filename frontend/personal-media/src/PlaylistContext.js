@@ -325,7 +325,7 @@ export class PlaylistProvider extends React.Component {
     }
     const selected = newTracks.length>0?newTracks[0]:tracks.children[0];
     this.setState(state => ({
-      selected:selected,
+      //selected:selected,
       displayedItemMode:newMode,
       route:route,
       displayedItems:newTracks,
