@@ -1,6 +1,6 @@
 import React, { Component} from 'react';
 import {AppBar} from '@material-ui/core';
-import {Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
+import {Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button,List,ListItem,Collapse,ListItemText} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {PlaylistContext} from './PlaylistContext';
@@ -15,6 +15,12 @@ const styles = theme => ({
         bottom: 0,
         backgroundColor: theme.palette.background.default,
     },
+    nestedItem:{
+        paddingLeft:'3em',
+    },
+    nestedText:{
+        fontSize:'0.9em !important',
+    },
 });
 
 export class HomeLayout extends Component {
@@ -23,6 +29,22 @@ export class HomeLayout extends Component {
         classes: {},
         classNames: {},
     };
+    constructor(props){
+        super(props);
+        this.artistsClick = this.artistsClick.bind(this);
+        this.albumsClick = this.albumsClick.bind(this);
+    }
+    state = {
+        albumsOpen:false,
+        artistsOpen:false,
+    }
+
+    artistsClick(){
+        this.setState({artistsOpen:true,albumsOpen:false});
+    }
+    albumsClick(){
+        this.setState({artistsOpen:false,albumsOpen:true});
+    }
 
     render(){
         const {
@@ -34,8 +56,33 @@ export class HomeLayout extends Component {
             <PlaylistContext.Consumer>{(context) => (
             <React.Fragment>
                 <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
-                
                 <PLAppBar />
+                <List>
+                    <ListItem button onClick={this.artistsClick} >
+                        <ListItemText inset primary="Artists" />
+                    </ListItem>
+                    <Collapse in={this.state.artistsOpen}>
+                        <List component="div" disablePadding >
+                            {context.getAllTrackPropValues("artist").map(artist =>
+                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/artist/"+artist)}>
+                                <ListItemText inset primary={artist} classes={{ primary: classes.nestedText }}/>
+                            </ListItem>
+                            )}
+                        </List>
+                    </Collapse>
+                    <ListItem button onClick={this.albumsClick} >
+                        <ListItemText inset primary="Albums" />
+                    </ListItem>
+                    <Collapse in={this.state.albumsOpen} disablePadding>
+                        <List component="div" disablePadding >
+                            {context.getAllTrackPropValues("album").map(album =>
+                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/album/"+album)}>
+                                <ListItemText inset primary={album} classes={{ primary: classes.nestedText }} />
+                            </ListItem>
+                            )}
+                        </List>
+                    </Collapse>
+                </List>
                 <PLDrawer />
                 <AppBar position="fixed" className={classes.appBar}>
                     <AudioPlayer

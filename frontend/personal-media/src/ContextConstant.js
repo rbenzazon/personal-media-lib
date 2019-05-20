@@ -3,4 +3,6 @@ export default {
     FAVORITE_MODE : "favorite",
     FOLDER_MODE : "folder",
     SEARCH_MODE : "search",
+    ARTIST_MODE : "artist",
+    ALBUM_MODE : "album",
 };

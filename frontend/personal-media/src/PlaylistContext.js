@@ -62,6 +62,8 @@ export class PlaylistProvider extends React.Component {
     this.getParentPath = this.getParentPath.bind(this);
     this.getFolderPath = this.getFolderPath.bind(this);
     this.linkTo = this.linkTo.bind(this);
+    this.getAllTracks = this.getAllTracks.bind(this);
+    this.getAllTrackPropValues = this.getAllTrackPropValues.bind(this);
     
   }
 
@@ -308,6 +310,18 @@ export class PlaylistProvider extends React.Component {
         newMode = constants.SEARCH_MODE;
         newTitle = "";
       break;
+      case "/"+constants.ARTIST_MODE+"/:artistName" :
+        let artistName = currentMatch.params.artistName;
+        newTracks = this.getAllTracks({artist:artistName}).artist;
+        newMode = constants.ARTIST_MODE;
+        newTitle = artistName;
+      break;
+      case "/"+constants.ALBUM_MODE+"/:albumName" :
+        let albumName = currentMatch.params.albumName;
+        newTracks = this.getAllTracks({album:albumName}).album;
+        newMode = constants.ALBUM_MODE;
+        newTitle = albumName;
+      break;
     }
     const selected = newTracks.length>0?newTracks[0]:tracks.children[0];
     this.setState(state => ({
@@ -317,6 +331,49 @@ export class PlaylistProvider extends React.Component {
       displayedItems:newTracks,
       title:newTitle,
     }));
+  }
+  getAllTracks(props){
+    const allTracks = this.mapRecursive(tracks.children).filter(track=>!track.children);
+    if(props.album || props.artist){
+      let result = {};
+      for(let prop in props){
+        let propValueMap = {};
+        allTracks.map(track=>{
+          if(track[prop]){
+            if(propValueMap[track[prop]]){
+              propValueMap[track[prop]].push(track);
+            }else{
+              propValueMap[track[prop]] = [track];
+            }
+          }
+        });
+        let propResultList = [];
+        if(propValueMap[props[prop]]){
+          result[prop] = propValueMap[props[prop]];
+        }
+      }
+      return result;
+    }else{
+      return allTracks;
+    }
+  }
+  getAllTrackPropValues(prop){
+    const allTracks = this.mapRecursive(tracks.children).filter(track=>!track.children && track[prop]);
+    if(prop === "album" || prop === "artist"){
+      let result = {};
+      let propValueMap = {};
+      allTracks.map(track=>{
+        console.log(track[prop]);
+          propValueMap[track[prop]] = true;
+      });
+      let propResultList = [];
+      for(let propValue in propValueMap){
+        propResultList.push(propValue);
+      }
+      return propResultList;
+    }else{
+      return null;
+    }
   }
   getPlaylistRef(name,playLists){
     for(let playlist of playLists){
@@ -406,7 +463,9 @@ export class PlaylistProvider extends React.Component {
         onSearchOpen:this.onSearchOpen,
         getParentPath:this.getParentPath,
         getFolderPath:this.getFolderPath,
+        getAllTracks:this.getAllTracks,
         linkTo:this.linkTo,
+        getAllTrackPropValues:this.getAllTrackPropValues,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>

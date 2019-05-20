@@ -16,6 +16,8 @@ function App(props){
           <Route exact path='/search/:searchKeyword' render={(props) => <FolderLayout {...props} />} />
           <Route exact path='/favorite' render={(props) => <FolderLayout {...props} />} />
           <Route exact path='/playlist/:playlistName' render={(props) => <FolderLayout {...props} />} />
+          <Route exact path='/artist/:artistName' render={(props) => <FolderLayout {...props} />} />
+          <Route exact path='/album/:albumName' render={(props) => <FolderLayout {...props} />} />
         </React.Fragment>
         </PlaylistProvider>
         );

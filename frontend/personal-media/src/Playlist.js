@@ -236,12 +236,12 @@ export class Playlist extends Component {
                             </Grid>
                         </TableCell>
                         {!track.children &&
-                        <TableCell className={classes.artistCell} onClick={() => context.onListClick(track)} >
+                        <TableCell className={classes.artistCell}  onClick={()=>track.artist && context.linkTo("/artist/"+track.artist)} >
                             {track.artist}
                         </TableCell>}
                         {!track.children && !isMobile && 
                         <TableCell className={css(classes['albumCell']
-                            )} onClick={() => context.onListClick(track)} >
+                            )} onClick={()=>track.album && context.linkTo("/album/"+track.album)} >
                             {track.album}
                         </TableCell>}
                         
