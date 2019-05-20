@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import {isMobile} from "react-device-detect";
 import css from 'classnames';
+import constants from "./ContextConstant";
 
 const getColor = (theme, type, opacity) => {
   const color =
@@ -126,7 +127,7 @@ const styles = theme => ({
 });
 
 
-export class PlayList extends Component {
+export class Playlist extends Component {
     static contextType = PlaylistContext;
     static defaultProps = {
         classes: {},
@@ -151,15 +152,14 @@ export class PlayList extends Component {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {context.state.parentFolders.length >=1 && !context.state.favoriteTracks && !context.state.playlistTracks &&
+                    {context.state.displayedItemMode === constants.FOLDER_MODE && context.state.parentFolders.length >=1 &&
                     <TableRow key={'back_folder'} >
                         <TableCell className={classes.cell} colSpan={isMobile?2:3}>
                             <Grid   alignContent="center"
                                     justify="flex-start"
                                     alignItems="center"
                                     container button
-                                    onClick={() => context.navigateUp()}
-                                    
+                                    onClick={()=>context.linkTo(context.getParentPath())}
                                     >
                                 <Grid item xs={isMobile?2:1} >
                                     <BackIcon className={classes.secondaryColor} />
@@ -171,11 +171,10 @@ export class PlayList extends Component {
                         </TableCell>
                     </TableRow>
                     }
-                    {(context.state.favoriteTracks || context.state.playlistTracks) &&
+                    {(context.state.displayedItemMode === constants.FAVORITE_MODE  || context.state.displayedItemMode === constants.PLAYLIST_MODE) &&
                     <TableRow key={'back_favorite'} hover>
                         <TableCell className={classes.mainCell} colSpan={isMobile?2:3}>
-                            <Link to="/" >
-                                <Grid alignContent="center" justify="flex-start" alignItems="center" container >
+                                <Grid alignContent="center" justify="flex-start" alignItems="center" container onClick={()=>context.linkTo("/folder")}>
                                     <Grid item xs={isMobile?2:1} >
                                         <BackIcon className={classes.secondaryColor} />
                                     </Grid>
@@ -183,7 +182,6 @@ export class PlayList extends Component {
                                         back to {context.state.currentFolder.title}
                                     </Grid>
                                 </Grid>
-                            </Link>
                         </TableCell>
                     </TableRow>
                     }
@@ -191,14 +189,17 @@ export class PlayList extends Component {
                     <TableRow key={track.id} selected={context.state.selected === track} hover>
                         <TableCell className={classes.mainCell} colSpan={track.children ? 3 : 1}>
                             <Grid alignContent="center" justify="center" alignItems="center" container>
+                                {!track.children && 
                                 <Grid item xs={track.children?(isMobile?2:2):(isMobile?2:2)} onClick={() => context.onListClick(track)}>
                                     {track.imageUrl &&
                                     <Avatar className={classes.trackImage} src={track.imageUrl} />}
-                                    {!track.imageUrl && !track.children &&
+                                    {!track.imageUrl &&
                                     <TrackIcon className={classes.trackIcon} />}
-                                    {track.children && 
-                                    <FolderIcon className={classes.trackIcon} />}
-                                </Grid>
+                                </Grid>}
+                                {track.children && 
+                                <Grid item xs={track.children?(isMobile?2:2):(isMobile?2:2)} onClick={()=>context.linkTo(context.getFolderPath(track))}>
+                                    <FolderIcon className={classes.trackIcon} />
+                                </Grid>}
                                 {!track.children && 
                                 <Grid item xs={isMobile?2:2}>
                                     <FavorIcon 
@@ -214,7 +215,16 @@ export class PlayList extends Component {
                                 <Grid item xs={isMobile?2:2}>
                                     <AddIcon className={classes.button} onClick={()=>context.onAddToPlaylist(track)} />
                                 </Grid>}
-                                
+                                {track.children &&
+                                <Grid item className={classes.titleGridItem} xs={track.children?(isMobile?10:10):(isMobile?6:6)} onClick={()=>context.linkTo(context.getFolderPath(track))}>
+                                    <span 
+                                        className={css(
+                                            {[classes['trackTitleSelected']]: context.state.selected === track},
+                                            classes['trackTitle'],
+                                        )} 
+                                    >{track.title}</span>
+                                </Grid>}
+                                {!track.children &&
                                 <Grid item className={classes.titleGridItem} xs={track.children?(isMobile?10:10):(isMobile?6:6)} onClick={() => context.onListClick(track)} >
                                     <span 
                                         className={css(
@@ -222,7 +232,7 @@ export class PlayList extends Component {
                                             classes['trackTitle'],
                                         )} 
                                     >{track.title}</span>
-                                </Grid>
+                                </Grid>}
                             </Grid>
                         </TableCell>
                         {!track.children &&
@@ -243,4 +253,4 @@ export class PlayList extends Component {
     )
   }
 }
-export default withStyles(styles)(PlayList);
+export default withStyles(styles)(Playlist);

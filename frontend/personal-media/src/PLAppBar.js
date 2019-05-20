@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import {Paper,InputBase,AppBar,Toolbar,Typography,IconButton} from '@material-ui/core';
 import {isMobile} from "react-device-detect";
 import css from 'classnames';
+import constants from './ContextConstant'
 
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 
@@ -87,7 +88,7 @@ export class PLAppBar extends Component {
                         <MenuIcon />
                     </IconButton>}
                     {!context.state.searchOpen && <Typography className={classes.appBarTitle} variant="h6" color="inherit">
-                    {context.state.favoriteTracks ? 'Favorite tracks' : (context.state.playlistTracks? context.state.currentPlaylist.title: context.state.currentFolder.title)}
+                    {context.state.title}
                     </Typography>}
                     <div className={classes.grow} />
                     <Paper className={css(
@@ -113,8 +114,8 @@ export class PLAppBar extends Component {
                         {context.state.searchOpen && <IconButton color="primary"
                             className={classes.searchIcon}
                             aria-label="clear search"
-                            onClick={() => context.clearSearch()}
-                            disabled={context.state.searchDisplay === false}
+                            onClick={() => context.state.displayedItemMode === constants.SEARCH_MODE && context.clearSearch()}
+                            disabled={context.state.displayedItemMode !== constants.SEARCH_MODE}
                         >
                             <ClearIcon />
                         </IconButton>}

@@ -13,5 +13,5 @@ export default {
         LOOP_LIST: "loopList",
         NO_LOOP: "noLoop",
         RANDOM: "random",
-    }
+    },
 };

@@ -6,8 +6,9 @@ import PropTypes from 'prop-types';
 import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 import {PlaylistContext,PlaylistProvider} from './PlaylistContext';
 import PLAppBar from './PLAppBar';
-import PlayList from './Playlist';
+import Playlist from './Playlist';
 import PLDrawer from './PLDrawer';
+import RouteDispatch from './RouteDispatch';
 
 const styles = theme => ({
     appBar: {
@@ -17,21 +18,19 @@ const styles = theme => ({
     },
 });
 
-class Dummy extends Component {
-    componentDidMount() {
-      this.props.onLayoutMount(this.props.match);
-    }
-    render() {
-      return null;
-    }
-}
 
-export class Layout extends Component {
+
+export class FolderLayout extends Component {
     static contextType = PlaylistContext;
     static defaultProps = {
         classes: {},
         classNames: {},
     };
+    constructor(props){
+        super(constructor);
+        console.log(props.history);
+        
+    }
 
     render(){
         const {
@@ -42,12 +41,12 @@ export class Layout extends Component {
         
             <PlaylistContext.Consumer>{(context) => (
             <React.Fragment>
-                <Dummy onLayoutMount={context.onLayoutMount} match={this.props.match}/>
+                <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
                 
                 <PLAppBar />
                 <PLDrawer />
                 
-                <PlayList />
+                <Playlist />
                 
                 
                 <AppBar position="fixed" className={classes.appBar}>
@@ -143,7 +142,7 @@ export class Layout extends Component {
         );
     }
 }
-Layout.propTypes = {
+FolderLayout.propTypes = {
     classes: PropTypes.object.isRequired
 };
-export default withStyles(styles)(Layout);
+export default withStyles(styles)(FolderLayout);

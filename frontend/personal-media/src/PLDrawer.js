@@ -31,11 +31,13 @@ export class PLDrawer extends Component {
                     <List>
                     {
                         [
-                        {text:'Favorite tracks',icon:<FavorIcon />,click:null},
+                        {text:'Home',icon:<FavorIcon />,click:"/"},
+                        {text:'My Files',icon:<FavorIcon />,click:"/folder/"},
+                        {text:'Favorite tracks',icon:<FavorIcon />,click:"/favorite"},
                         {text:'Add media',icon:<ScanIcon/>,click:() => context.setImportOpen(true)},
                         {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.onCreatePlaylistOpenClose(true)}
                         ].map((item) => {
-                        if(item.click){
+                        if(typeof item.click == "function"){
                             return (
                             <ListItem button key={item.text} onClick={item.click}>
                                 <ListItemIcon>{item.icon}</ListItemIcon>
@@ -44,8 +46,8 @@ export class PLDrawer extends Component {
                             )
                         }else{
                             return (
-                            <Link to="/favorite" key={item.text} style={{ textDecoration: 'none' }}>
-                                <ListItem button  onClick={item.click}>
+                            <Link to={item.click} key={item.text} style={{ textDecoration: 'none' }}>
+                                <ListItem button >
                                     <ListItemIcon>{item.icon}</ListItemIcon>
                                     <ListItemText primary={item.text} />
                                 </ListItem>

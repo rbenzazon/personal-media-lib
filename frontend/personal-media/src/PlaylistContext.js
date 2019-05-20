@@ -1,41 +1,36 @@
 import React, { createContext } from 'react';
 import myData from './data.json';
 import Player from './AudioPlayer/utils/constants';
+import constants from './ContextConstant'
 const {tracks} = myData;
+
 
 export const PlaylistContext = createContext();
 
-
-
 export class PlaylistProvider extends React.Component {
   state = {
+    route:null,
     currentFolder:tracks,
+    parentFolders:[],
+    selected:tracks.children.filter(track=>!track.children)[0],
+    displayedItemMode:constants.PLAYLIST_MODE,
+    displayedItems:[],
+    playLists:[{title:'my playlist',children:[]}],
     playerLoopStatus:Player.Status.LOOP_LIST,
     playerStatus:Player.Status.PAUSE,
-    parentFolders:[],
-    selected:tracks.children.filter(track => !track.children)[0],
-    sideDrawer:false,
-    favoriteTracks:false,/**/
-    playlistTracks:false,
-    importOpen:false,
-    displayedItems:[],
     playerRef:undefined,
-    searchDisplay:false,
-    searchKeyword:'',
-    searchedKeyword:'',
+    sideDrawer:false,
+    importOpen:false,
     searchOpen:false,
-    playLists:[{title:'my playlist',children:[]}],
+    createPlaylistOpen:false,
+    searchKeyword:'',
     trackToAdd:null,
     playlistToAdd:null,
     playlistAddOpen:false,
-    createPlaylistOpen:false,
     createPlaylistName:'',
-    match:null,
-    currentPlaylist:null,
   }
   constructor(props){
     super(props);
-    this.getListData = this.getListData.bind(this);
     this.mapRecursive = this.mapRecursive.bind(this);
     this.onPlaylistToAddChange = this.onPlaylistToAddChange.bind(this);
     this.onCreatePlaylistOpenClose = this.onCreatePlaylistOpenClose.bind(this);
@@ -45,8 +40,8 @@ export class PlaylistProvider extends React.Component {
     this.onAddToPlaylistClose = this.onAddToPlaylistClose.bind(this);
     this.onAddToPlaylist = this.onAddToPlaylist.bind(this);
     this.onListClick = this.onListClick.bind(this);
-    this.navigateToFolder = this.navigateToFolder.bind(this);
-    this.navigateUp = this.navigateUp.bind(this);
+    /*this.navigateToFolder = this.navigateToFolder.bind(this);
+    this.navigateUp = this.navigateUp.bind(this);*/
     this.toggleDrawer = this.toggleDrawer.bind(this);
     this.onNextClick = this.onNextClick.bind(this);
     this.onPrevClick = this.onPrevClick.bind(this);
@@ -58,63 +53,23 @@ export class PlaylistProvider extends React.Component {
     this.setImportOpen = this.setImportOpen.bind(this);
     this.onListFavoriteClick = this.onListFavoriteClick.bind(this);
     this.onSearchKeyPress = this.onSearchKeyPress.bind(this);
-    this.displaySearch = this.displaySearch.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.clearSearch = this.clearSearch.bind(this);
     this.onSearchOpen = this.onSearchOpen.bind(this)
-    this.onLayoutMount = this.onLayoutMount.bind(this);
+    this.onRouteMount = this.onRouteMount.bind(this);
     this.getPlaylistRef = this.getPlaylistRef.bind(this);
     this.playRandomTrack = this.playRandomTrack.bind(this);
-    
+    this.getParentPath = this.getParentPath.bind(this);
+    this.getFolderPath = this.getFolderPath.bind(this);
+    this.linkTo = this.linkTo.bind(this);
     
   }
 
-  getPlaylistRef(name,playLists){
-    for(let playlist of playLists){
-      if(name === playlist.title){
-        return playlist;
-      }
-    }
-    return false;
-  }
-
-  getListData(currentFolder,playLists,searchKeyWord,match){
-    let tmpTracks;
-    let currentMatch = match? match:this.state.match;
-    if(currentMatch.path === "/favorite"){
-      tmpTracks = this.mapRecursive(tracks.children).filter((track)=>track.favorite);
-    }else if(playLists && currentMatch.path === "/playlist/:playlistName"){
-      tmpTracks = [...this.getPlaylistRef(currentMatch.params.playlistName,playLists).children];
-    }else{
-      if(searchKeyWord && searchKeyWord !== ''){
-        tmpTracks = this.mapRecursive(tracks.children);
-      }else{
-        tmpTracks = [...currentFolder.children];
-      }
-    }
-    if(searchKeyWord && searchKeyWord !== ''){
-      tmpTracks = tmpTracks.filter(track=>{
-        let result = false;
-        let searchableFields = track.children ? ['title'] : ['title','artist','album'];
-        for(let prop of searchableFields){
-          result = result || track[prop] && track[prop].search(new RegExp(searchKeyWord, "i")) !== -1;
-        }
-        return result;
-      });
-    }
-    return tmpTracks;
-  }
-  mapRecursive(trackList){
-    let output = [];
-    trackList.map((track)=>{
-        if(!track.children){
-          output.push(track);
-        }else{
-          output = [...output,...this.mapRecursive(track.children)];
-        }
-    });
-    return output;
-  }
+  
+  /**
+   * Playlists
+   * 
+   */
   onPlaylistToAddChange(value){
     this.setState({playlistToAdd:value});
   }
@@ -144,45 +99,29 @@ export class PlaylistProvider extends React.Component {
   onAddToPlaylist(track){
     this.setState({trackToAdd:track,playlistAddOpen:true});
   }
+  /**
+   * file list nav
+   */
   onListClick(track){
-    if(track === undefined){
-      this.navigateUp();
-    }else if(track.children){
-      this.navigateToFolder(track);
-    }else{
+    if(track && !track.children){
       this.setState({selected:track});
       this.restartPlayer();
     }
   }
-  navigateToFolder(track){
-    if(track.children){
-      this.setState(state => ({
-        currentFolder:track,
-        parentFolders:[...state.parentFolders,state.currentFolder],
-        displayedItems:this.getListData(track)
-      }));
-    }
-  }
-  navigateUp(){
-    let parents = [...this.state.parentFolders];
-    const newCurrent = parents.splice(parents.length-1, 1)[0];
-    this.setState(state => ({
-      currentFolder:newCurrent,
-      parentFolders:parents,
-      displayedItems:this.getListData(newCurrent)
-    }));
-  }
+
   toggleDrawer(open){
     //if(this.state.sideDrawer !== open){
 
         this.setState({sideDrawer: open});
     //}
   }
-  playRandomTrack(){
-    const children = this.state.displayedItems.filter(track=>track !== this.state.selected && !track.children);
-    let newTrack = children[Math.round(Math.random()*children.length)];
-    this.setState({selected:newTrack});
-    this.restartPlayer();
+  /**
+   * Playback
+   */
+  setPlayerRef(node){
+    if(node !== this.state.playerRef && node !== null){
+      this.setState({playerRef:node});
+    }
   }
   onNextClick(){
     if(this.state.playerLoopStatus == Player.Status.RANDOM){
@@ -212,10 +151,12 @@ export class PlaylistProvider extends React.Component {
         }
     }
   }
-  setPlayerRef(node){
-    if(node !== this.state.playerRef && node !== null){
-      this.setState({playerRef:node});
-    }
+  playRandomTrack(){
+    const children = this.state.displayedItems.filter(track=>track !== this.state.selected && !track.children);
+    let randomIndex = Math.round(Math.random()*(children.length-1));
+    let newTrack = children[randomIndex];
+    this.setState({selected:newTrack});
+    this.restartPlayer();
   }
   restartPlayer(){
     if(this.state.playerRef !== undefined){
@@ -256,10 +197,14 @@ export class PlaylistProvider extends React.Component {
     }
     this.setState({playerLoopStatus:newLoopStatus});
   }
+
+  /**
+   * Favorite
+   */
   setFavoriteTracks(value){
     this.setState(state=>({
       favoriteTracks:value,
-      displayedItems:this.getListData(state.currentFolder,state.playLists)
+      displayedItems:[...state.displayedItems],
     }))
   }
   setImportOpen(value){
@@ -268,64 +213,174 @@ export class PlaylistProvider extends React.Component {
   onListFavoriteClick(track){
     track.favorite = track.favorite ?!track.favorite : true;
     this.setState(state =>({
-      displayedItems:this.getListData(state.currentFolder,state.playLists)
+      displayedItems:[...state.displayedItems],
     }));
   }
+  /**
+   * Search
+   * 
+   */
   onSearchOpen(value){
-    if(value){
-      this.setState({searchOpen:true});
-    }else{
-      this.clearSearch();
-    }
+    this.setState({searchOpen:value,searchKeyword:''});
   }
   onSearchKeyPress(e){
     if (e.key === 'Enter') {
-      this.displaySearch();
-    }
-  }
-  displaySearch(){
-    if (this.state.searchKeyword !== '' )
-    {
-      if(this.state.searchKeyword !== this.state.searchedKeyword){
-        this.setState(state => ({
-          searchedKeyword:state.searchKeyword,
-          searchDisplay:true,
-          displayedItems:this.getListData(state.currentFolder,state.playLists,state.searchKeyword),
-        }));
-      }
-    }else{
-      this.clearSearch();
+      this.state.route.history.push("/search/"+this.state.searchKeyword);
     }
   }
   onSearchChange(value){
     this.setState(state => ({searchKeyword:value}));
   }
   clearSearch() {
+    if(this.state.route.match.params.searchKeyword){
+      this.state.route.history.push("/folder");
+    }
     this.setState(state => ({
       searchKeyword:'',
-      searchedKeyword:'',
-      searchDisplay:false,
       searchOpen:false,
-      displayedItems:this.getListData(state.currentFolder,state.playLists),
     }));
   }
-  onLayoutMount(match){
-    let newPlaylist = this.getPlaylistRef(match.params.playlistName,this.state.playLists);
+
+  /**
+   * Init / route event
+   * 
+   */
+  onRouteMount(route){
+    const match = route.match;
+    let newTracks;
+    let newMode;
+    let newTitle;
+    let currentMatch = match? match:this.state.route;
+    switch(currentMatch.path){
+      case "/" :
+        newTracks = [...tracks.children];
+        newMode = null;
+        newTitle = "Home";
+      break;
+      case "/"+constants.FAVORITE_MODE :
+        newTracks = this.mapRecursive(tracks.children).filter((track)=>track.favorite);
+        newMode = constants.FAVORITE_MODE;
+        newTitle = "Favorite";
+      break;
+      case "/"+constants.PLAYLIST_MODE+"/:playlistName" :
+        const playListRef = this.getPlaylistRef(currentMatch.params.playlistName,this.state.playLists);
+        newTracks = [...playListRef.children];
+        newMode = constants.PLAYLIST_MODE;
+        newTitle = playListRef.title;
+      break;
+      case "/"+constants.FOLDER_MODE+"/:folderPath" :
+        const folderStructure = this.getFolderStructure(currentMatch.params.folderPath);
+        newTracks = [...folderStructure.newFolder.children];
+        newMode = constants.FOLDER_MODE;
+        newTitle = folderStructure.newFolder.title;
+        this.setState(state => ({
+          displayedItemMode:newMode,
+          route:route,
+          displayedItems:newTracks,
+          title:newTitle,
+          parentFolders:folderStructure.parentFolders,
+        }));
+        return;//special case, don't wanna share the setState with other cases to add parent parentFolders
+      break;
+      case "/"+constants.FOLDER_MODE :
+        newTracks = [...tracks.children];
+        newMode = constants.FOLDER_MODE;
+        newTitle = tracks.title;
+        this.setState(state => ({
+          displayedItemMode:newMode,
+          route:route,
+          displayedItems:newTracks,
+          title:newTitle,
+          parentFolders:[],
+        }));
+        return;//special case, don't wanna share the setState with other cases to add parent parentFolders
+      break;
+      case "/"+constants.SEARCH_MODE+"/:searchKeyword" :
+        let searchKeyword = currentMatch.params.searchKeyword;
+        newTracks = this.mapRecursive(tracks.children).filter(track=>{
+          let result = false;
+          let searchableFields = track.children ? ['title'] : ['title','artist','album'];
+          for(let prop of searchableFields){
+            result = result || track[prop] && track[prop].search(new RegExp(searchKeyword, "i")) !== -1;
+          }
+          return result;
+        });
+        newMode = constants.SEARCH_MODE;
+        newTitle = "";
+      break;
+    }
+    const selected = newTracks.length>0?newTracks[0]:tracks.children[0];
     this.setState(state => ({
-      currentPlaylist:newPlaylist !== false?newPlaylist:null,
-      favoriteTracks:match.path === "/favorite",
-      playlistTracks:this.getPlaylistRef(match.params.playlistName,state.playLists) !== false,
-      match:match,
-      displayedItems:this.getListData(state.currentFolder,state.playLists,null,match),
+      selected:selected,
+      displayedItemMode:newMode,
+      route:route,
+      displayedItems:newTracks,
+      title:newTitle,
     }));
+  }
+  getPlaylistRef(name,playLists){
+    for(let playlist of playLists){
+      if(name === playlist.title){
+        return playlist;
+      }
+    }
+    return false;
+  }
+  getParentPath(){
+    return "/folder/"+this.state.parentFolders.slice(1).map(folder=>folder.title).join("/");
+  }
+  getFolderPath(track){
+    return "/folder/"+this.state.parentFolders.map(folder=>folder.title).reduce((concat,prev)=>concat +"/"+prev,"")+track.title;
+  }
+  getFolderStructure(path){
+    const folders = path.split("/");
+    
+    //route /folder/
+    if(folders.length == 0){
+      return {newFolder:tracks,parentFolders:[]};
+    }
+    /*if(folders[folders.length-1] === ""){
+      folders.length = folders.length-1;
+    }*/
+    //route folder/folderPath
+    //TODO check for slash support in url param
+    let parentFolders = [tracks];
+    let newFolder = tracks;
+    for(let folder of folders){
+      let tmpTracks = newFolder.children.filter(track=>track.children && track.title === folder);
+      //no folder found with the corresponding name
+      if(tmpTracks.length == 0){
+        console.log("can't find "+folder+" in "+newFolder.title)
+        return {newFolder:tracks,parentFolders:[]};
+      }
+      newFolder = tmpTracks[0];
+      if(folders.indexOf(folder) < folders.length -1){
+        parentFolders.push(newFolder);
+      }
+    }
+    return {newFolder:newFolder,parentFolders:parentFolders};
+  }
+
+  mapRecursive(trackList){
+    let output = [];
+    trackList.map((track)=>{
+        if(!track.children){
+          output.push(track);
+        }else{
+          output = [...output,...this.mapRecursive(track.children)];
+        }
+    });
+    return output;
+  }
+
+  linkTo(route){
+    this.state.route.history.push(route);
   }
 
   render (){
     return (
       <PlaylistContext.Provider value={{
         state:this.state,
-        getListData:this.getListData,
-        mapRecursive:this.mapRecursive,
         onPlaylistToAddChange:this.onPlaylistToAddChange,
         onCreatePlaylistOpenClose:this.onCreatePlaylistOpenClose,
         onPlaylistNameChange:this.onPlaylistNameChange,
@@ -334,8 +389,6 @@ export class PlaylistProvider extends React.Component {
         onAddToPlaylistClose:this.onAddToPlaylistClose,
         onAddToPlaylist:this.onAddToPlaylist,
         onListClick:this.onListClick,
-        navigateToFolder:this.navigateToFolder,
-        navigateUp:this.navigateUp,
         toggleDrawer:this.toggleDrawer,
         onNextClick:this.onNextClick,
         onPrevClick:this.onPrevClick,
@@ -347,11 +400,13 @@ export class PlaylistProvider extends React.Component {
         setImportOpen:this.setImportOpen,
         onListFavoriteClick:this.onListFavoriteClick,
         onSearchKeyPress:this.onSearchKeyPress,
-        displaySearch:this.displaySearch,
         onSearchChange:this.onSearchChange,
         clearSearch:this.clearSearch,
-        onLayoutMount:this.onLayoutMount,
+        onRouteMount:this.onRouteMount,
         onSearchOpen:this.onSearchOpen,
+        getParentPath:this.getParentPath,
+        getFolderPath:this.getFolderPath,
+        linkTo:this.linkTo,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>
