@@ -64,7 +64,7 @@ export class HomeLayout extends Component {
             <PlaylistContext.Consumer>{(context) => (
             <React.Fragment>
                 <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
-                <PLAppBar />
+                
                 <div style={{padding:'20px'}}>
                 <List className={classes.list}>
                     <ListItem button onClick={this.artistsClick} >

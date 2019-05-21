@@ -197,7 +197,7 @@ export class Playlist extends Component {
                     {context.state.displayedItems.map((track) =>
                     <TableRow key={track.id} selected={context.state.selected === track} hover>
                         <TableCell className={classes.mainCell} colSpan={track.children ? 3 : 1}>
-                            <Grid alignContent="center" justify="center" alignItems="center" container>
+                            <Grid alignContent="center" justify="flex-start" alignItems="center" container>
                                 {!track.children && 
                                 <Grid item 
                                     xs={2}

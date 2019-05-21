@@ -4,12 +4,14 @@ import HomeLayout from './HomeLayout';
 import { Route,Switch } from "react-router-dom";
 import {PlaylistProvider } from './PlaylistContext';
 import APAppBar from './APAppBar';
+import PLAppBar from './PLAppBar';
 
 function App(props){
 
   return (
         <PlaylistProvider >
         <React.Fragment>
+          <PLAppBar />
             <Switch>
             <Route exact path='/' render={(props) => <HomeLayout {...props} />} />
             <Route exact strict path={[

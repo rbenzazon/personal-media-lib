@@ -42,7 +42,7 @@ export class FolderLayout extends Component {
             <React.Fragment>
                 <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
                 
-                <PLAppBar />
+                
                 <PLDrawer />
                 
                 <Playlist />

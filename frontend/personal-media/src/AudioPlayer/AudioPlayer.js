@@ -182,12 +182,20 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               />
             </Grid>
             <Grid xs={3} item onClick={() => this.triggerAction(Player.Status.PLAY)} focusable="true">
+              {context.state.playerStatus == Player.Status.PAUSE &&
               <PlayStatusIcon
                 className={css(
                   classes['player-default-icon'],
                   playIcon
                 )}
-              />
+              />}
+              {context.state.playerStatus == Player.Status.PLAY &&
+              <PlayStatusIcon
+                className={css(
+                  classes['player-default-icon'],
+                  playIcon
+                )}
+              />}
             </Grid>
             <Grid xs={3} item onClick={() => context.onNextClick()} focusable="true">
               <SkipNextIcon
