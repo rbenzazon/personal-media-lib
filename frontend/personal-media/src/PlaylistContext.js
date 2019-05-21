@@ -155,6 +155,9 @@ export class PlaylistProvider extends React.Component {
   }
   playRandomTrack(){
     const children = this.state.displayedItems.filter(track=>track !== this.state.selected && !track.children);
+    if(children.length === 0){
+      return;
+    }
     let randomIndex = Math.round(Math.random()*(children.length-1));
     let newTrack = children[randomIndex];
     this.setState({selected:newTrack});
