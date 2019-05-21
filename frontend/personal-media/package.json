@@ -13,10 +13,12 @@
     "@types/react": "^16.8.17",
     "@types/react-dom": "^16.8.4",
     "@types/react-router-dom": "^4.3.3",
+    "history": "^4.9.0",
     "material-ui": "^0.20.2",
     "react": "^16.8.6",
     "react-device-detect": "^1.6.2",
     "react-dom": "^16.8.6",
+    "react-ga": "^2.5.7",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.0",
     "typescript": "^3.4.5"
