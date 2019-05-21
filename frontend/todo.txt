@@ -3,12 +3,13 @@ add search from criteria ? done
 	-add clear button on search field
 	-add context support (displayedItemFromSearch)
 	
-check theme color and usage
+check theme color and usage done
 header de liste / tableau ?
 	-title, artist, album, track num, year: done
 	-add sorting
 	-add playing animated ison
 	-add play/pause button
+	-make the play status part of the state
 	-add button to add to playlist:done
 
 add playlist feature
@@ -19,7 +20,10 @@ continue playlist / loop done
 		-add loop setting to context
 		-add playback complete from player to context to play next song or loop
 		-reinstall loop button and hook it to context
-install routes on the folder navigation
+install routes on the folder navigation done
 
-const noteList = document.querySelectorAll('.rating-other-user-rating span:not(.point-scale)').map(span=>parseInt(span.textContent));
-const average2 = noteList4.reduce( ( p, c ) => p + c, 0 ) / noteList4.length;
+ajouter homepage dashboard et déplacer la vue dossier vers la route re navigation done
+
+ajouter vue résultats de recherche, artiste et album done
+
+
