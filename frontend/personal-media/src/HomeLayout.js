@@ -1,10 +1,8 @@
 import React, { Component} from 'react';
-import {AppBar} from '@material-ui/core';
 import {Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button,List,ListItem,Collapse,ListItemText} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {PlaylistContext} from './PlaylistContext';
-import PLAppBar from './PLAppBar';
 import PLDrawer from './PLDrawer';
 import RouteDispatch from './RouteDispatch';
 
@@ -42,7 +40,6 @@ export class HomeLayout extends Component {
         artistsOpen:false,
         genresOpen:false,
     }
-    
     genresClick(){
         this.setState(state=>{return {genresOpen:!state.genresOpen,albumsOpen:false,artistsOpen:false}});
     }
@@ -53,21 +50,18 @@ export class HomeLayout extends Component {
     albumsClick(){
         this.setState(state=>{return {albumsOpen:!state.albumsOpen,artistsOpen:false,genresOpen:false}});
     }
-
     render(){
         const {
             classes,
         } = this.props;
         return(
-        
-        
             <PlaylistContext.Consumer>{(context) => (
             <React.Fragment>
                 <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
                 
                 <div style={{padding:'20px'}}>
                 <List className={classes.list}>
-                    <ListItem button onClick={this.artistsClick} >
+                    <ListItem button onClick={this.artistsClick} key={"artists"}>
                         <ListItemText primary="Artists" />
                     </ListItem>
                     <Collapse in={this.state.artistsOpen}>
@@ -79,7 +73,7 @@ export class HomeLayout extends Component {
                             )}
                         </List>
                     </Collapse>
-                    <ListItem button onClick={this.albumsClick} >
+                    <ListItem button onClick={this.albumsClick} key={"albums"}>
                         <ListItemText primary="Albums" />
                     </ListItem>
                     <Collapse in={this.state.albumsOpen} disablePadding>

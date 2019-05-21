@@ -2,19 +2,12 @@ import React, { Component} from 'react';
 import {Select,MenuItem,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 import {PlaylistContext} from './PlaylistContext';
-import PLAppBar from './PLAppBar';
 import Playlist from './Playlist';
 import PLDrawer from './PLDrawer';
 import RouteDispatch from './RouteDispatch';
 
 const styles = theme => ({
-    appBar: {
-        top: 'auto',
-        bottom: 0,
-        backgroundColor: theme.palette.background.default,
-    },
 });
 
 
@@ -25,26 +18,12 @@ export class FolderLayout extends Component {
         classes: {},
         classNames: {},
     };
-    constructor(props){
-        super(constructor);
-        console.log(props.history);
-        
-    }
-    
     render(){
-        const {
-            classes,
-        } = this.props;
         return(
-        
-        
             <PlaylistContext.Consumer>{(context) => (
             <React.Fragment>
                 <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
-                
-                
                 <PLDrawer />
-                
                 <Playlist />
                 <Dialog
                     open={context.state.createPlaylistOpen}
@@ -82,11 +61,11 @@ export class FolderLayout extends Component {
                             onChange={(e) => context.onPlaylistToAddChange(e.target.value)}
                         >
                             {context.state.playLists.map((item)=>{return(
-                            <MenuItem selected={context.state.playlistToAdd === item} value={item}>{item.title}</MenuItem>
+                            <MenuItem key={item.title} selected={context.state.playlistToAdd === item} value={item}>{item.title}</MenuItem>
                             )})}
                         </Select>
                         }
-                        {context.state.playLists.length == 0 &&
+                        {context.state.playLists.length === 0 &&
                             <Button onClick={() => {context.onAddToPlaylistClose();context.onCreatePlaylistOpenClose(true)}} color="primary" autoFocus>
                             Create playlist
                             </Button>
@@ -124,8 +103,6 @@ export class FolderLayout extends Component {
                 </Dialog>
             </React.Fragment>
             )}</PlaylistContext.Consumer>
-        
-        
         );
     }
 }

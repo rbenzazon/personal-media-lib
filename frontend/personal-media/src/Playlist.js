@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {PlaylistContext} from './PlaylistContext';
 import {Grid,Avatar, TableBody,Table,TableRow,TableCell,TableHead} from '@material-ui/core';
 import {Audiotrack as TrackIcon,Folder as FolderIcon, ArrowBack as BackIcon, Favorite as FavorIcon, AddCircle as AddIcon} from '@material-ui/icons';
-import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import {isMobile} from "react-device-detect";
@@ -31,20 +30,10 @@ const getGreyColor = (theme, opacity) => {
 };
 const styles = theme => ({
     
-    cell:{
+    headerCell:{
         cursor: "default",
         padding: "0.7em 0.7em !important",
         color:getGreyColor(theme),
-    },
-    secondaryColor:{
-        color:theme.palette.secondary.dark,
-    },
-    primaryColor:{
-        color:theme.palette.primary.dark,
-    },
-    imageCell:{
-        padding: "0.7em 0.7em !important",
-        maxWidth:isMobile?'1em':'2em',
     },
     gridIcons:{
         cursor: "pointer",
@@ -54,13 +43,10 @@ const styles = theme => ({
         cursor: "pointer",
     },
     mainCell:{
-        //cursor: "default",
         padding: "0 !important",
-        //minWidth:isMobile?'3em':'10em',
         color:theme.palette.secondary.dark,
     },
     artistCell:{
-        //cursor: "pointer",
         padding: "0.7em 0.7em !important",
         maxWidth:isMobile?'6em':'8em',
         'text-overflow': 'ellipsis',
@@ -69,7 +55,6 @@ const styles = theme => ({
         color:theme.palette.secondary.contrastText,
     },
     albumCell:{
-        //cursor: "pointer",
         padding: "0.7em 0.7em !important",
         maxWidth:isMobile?'5em':'6em',
         'text-overflow': 'ellipsis',
@@ -95,6 +80,10 @@ const styles = theme => ({
     },
     trackTitleSelected:{
         color:theme.palette.primary.dark,
+    },
+    backTitle:{
+        cursor: "pointer",
+        color:theme.palette.secondary.contrastText,
     },
     favoriteDisabled:{
         padding:'0.2em 0em 0em 0em',
@@ -130,7 +119,7 @@ const styles = theme => ({
     grow: {
         flexGrow: 1,
     },
-    titleGridItem:{
+    titleGrid:{
         padding:'0.6em 0em 0.5em 0em',
     },
 });
@@ -145,35 +134,32 @@ export class Playlist extends Component {
     render() {
     const {
         classes,
-        classNames: {
-            favoriteDisabled,
-        },
     } = this.props;
     return (
         <PlaylistContext.Consumer>{(context) => (
             <Table className={classes.table}>
                 <TableHead >
                     <TableRow className={classes.tableHeadTr}>
-                        <TableCell className={classes.cell}>Title / name</TableCell>
-                        <TableCell className={classes.cell}>Artist</TableCell>
+                        <TableCell className={classes.headerCell}>Title / name</TableCell>
+                        <TableCell className={classes.headerCell}>Artist</TableCell>
                         {!isMobile && 
-                        <TableCell className={classes.cell}>Album</TableCell>}
+                        <TableCell className={classes.headerCell}>Album</TableCell>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {context.state.displayedItemMode === constants.FOLDER_MODE && context.state.parentFolders.length >=1 &&
                     <TableRow key={'back_folder'} >
-                        <TableCell className={classes.cell} colSpan={isMobile?2:3}>
+                        <TableCell className={classes.mainCell} colSpan={isMobile?2:3}>
                             <Grid   alignContent="center"
                                     justify="flex-start"
                                     alignItems="center"
                                     container button
                                     onClick={()=>context.linkTo(context.getParentPath())}
                                     >
-                                <Grid item xs={isMobile?2:1} >
-                                    <BackIcon className={classes.secondaryColor} />
+                                <Grid item xs={isMobile?2:1} className={classes.gridIcons}>
+                                    <BackIcon className={classes.trackIcon} />
                                 </Grid>
-                                <Grid item xs={isMobile?10:11} className={classes.primaryColor}>
+                                <Grid item xs={isMobile?10:11} className={classes.backTitle}>
                                     back to {context.state.parentFolders[context.state.parentFolders.length-1].title}
                                 </Grid>
                             </Grid>
@@ -184,10 +170,10 @@ export class Playlist extends Component {
                     <TableRow key={'back_favorite'} hover>
                         <TableCell className={classes.mainCell} colSpan={isMobile?2:3}>
                                 <Grid alignContent="center" justify="flex-start" alignItems="center" container onClick={()=>context.linkTo("/folder")}>
-                                    <Grid item xs={isMobile?2:1} >
-                                        <BackIcon className={classes.secondaryColor} />
+                                    <Grid item xs={isMobile?2:1} className={classes.gridIcons}>
+                                        <BackIcon className={classes.trackIcon} />
                                     </Grid>
-                                    <Grid item xs={isMobile?10:11} style={{ textDecoration: 'none' }} className={classes.primaryColor}>
+                                    <Grid item xs={isMobile?10:11} className={classes.backTitle}>
                                         back to {context.state.currentFolder.title}
                                     </Grid>
                                 </Grid>
@@ -233,7 +219,7 @@ export class Playlist extends Component {
                                     <AddIcon className={classes.button} onClick={()=>context.onAddToPlaylist(track)} />
                                 </Grid>}
                                 {track.children &&
-                                <Grid item className={classes.titleGridItem} xs={10} onClick={()=>context.linkTo(context.getFolderPath(track))}>
+                                <Grid item className={classes.titleGrid} xs={10} onClick={()=>context.linkTo(context.getFolderPath(track))}>
                                     <span 
                                         className={css(
                                             {[classes['trackTitleSelected']]: context.state.selected === track},
@@ -242,7 +228,7 @@ export class Playlist extends Component {
                                     >{track.title}</span>
                                 </Grid>}
                                 {!track.children &&
-                                <Grid item className={classes.titleGridItem} xs={6} onClick={() => context.onListClick(track)} >
+                                <Grid item className={classes.titleGrid} xs={6} onClick={() => context.onListClick(track)} >
                                     <span 
                                         className={css(
                                             {[classes['trackTitleSelected']]: context.state.selected === track},

@@ -32,7 +32,7 @@ const styles = theme => ({
         transition:'width 300ms cubic-bezier(0.4, 0, 0.2, 1) 150ms',
     },
     searchOpen:{
-        width: isMobile ? '80%' : '80%' + '!important',
+        width: (isMobile ? '80%' : '80%') + '!important',
     },
     grow: {
         flexGrow: 1,

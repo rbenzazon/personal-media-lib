@@ -126,7 +126,7 @@ export class PlaylistProvider extends React.Component {
     }
   }
   onNextClick(){
-    if(this.state.playerLoopStatus == Player.Status.RANDOM){
+    if(this.state.playerLoopStatus === Player.Status.RANDOM){
       this.playRandomTrack();
     }else{
       const children = this.state.displayedItems;
@@ -181,6 +181,8 @@ export class PlaylistProvider extends React.Component {
         case Player.Status.RANDOM :
           this.playRandomTrack();
         break;
+        default:
+        break;
       }
     }
   }
@@ -198,6 +200,8 @@ export class PlaylistProvider extends React.Component {
       break;
       case Player.Status.RANDOM :
         newLoopStatus = Player.Status.LOOP_LIST;
+      break;
+      default:
       break;
     }
     this.setState({playerLoopStatus:newLoopStatus});
@@ -287,7 +291,7 @@ export class PlaylistProvider extends React.Component {
           parentFolders:folderStructure.parentFolders,
         }));
         return;//special case, don't wanna share the setState with other cases to add parent parentFolders
-      break;
+      
       case "/"+constants.FOLDER_MODE+"/" :
       case "/"+constants.FOLDER_MODE :
         newTracks = [...tracks.children];
@@ -301,7 +305,7 @@ export class PlaylistProvider extends React.Component {
           parentFolders:[],
         }));
         return;//special case, don't wanna share the setState with other cases to add parent parentFolders
-      break;
+      
       case "/"+constants.SEARCH_MODE+"/:searchKeyword" :
         let searchKeyword = currentMatch.params.searchKeyword;
         newTracks = this.mapRecursive(tracks.children).filter(track=>{
@@ -333,8 +337,10 @@ export class PlaylistProvider extends React.Component {
         newMode = constants.GENRE_MODE;
         newTitle = "genre : "+genreName;
       break;
+      default:
+      break;
     }
-    const selected = newTracks.length>0?newTracks[0]:tracks.children[0];
+    //const selected = newTracks.length>0?newTracks[0]:tracks.children[0];
     this.setState(state => ({
       //selected:selected,
       displayedItemMode:newMode,
@@ -349,7 +355,7 @@ export class PlaylistProvider extends React.Component {
       let result = {};
       for(let prop in props){
         let propValueMap = {};
-        allTracks.map(track=>{
+        allTracks.forEach(function(track){
           if(track[prop]){
             if(propValueMap[track[prop]]){
               propValueMap[track[prop]].push(track);
@@ -358,7 +364,6 @@ export class PlaylistProvider extends React.Component {
             }
           }
         });
-        let propResultList = [];
         if(propValueMap[props[prop]]){
           result[prop] = propValueMap[props[prop]];
         }
@@ -371,9 +376,8 @@ export class PlaylistProvider extends React.Component {
   getAllTrackPropValues(prop){
     const allTracks = this.mapRecursive(tracks.children).filter(track=>!track.children && track[prop]);
     if(prop === "album" || prop === "artist" || prop === "genre"){
-      let result = {};
       let propValueMap = {};
-      allTracks.map(track=>{
+      allTracks.forEach(track=>{
           propValueMap[track[prop]] = true;
       });
       let propResultList = [];
@@ -399,10 +403,10 @@ export class PlaylistProvider extends React.Component {
   getFolderPath(track){
     let parents = [];
     if(this.state.parentFolders.length === 1){
-      parents = [this.state.parentFolders[0].children.filter(track=>track.title == this.state.title)[0]];
+      parents = [this.state.parentFolders[0].children.filter(track=>track.title === this.state.title)[0]];
     }else if(this.state.parentFolders.length > 1){
 
-      parents = [...this.state.parentFolders.slice(1),this.state.parentFolders[this.state.parentFolders.length-1].children.filter(track=>track.title == this.state.title)];
+      parents = [...this.state.parentFolders.slice(1),this.state.parentFolders[this.state.parentFolders.length-1].children.filter(track=>track.title === this.state.title)];
     }
     let parentFolderNames = parents.map(folder=>folder.title);
     let parentFolderReduced = parentFolderNames.reduce((concat,prev,idx)=>concat +prev+"/","");
@@ -412,7 +416,7 @@ export class PlaylistProvider extends React.Component {
     const folders = path.split("/");
     
     //route /folder/
-    if(folders.length == 0){
+    if(folders.length === 0){
       return {newFolder:tracks,parentFolders:[]};
     }
     /*if(folders[folders.length-1] === ""){
@@ -425,7 +429,7 @@ export class PlaylistProvider extends React.Component {
     for(let folder of folders){
       let tmpTracks = newFolder.children.filter(track=>track.children && track.title === folder);
       //no folder found with the corresponding name
-      if(tmpTracks.length == 0){
+      if(tmpTracks.length === 0){
         console.log("can't find "+folder+" in "+newFolder.title)
         return {newFolder:tracks,parentFolders:[]};
       }
@@ -439,7 +443,7 @@ export class PlaylistProvider extends React.Component {
 
   mapRecursive(trackList){
     let output = [];
-    trackList.map((track)=>{
+    trackList.forEach((track)=>{
         if(!track.children){
           output.push(track);
         }else{

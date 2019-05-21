@@ -16,9 +16,6 @@ export class PLDrawer extends Component {
     };
 
     render() {
-        const {
-            classes,
-        } = this.props;
     return (
         <PlaylistContext.Consumer>{(context) => (
             <Drawer open={context.state.sideDrawer} onClose={() => context.toggleDrawer(false)}>
