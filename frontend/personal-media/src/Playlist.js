@@ -32,7 +32,7 @@ const getGreyColor = (theme, opacity) => {
 const styles = theme => ({
     
     cell:{
-        cursor: "pointer",
+        cursor: "default",
         padding: "0.7em 0.7em !important",
         color:getGreyColor(theme),
     },
@@ -47,16 +47,20 @@ const styles = theme => ({
         maxWidth:isMobile?'1em':'2em',
     },
     gridIcons:{
+        cursor: "pointer",
         maxWidth: "50px",
     },
-    mainCell:{
+    cellspan:{
         cursor: "pointer",
+    },
+    mainCell:{
+        //cursor: "default",
         padding: "0 !important",
         //minWidth:isMobile?'3em':'10em',
         color:theme.palette.secondary.dark,
     },
     artistCell:{
-        cursor: "pointer",
+        //cursor: "pointer",
         padding: "0.7em 0.7em !important",
         maxWidth:isMobile?'6em':'8em',
         'text-overflow': 'ellipsis',
@@ -65,7 +69,7 @@ const styles = theme => ({
         color:theme.palette.secondary.contrastText,
     },
     albumCell:{
-        cursor: "pointer",
+        //cursor: "pointer",
         padding: "0.7em 0.7em !important",
         maxWidth:isMobile?'5em':'6em',
         'text-overflow': 'ellipsis',
@@ -85,6 +89,7 @@ const styles = theme => ({
         margin:'0 10%',
     },
     trackTitle:{
+        cursor: "pointer",
         margin:'0.5em 0em 0.5em 0em',
         color:theme.palette.secondary.contrastText,
     },
@@ -248,13 +253,12 @@ export class Playlist extends Component {
                             </Grid>
                         </TableCell>
                         {!track.children &&
-                        <TableCell className={classes.artistCell}  onClick={()=>track.artist && context.linkTo("/artist/"+track.artist)} >
-                            {track.artist}
+                        <TableCell className={classes.artistCell} >
+                            <span className={classes.cellspan} onClick={()=>track.artist && context.linkTo("/artist/"+track.artist)} >{track.artist}</span>
                         </TableCell>}
                         {!track.children && !isMobile && 
-                        <TableCell className={css(classes['albumCell']
-                            )} onClick={()=>track.album && context.linkTo("/album/"+track.album)} >
-                            {track.album}
+                        <TableCell className={classes.albumCell} >
+                            <span className={classes.cellspan} onClick={()=>track.album && context.linkTo("/album/"+track.album)} >{track.album}</span>
                         </TableCell>}
                         
                         

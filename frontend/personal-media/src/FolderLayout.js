@@ -30,7 +30,7 @@ export class FolderLayout extends Component {
         console.log(props.history);
         
     }
-
+    
     render(){
         const {
             classes,

@@ -5,4 +5,5 @@ export default {
     SEARCH_MODE : "search",
     ARTIST_MODE : "artist",
     ALBUM_MODE : "album",
+    GENRE_MODE : "genre",
 };

@@ -111,11 +111,10 @@ export class PLAppBar extends Component {
                             placeholder="Search…"
                             className={classes.input}
                         />
-                        {context.state.searchOpen && <IconButton color="primary"
+                        {context.state.displayedItemMode === constants.SEARCH_MODE && <IconButton color="primary"
                             className={classes.searchIcon}
                             aria-label="clear search"
-                            onClick={() => context.state.displayedItemMode === constants.SEARCH_MODE && context.clearSearch()}
-                            disabled={context.state.displayedItemMode !== constants.SEARCH_MODE}
+                            onClick={() => context.clearSearch()}
                         >
                             <ClearIcon />
                         </IconButton>}

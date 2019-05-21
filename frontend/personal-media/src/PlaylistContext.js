@@ -234,13 +234,14 @@ export class PlaylistProvider extends React.Component {
     this.setState(state => ({searchKeyword:value}));
   }
   clearSearch() {
-    if(this.state.route.match.params.searchKeyword){
+    if(this.state.route.match.params.searchKeyword && this.state.displayedItemMode === constants.SEARCH_MODE){
       this.state.route.history.push("/folder");
+      this.setState(state => ({
+        searchKeyword:'',
+        searchOpen:false,
+      }));
     }
-    this.setState(state => ({
-      searchKeyword:'',
-      searchOpen:false,
-    }));
+    
   }
 
   /**
@@ -270,8 +271,8 @@ export class PlaylistProvider extends React.Component {
         newMode = constants.PLAYLIST_MODE;
         newTitle = playListRef.title;
       break;
-      case "/"+constants.FOLDER_MODE+"/:folderPath" :
-        const folderStructure = this.getFolderStructure(currentMatch.params.folderPath);
+      case "/"+constants.FOLDER_MODE+"/*" :
+        const folderStructure = this.getFolderStructure(currentMatch.params[0]);
         newTracks = [...folderStructure.newFolder.children];
         newMode = constants.FOLDER_MODE;
         newTitle = folderStructure.newFolder.title;
@@ -284,6 +285,7 @@ export class PlaylistProvider extends React.Component {
         }));
         return;//special case, don't wanna share the setState with other cases to add parent parentFolders
       break;
+      case "/"+constants.FOLDER_MODE+"/" :
       case "/"+constants.FOLDER_MODE :
         newTracks = [...tracks.children];
         newMode = constants.FOLDER_MODE;
@@ -311,16 +313,22 @@ export class PlaylistProvider extends React.Component {
         newTitle = "";
       break;
       case "/"+constants.ARTIST_MODE+"/:artistName" :
-        let artistName = currentMatch.params.artistName;
+        let artistName = decodeURIComponent(currentMatch.params.artistName);
         newTracks = this.getAllTracks({artist:artistName}).artist;
         newMode = constants.ARTIST_MODE;
-        newTitle = artistName;
+        newTitle = "artist : "+artistName;
       break;
       case "/"+constants.ALBUM_MODE+"/:albumName" :
-        let albumName = currentMatch.params.albumName;
+        let albumName = decodeURIComponent(currentMatch.params.albumName);
         newTracks = this.getAllTracks({album:albumName}).album;
         newMode = constants.ALBUM_MODE;
-        newTitle = albumName;
+        newTitle = "album : "+albumName;
+      break;
+      case "/"+constants.GENRE_MODE+"/:genreName" :
+        let genreName = decodeURIComponent(currentMatch.params.genreName);
+        newTracks = this.getAllTracks({genre:genreName}).genre;
+        newMode = constants.GENRE_MODE;
+        newTitle = "genre : "+genreName;
       break;
     }
     const selected = newTracks.length>0?newTracks[0]:tracks.children[0];
@@ -334,7 +342,7 @@ export class PlaylistProvider extends React.Component {
   }
   getAllTracks(props){
     const allTracks = this.mapRecursive(tracks.children).filter(track=>!track.children);
-    if(props.album || props.artist){
+    if(props.album || props.artist || props.genre){
       let result = {};
       for(let prop in props){
         let propValueMap = {};
@@ -359,11 +367,10 @@ export class PlaylistProvider extends React.Component {
   }
   getAllTrackPropValues(prop){
     const allTracks = this.mapRecursive(tracks.children).filter(track=>!track.children && track[prop]);
-    if(prop === "album" || prop === "artist"){
+    if(prop === "album" || prop === "artist" || prop === "genre"){
       let result = {};
       let propValueMap = {};
       allTracks.map(track=>{
-        console.log(track[prop]);
           propValueMap[track[prop]] = true;
       });
       let propResultList = [];
@@ -387,7 +394,16 @@ export class PlaylistProvider extends React.Component {
     return "/folder/"+this.state.parentFolders.slice(1).map(folder=>folder.title).join("/");
   }
   getFolderPath(track){
-    return "/folder/"+this.state.parentFolders.map(folder=>folder.title).reduce((concat,prev)=>concat +"/"+prev,"")+track.title;
+    let parents = [];
+    if(this.state.parentFolders.length === 1){
+      parents = [this.state.parentFolders[0].children.filter(track=>track.title == this.state.title)[0]];
+    }else if(this.state.parentFolders.length > 1){
+
+      parents = [...this.state.parentFolders.slice(1),this.state.parentFolders[this.state.parentFolders.length-1].children.filter(track=>track.title == this.state.title)];
+    }
+    let parentFolderNames = parents.map(folder=>folder.title);
+    let parentFolderReduced = parentFolderNames.reduce((concat,prev,idx)=>concat +prev+"/","");
+    return "/folder/"+parentFolderReduced+track.title;
   }
   getFolderStructure(path){
     const folders = path.split("/");

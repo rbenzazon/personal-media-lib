@@ -35,17 +35,23 @@ export class HomeLayout extends Component {
         super(props);
         this.artistsClick = this.artistsClick.bind(this);
         this.albumsClick = this.albumsClick.bind(this);
+        this.genresClick = this.genresClick.bind(this);
     }
     state = {
         albumsOpen:false,
         artistsOpen:false,
+        genresOpen:false,
+    }
+    
+    genresClick(){
+        this.setState(state=>{return {genresOpen:!state.genresOpen,albumsOpen:false,artistsOpen:false}});
     }
 
     artistsClick(){
-        this.setState(state=>{return {artistsOpen:!state.artistsOpen,albumsOpen:false}});
+        this.setState(state=>{return {artistsOpen:!state.artistsOpen,albumsOpen:false,genresOpen:false}});
     }
     albumsClick(){
-        this.setState(state=>{return {albumsOpen:!state.albumsOpen,artistsOpen:false}});
+        this.setState(state=>{return {albumsOpen:!state.albumsOpen,artistsOpen:false,genresOpen:false}});
     }
 
     render(){
@@ -67,7 +73,7 @@ export class HomeLayout extends Component {
                     <Collapse in={this.state.artistsOpen}>
                         <List component="div" disablePadding >
                             {context.getAllTrackPropValues("artist").map(artist =>
-                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/artist/"+artist)}>
+                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/artist/"+encodeURIComponent(artist))}>
                                 <ListItemText primary={artist} classes={{ primary: classes.nestedText }}/>
                             </ListItem>
                             )}
@@ -79,8 +85,20 @@ export class HomeLayout extends Component {
                     <Collapse in={this.state.albumsOpen} disablePadding>
                         <List component="div" disablePadding >
                             {context.getAllTrackPropValues("album").map(album =>
-                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/album/"+album)}>
+                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/album/"+encodeURIComponent(album))}>
                                 <ListItemText primary={album} classes={{ primary: classes.nestedText }} />
+                            </ListItem>
+                            )}
+                        </List>
+                    </Collapse>
+                    <ListItem button onClick={this.genresClick} >
+                        <ListItemText primary="Genre" />
+                    </ListItem>
+                    <Collapse in={this.state.genresOpen} disablePadding>
+                        <List component="div" disablePadding >
+                            {context.getAllTrackPropValues("genre").map(genre =>
+                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/genre/"+encodeURIComponent(genre))}>
+                                <ListItemText primary={genre} classes={{ primary: classes.nestedText }} />
                             </ListItem>
                             )}
                         </List>
