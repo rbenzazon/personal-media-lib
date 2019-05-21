@@ -4,7 +4,11 @@ import Player from './AudioPlayer/utils/constants';
 import constants from './ContextConstant'
 const {tracks} = myData;
 
-
+/**
+ * theaudiodb.com art data
+ * key
+ * 195003 
+ */
 export const PlaylistContext = createContext();
 
 export class PlaylistProvider extends React.Component {
@@ -64,10 +68,7 @@ export class PlaylistProvider extends React.Component {
     this.linkTo = this.linkTo.bind(this);
     this.getAllTracks = this.getAllTracks.bind(this);
     this.getAllTrackPropValues = this.getAllTrackPropValues.bind(this);
-    
   }
-
-  
   /**
    * Playlists
    * 
@@ -323,13 +324,13 @@ export class PlaylistProvider extends React.Component {
         let artistName = decodeURIComponent(currentMatch.params.artistName);
         newTracks = this.getAllTracks({artist:artistName}).artist;
         newMode = constants.ARTIST_MODE;
-        newTitle = "artist : "+artistName;
+        newTitle = "";
       break;
       case "/"+constants.ALBUM_MODE+"/:albumName" :
         let albumName = decodeURIComponent(currentMatch.params.albumName);
         newTracks = this.getAllTracks({album:albumName}).album;
         newMode = constants.ALBUM_MODE;
-        newTitle = "album : "+albumName;
+        newTitle = "";
       break;
       case "/"+constants.GENRE_MODE+"/:genreName" :
         let genreName = decodeURIComponent(currentMatch.params.genreName);

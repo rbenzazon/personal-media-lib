@@ -6,6 +6,9 @@ import {PlaylistContext} from './PlaylistContext';
 import Playlist from './Playlist';
 import PLDrawer from './PLDrawer';
 import RouteDispatch from './RouteDispatch';
+import { Route } from "react-router-dom";
+import ArtistCard from './ArtistCard'
+import AlbumCard from './AlbumCard'
 
 const styles = theme => ({
 });
@@ -24,6 +27,9 @@ export class FolderLayout extends Component {
             <React.Fragment>
                 <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
                 <PLDrawer />
+                
+                <Route strict exact path='/artist/:artistName' render={(props) => <ArtistCard {...props} />} />
+                <Route strict exact path='/album/:albumName' render={(props) => <AlbumCard {...props} />} />
                 <Playlist />
                 <Dialog
                     open={context.state.createPlaylistOpen}
