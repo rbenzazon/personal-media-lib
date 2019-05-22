@@ -45,6 +45,7 @@ const styles = theme => ({
     },
     albumDesc:{
         display: "-webkit-box",
+        display: "box",
         color:theme.palette.secondary.contrastText,
         transition:'height 300ms cubic-bezier(0.4, 0, 0.2, 1) 150ms',
         fontSize:"13px",
@@ -53,6 +54,9 @@ const styles = theme => ({
         textOverflow:"ellipsis",
         "-webkit-line-clamp":"4",
         "-webkit-box-orient": "vertical",  
+        "line-clamp":"4",
+        "box-orient": "vertical", 
+        maxHeight:"75px",
         overflow: "hidden",
     },
     albumDescMore:{

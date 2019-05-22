@@ -46,7 +46,7 @@ const styles = theme => ({
         "-webkit-line-clamp":"6",
         "-webkit-box-orient": "vertical",  
         overflow: "hidden",
-        
+        maxHeight:"110px",
     },
     artistBioMore:{
         cursor:"pointer",

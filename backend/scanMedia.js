@@ -73,7 +73,8 @@ function mapToProps(obj,meta){
         }
         if(metaProp.constructor === Array){
             obj[propName] = metaProp.join(",");
-        }else{
+        }else if(typeof metaProp === "string"){
+            metaProp = metaProp.replace("´","'");
             obj[propName] = metaProp;
         }
     }
