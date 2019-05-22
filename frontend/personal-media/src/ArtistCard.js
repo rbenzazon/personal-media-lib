@@ -49,6 +49,7 @@ const styles = theme => ({
         
     },
     artistBioMore:{
+        cursor:"pointer",
         color:theme.palette.secondary.contrastText,
         fontSize:"13px",
     },
@@ -88,13 +89,6 @@ export class ArtistCard extends Component {
         this.setState(state=>({artistBioExpanded:!state.artistBioExpanded}));
     }
     async componentWillMount(){
-        const options = {
-            method:"get",
-            headers:{
-              Accept:"application/json",
-              "Content-Type":"application/json",
-            },
-        }
         const res = await fetch("https://theaudiodb.com/api/v1/json/195003/search.php?s="+this.props.match.params.artistName);
         const artistData = await res.json();
         if(artistData.artists === null){
@@ -109,7 +103,7 @@ export class ArtistCard extends Component {
         return (
             <Grid container className={classes.container}>
                 <Grid item xs={12} sm={5} md={4} lg={3} xl={2} className={classes.artistGridItem}>
-                    <img src={this.state.artistData.strArtistThumb} className={classes.artistImage}/>
+                    <img src={this.state.artistData.strArtistThumb} alt={this.state.artistName+" picture"} className={classes.artistImage}/>
                 </Grid>
                 <Grid item xs={12} sm={7} md={8} lg={9} xl={10}>
                     <p className={classes.artistName} >{this.state.artistName}</p>

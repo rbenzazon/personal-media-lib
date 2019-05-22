@@ -5,14 +5,14 @@ import { Route,Switch } from "react-router-dom";
 import {PlaylistProvider } from './PlaylistContext';
 import APAppBar from './APAppBar';
 import PLAppBar from './PLAppBar';
-import createHistory from 'history/createBrowserHistory'
+import createBrowserHistory from 'history/createBrowserHistory'
 import ReactGA from 'react-ga';
 import { createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import { Router} from "react-router-dom";
 
 ReactGA.initialize('UA-52487002-2');
 
-const history = createHistory();
+const history = createBrowserHistory();
 history.listen(location => {
 	ReactGA.set({ page: location.pathname })
 	ReactGA.pageview(location.pathname);

@@ -5,18 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import css from 'classnames';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 
-const getColor = (theme, type, opacity) => {
-    const color =
-      theme.palette[type][theme.palette.type === 'light' ? 'main' : 'dark'];
-  
-    if (!opacity) {
-      return color;
-    }
-  
-    return lighten(color, opacity);
-};
-  
-  const getGreyColor = (theme, opacity) => {
+const getGreyColor = (theme, opacity) => {
       const greyColor = theme.palette.grey['500'];
     
       if (!opacity) {
@@ -41,6 +30,7 @@ const styles = theme => ({
     value:{
         color:theme.palette.secondary.contrastText,
         fontSize:"13px",
+        margin:"0 20px 0 10px",
     },
     albumName:{
         fontSize:"24px",
@@ -53,6 +43,23 @@ const styles = theme => ({
     container:{
         padding:"30px",
     },
+    albumDesc:{
+        display: "-webkit-box",
+        color:theme.palette.secondary.contrastText,
+        transition:'height 300ms cubic-bezier(0.4, 0, 0.2, 1) 150ms',
+        fontSize:"13px",
+    },
+    albumDescContracted:{
+        textOverflow:"ellipsis",
+        "-webkit-line-clamp":"4",
+        "-webkit-box-orient": "vertical",  
+        overflow: "hidden",
+    },
+    albumDescMore:{
+        cursor:"pointer",
+        color:theme.palette.secondary.contrastText,
+        fontSize:"13px",
+    },
 });
 
 export class AlbumCard extends Component {
@@ -64,16 +71,14 @@ export class AlbumCard extends Component {
         this.state={
             albumName:decodeURIComponent(this.props.match.params.albumName),
             albumData:{},
+            albumDescExpanded:false,
         }
+        this.onReadMoreDesc = this.onReadMoreDesc.bind(this);
+    }
+    onReadMoreDesc(){
+        this.setState(state=>({albumDescExpanded:!state.albumDescExpanded}));
     }
     async componentWillMount(){
-        const options = {
-            method:"get",
-            headers:{
-              Accept:"application/json",
-              "Content-Type":"application/json",
-            },
-        }
         const res = await fetch("https://theaudiodb.com/api/v1/json/195003/searchalbum.php?a="+this.props.match.params.albumName);
         const albumData = await res.json();
         if(albumData.album === null){
@@ -89,19 +94,32 @@ export class AlbumCard extends Component {
         return (
             <Grid container className={classes.container}>
                 <Grid item xs={12} sm={5} md={4} lg={3} xl={2} className={classes.albumGridItem}>
-                    <img src={this.state.albumData.strAlbumThumb} className={classes.albumImage}/>
+                    <img src={this.state.albumData.strAlbumThumb} alt={this.state.albumName+" picture"} className={classes.albumImage}/>
                 </Grid>
                 <Grid item xs={12} sm={7} md={8} lg={9} xl={10} >
                     <p className={classes.albumName} >{this.state.albumName}</p>
-                    {this.state.albumData.strArtist &&
-                    <p  ><span className={classes.label} >artist</span>  <span className={classes.value} >{this.state.albumData.strArtist}</span></p>
-                    }
-                    {this.state.albumData.intYearReleased &&
-                    <p  ><span className={classes.label} >release in</span>  <span className={classes.value} >{this.state.albumData.intYearReleased}</span></p>
-                    }
+                    
+                    <p>
+                        {this.state.albumData.strArtist && 
+                        <React.Fragment><span className={classes.label} >artist</span><span className={classes.value} >{this.state.albumData.strArtist}</span></React.Fragment>
+                        }
+                        {this.state.albumData.intYearReleased &&
+                        <React.Fragment><span className={classes.label} >released in</span><span className={classes.value} >{this.state.albumData.intYearReleased}</span></React.Fragment>
+                        }
+                    </p>
+                    
+                    
                     {this.state.albumData.strLabel &&
                     <p  ><span className={classes.label} >label</span>  <span className={classes.value} >{this.state.albumData.strLabel}</span></p>
-                    }strDescriptionEN
+                    }
+                    <p className={css(
+                        classes["albumDesc"],
+                        {[classes["albumDescContracted"]]:!this.state.albumDescExpanded},
+                        )} >{this.state.albumData.strDescriptionEN}</p>
+                    <p className={classes.albumDescMore} onClick={this.onReadMoreDesc}>
+                        {!this.state.albumDescExpanded && "...read more"}
+                        {this.state.albumDescExpanded && "...read less"}
+                    </p>
                     
                 </Grid>
             </Grid>
