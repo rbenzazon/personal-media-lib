@@ -3,8 +3,8 @@ import {PlaylistContext} from './PlaylistContext';
 import {Grid,Avatar, TableBody,Table,TableRow,TableCell,TableHead} from '@material-ui/core';
 import {Audiotrack as TrackIcon,Folder as FolderIcon, ArrowBack as BackIcon, Favorite as FavorIcon, AddCircle as AddIcon} from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-import { lighten } from '@material-ui/core/styles/colorManipulator';
 import {isMobile} from "react-device-detect";
+import { lighten } from '@material-ui/core/styles/colorManipulator';
 import css from 'classnames';
 import constants from "./ContextConstant";
 
@@ -126,11 +126,27 @@ const styles = theme => ({
 
 
 export class Playlist extends Component {
+    state={
+        hideAlbums:false,
+    }
     static contextType = PlaylistContext;
     static defaultProps = {
         classes: {},
         classNames: {},
     };
+    componentDidMount() {
+        window.addEventListener("resize", this.resize.bind(this));
+        this.resize();
+    }
+    componentDidUnMount() {
+        window.removeEventListener("resize", this.resize);
+    }
+    
+    resize() {
+        
+        this.setState({hideAlbums: window.innerWidth <= 600});
+        console.log(this.state.hideAlbums);
+    }
     render() {
     const {
         classes,
@@ -142,14 +158,14 @@ export class Playlist extends Component {
                     <TableRow className={classes.tableHeadTr}>
                         <TableCell className={classes.headerCell}>Title / name</TableCell>
                         <TableCell className={classes.headerCell}>Artist</TableCell>
-                        {!isMobile && 
+                        {!this.state.hideAlbums && 
                         <TableCell className={classes.headerCell}>Album</TableCell>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {context.state.displayedItemMode === constants.FOLDER_MODE && context.state.parentFolders.length >=1 &&
                     <TableRow key={'back_folder'} >
-                        <TableCell className={classes.mainCell} colSpan={isMobile?2:3}>
+                        <TableCell className={classes.mainCell} colSpan={this.state.hideAlbums?2:3}>
                             <Grid   alignContent="center"
                                     justify="flex-start"
                                     alignItems="center"
@@ -168,7 +184,7 @@ export class Playlist extends Component {
                     }
                     {(context.state.displayedItemMode === constants.FAVORITE_MODE  || context.state.displayedItemMode === constants.PLAYLIST_MODE) &&
                     <TableRow key={'back_favorite'} hover>
-                        <TableCell className={classes.mainCell} colSpan={isMobile?2:3}>
+                        <TableCell className={classes.mainCell} colSpan={this.state.hideAlbums?2:3}>
                                 <Grid alignContent="center" justify="flex-start" alignItems="center" container onClick={()=>context.linkTo("/folder")}>
                                     <Grid item xs={isMobile?2:1} className={classes.gridIcons}>
                                         <BackIcon className={classes.trackIcon} />
@@ -182,7 +198,7 @@ export class Playlist extends Component {
                     }
                     {context.state.displayedItems.map((track) =>
                     <TableRow key={track.id} selected={context.state.selected === track} hover>
-                        <TableCell className={classes.mainCell} colSpan={track.children ? 3 : 1}>
+                        <TableCell className={classes.mainCell} colSpan={track.children ? (this.state.hideAlbums ? 2:3) : 1}>
                             <Grid alignContent="center" justify="flex-start" alignItems="center" container>
                                 {!track.children && 
                                 <Grid item 
@@ -242,7 +258,7 @@ export class Playlist extends Component {
                         <TableCell className={classes.artistCell} >
                             <span className={classes.cellspan} onClick={()=>track.artist && context.linkTo("/artist/"+track.artist)} >{track.artist}</span>
                         </TableCell>}
-                        {!track.children && !isMobile && 
+                        {(!track.children && !this.state.hideAlbums ) &&
                         <TableCell className={classes.albumCell} >
                             <span className={classes.cellspan} onClick={()=>track.album && context.linkTo("/album/"+track.album)} >{track.album}</span>
                         </TableCell>}
