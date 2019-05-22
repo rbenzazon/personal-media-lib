@@ -66,7 +66,7 @@ export class HomeLayout extends Component {
                     </ListItem>
                     <Collapse in={this.state.artistsOpen}>
                         <List component="div" disablePadding >
-                            {context.getAllTrackPropValues("artist").map(artist =>
+                            {context.getAllTrackPropValues("artist").sort((a,b)=>a<b?-1:1).map(artist =>
                             <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/artist/"+encodeURIComponent(artist))}>
                                 <ListItemText primary={artist} classes={{ primary: classes.nestedText }}/>
                             </ListItem>
@@ -78,7 +78,7 @@ export class HomeLayout extends Component {
                     </ListItem>
                     <Collapse in={this.state.albumsOpen} disablePadding>
                         <List component="div" disablePadding >
-                            {context.getAllTrackPropValues("album").map(album =>
+                            {context.getAllTrackPropValues("album").sort((a,b)=>a<b?-1:1).map(album =>
                             <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/album/"+encodeURIComponent(album))}>
                                 <ListItemText primary={album} classes={{ primary: classes.nestedText }} />
                             </ListItem>
@@ -90,7 +90,7 @@ export class HomeLayout extends Component {
                     </ListItem>
                     <Collapse in={this.state.genresOpen} disablePadding>
                         <List component="div" disablePadding >
-                            {context.getAllTrackPropValues("genre").map(genre =>
+                            {context.getAllTrackPropValues("genre").sort((a,b)=>a<b?-1:1).map(genre =>
                             <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/genre/"+encodeURIComponent(genre))}>
                                 <ListItemText primary={genre} classes={{ primary: classes.nestedText }} />
                             </ListItem>

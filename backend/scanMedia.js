@@ -26,7 +26,7 @@ readFolder = (folderPath) => {
     for (var i=0; i<items.length; i++) {
         let item = items[i];
         var ext = path.extname(item.name);
-        if(ext == ".mp3" || item.isDirectory()){
+        if(ext == ".mp3" || ext == ".flac" || item.isDirectory()){
             files.push(item);
         }
     }
@@ -143,6 +143,6 @@ async function scanFiles(){
     files.tracks.children = await scanRecursive(pathToScan,files.tracks.children);
 
     var json = JSON.stringify(files);
-    fs.writeFile(pathToScan+'/tracks.json', json, 'utf8',()=>{});
+    fs.writeFile('../frontend/personal-media/src/data.json', json, 'utf8',()=>{});
 }
 scanFiles();
