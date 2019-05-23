@@ -1,10 +1,8 @@
 import React, { Component} from 'react';
-import {Select,MenuItem,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {PlaylistContext} from './PlaylistContext';
 import Playlist from './Playlist';
-import PLDrawer from './PLDrawer';
 import RouteDispatch from './RouteDispatch';
 import { Route } from "react-router-dom";
 import ArtistCard from './ArtistCard'
@@ -26,87 +24,14 @@ export class FolderLayout extends Component {
             <PlaylistContext.Consumer>{(context) => (
             <React.Fragment>
                 <RouteDispatch onRouteMount={context.onRouteMount} match={{match:this.props.match,history:this.props.history}}/>
-                <PLDrawer />
+                
                 
                 <Route strict exact path='/artist/:artistName' render={(props) => <ArtistCard {...props} />} />
                 <Route strict exact path='/album/:albumName' render={(props) => <AlbumCard {...props} />} />
                 <Playlist />
-                <Dialog
-                    open={context.state.createPlaylistOpen}
-                    onClose={() => context.onCreatePlaylistClose()}
-                    aria-labelledby="add to playlist"
-                    aria-describedby="add this track to a playlist"
-                    >
-                    <DialogTitle id="alert-dialog-title">Create a playlist</DialogTitle>
-                    <DialogContent>
-                        <input placeholder="Enter a name" value={context.state.createPlaylistName} onChange={(e) => context.onPlaylistNameChange(e.target.value)}></input>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => context.onCreatePlaylistClose()} color="secondary">
-                        Cancel
-                        </Button>
-                        <Button onClick={() => context.createPlaylist()} color="primary" autoFocus>
-                        Create
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-                <Dialog
-                    open={context.state.playlistAddOpen}
-                    onClose={() => context.onAddToPlaylistClose()}
-                    aria-labelledby="add to playlist"
-                    aria-describedby="add this track to a playlist"
-                    >
-                    <DialogTitle id="alert-dialog-title">Add to playlist</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                        choose a playlist in which to add this track
-                        </DialogContentText>
-                        {context.state.playLists.length > 0 &&
-                        <Select
-                            value={context.state.playlistToAdd}
-                            onChange={(e) => context.onPlaylistToAddChange(e.target.value)}
-                        >
-                            {context.state.playLists.map((item)=>{return(
-                            <MenuItem key={item.title} selected={context.state.playlistToAdd === item} value={item}>{item.title}</MenuItem>
-                            )})}
-                        </Select>
-                        }
-                        {context.state.playLists.length === 0 &&
-                            <Button onClick={() => {context.onAddToPlaylistClose();context.onCreatePlaylistOpenClose(true)}} color="primary" autoFocus>
-                            Create playlist
-                            </Button>
-                        }
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => context.onAddToPlaylistClose()} color="secondary">
-                        Cancel
-                        </Button>
-                        <Button onClick={() => context.addToPlaylist()} color="primary" autoFocus>
-                        Add
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-                <Dialog
-                    open={context.state.importOpen}
-                    onClose={() => context.setImportOpen(false)}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    >
-                    <DialogTitle id="alert-dialog-title">Import media</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                        Select files from your local storage
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => context.setImportOpen(false)} color="primary">
-                        Cancel
-                        </Button>
-                        <Button onClick={() => context.setImportOpen(false)} color="primary" autoFocus>
-                        Browse
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                
+                
+                
             </React.Fragment>
             )}</PlaylistContext.Consumer>
         );

@@ -8,3 +8,4 @@ node_modules
 *.nfo
 *.flac
 *.cue
+/backend/public

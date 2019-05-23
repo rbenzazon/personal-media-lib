@@ -68,6 +68,7 @@ export class PlaylistProvider extends React.Component {
     this.linkTo = this.linkTo.bind(this);
     this.getAllTracks = this.getAllTracks.bind(this);
     this.getAllTrackPropValues = this.getAllTrackPropValues.bind(this);
+    this.displaySearch = this.displaySearch.bind(this);
   }
   /**
    * Playlists
@@ -235,6 +236,11 @@ export class PlaylistProvider extends React.Component {
   }
   onSearchKeyPress(e){
     if (e.key === 'Enter') {
+      this.displaySearch();
+    }
+  }
+  displaySearch(){
+    if(this.state.searchKeyword != ''){
       this.state.route.history.push("/search/"+this.state.searchKeyword);
     }
   }
@@ -490,6 +496,7 @@ export class PlaylistProvider extends React.Component {
         getAllTracks:this.getAllTracks,
         linkTo:this.linkTo,
         getAllTrackPropValues:this.getAllTrackPropValues,
+        displaySearch:this.displaySearch,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>

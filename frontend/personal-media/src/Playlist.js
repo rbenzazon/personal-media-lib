@@ -32,31 +32,31 @@ const styles = theme => ({
     
     headerCell:{
         cursor: "default",
-        padding: "0.7em 0.7em !important",
+        padding: "0.6rem 0.6rem !important",
         color:getGreyColor(theme),
     },
     gridIcons:{
         cursor: "pointer",
-        maxWidth: "50px",
+        maxWidth: "3rem",
     },
     cellspan:{
         cursor: "pointer",
     },
     mainCell:{
-        padding: "0 !important",
+        padding: "0 0 0 0.5rem !important",
         color:theme.palette.secondary.dark,
     },
     artistCell:{
-        padding: "0.7em 0.7em !important",
-        maxWidth:isMobile?'6em':'8em',
+        padding: "0.6rem 0.6rem !important",
+        maxWidth:isMobile?'5rem':'7rem',
         'text-overflow': 'ellipsis',
         'white-space': 'nowrap',
         overflow: 'hidden',
         color:theme.palette.secondary.contrastText,
     },
     albumCell:{
-        padding: "0.7em 0.7em !important",
-        maxWidth:isMobile?'5em':'6em',
+        padding: "0.6rem 0.6rem !important",
+        maxWidth:isMobile?'4rem':'5rem',
         'text-overflow': 'ellipsis',
         'white-space': 'nowrap',
         overflow: 'hidden',
@@ -64,18 +64,18 @@ const styles = theme => ({
     },
     trackIcon:{
         color:getGreyColor(theme),
-        width:'1.2em',
-        height:'1.2em',
+        width:'2rem',
+        //height:'4rem',
         margin:'0 10%',
     },
     trackImage:{
-        width:'1.5em',
-        height:'1.5em',
+        width:'1.6rem',
+        height:'1.6rem',
         margin:'0 10%',
     },
     trackTitle:{
         cursor: "pointer",
-        margin:'0.5em 0em 0.5em 0em',
+        margin:'0.6rem 0em 0.6rem 0em',
         color:theme.palette.secondary.contrastText,
     },
     trackTitleSelected:{
@@ -86,9 +86,9 @@ const styles = theme => ({
         color:theme.palette.secondary.contrastText,
     },
     favoriteDisabled:{
-        padding:'0.2em 0em 0em 0em',
-        width:'1.3em',
-        height:'1.3em',
+        padding:'0.3rem 0em 0em 0em',
+        width:'1.6rem',
+        height:'1.6rem',
         margin:'0 10%',
         fill: getGreyColor(theme),
         color: getGreyColor(theme),
@@ -98,10 +98,10 @@ const styles = theme => ({
         },
     },
     button: {
-        padding:'0.2em 0em 0em 0em',
+        padding:'0.3rem 0em 0em 0em',
         margin:'0 10%',
-        width:'1.3em',
-        height:'1.3em',
+        width:'1.6rem',
+        height:'1.6rem',
         fill: `${getColor(theme, 'primary')} !important`,
         color: `${getColor(theme, 'primary')} !important`,
         '&:hover': {
@@ -110,17 +110,17 @@ const styles = theme => ({
         },
     },
     table:{
-        marginBottom: '4em',
+        marginBottom: '4rem',
         backgroundColor: theme.palette.background.paper,
     },
     tableHeadTr:{
-        height:'2em',
+        height:'2rem',
     },
     grow: {
         flexGrow: 1,
     },
     titleGrid:{
-        padding:'0.6em 0em 0.5em 0em',
+        padding:'0.6rem 0rem 0.6rem 0em',
     },
 });
 
@@ -169,7 +169,7 @@ export class Playlist extends Component {
                             <Grid   alignContent="center"
                                     justify="flex-start"
                                     alignItems="center"
-                                    container button
+                                    container button="true"
                                     onClick={()=>context.linkTo(context.getParentPath())}
                                     >
                                 <Grid item xs={isMobile?2:1} className={classes.gridIcons}>
@@ -219,7 +219,7 @@ export class Playlist extends Component {
                                 >
                                     <FolderIcon className={classes.trackIcon} />
                                 </Grid>}
-                                {!track.children && 
+                                {(!track.children && !this.state.hideAlbums) &&  
                                 <Grid item xs={2} className={classes.gridIcons}>
                                     <FavorIcon 
                                         className={css(

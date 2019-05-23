@@ -1,9 +1,8 @@
 import React, { Component} from 'react';
-import {Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button,List,ListItem,Collapse,ListItemText} from '@material-ui/core';
+import {List,ListItem,Collapse,ListItemText} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {PlaylistContext} from './PlaylistContext';
-import PLDrawer from './PLDrawer';
 import RouteDispatch from './RouteDispatch';
 
 const styles = theme => ({
@@ -65,9 +64,9 @@ export class HomeLayout extends Component {
                         <ListItemText primary="Artists" />
                     </ListItem>
                     <Collapse in={this.state.artistsOpen}>
-                        <List component="div" disablePadding >
+                        <List component="div" disablepadding="true" >
                             {context.getAllTrackPropValues("artist").sort((a,b)=>a<b?-1:1).map(artist =>
-                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/artist/"+encodeURIComponent(artist))}>
+                            <ListItem key={artist} className={classes.nestedItem} button onClick={() => context.linkTo("/artist/"+encodeURIComponent(artist))}>
                                 <ListItemText primary={artist} classes={{ primary: classes.nestedText }}/>
                             </ListItem>
                             )}
@@ -76,10 +75,10 @@ export class HomeLayout extends Component {
                     <ListItem button onClick={this.albumsClick} key={"albums"}>
                         <ListItemText primary="Albums" />
                     </ListItem>
-                    <Collapse in={this.state.albumsOpen} disablePadding>
-                        <List component="div" disablePadding >
+                    <Collapse in={this.state.albumsOpen} disablepadding="true">
+                        <List component="div" disablepadding="true" >
                             {context.getAllTrackPropValues("album").sort((a,b)=>a<b?-1:1).map(album =>
-                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/album/"+encodeURIComponent(album))}>
+                            <ListItem key={album} className={classes.nestedItem} button onClick={() => context.linkTo("/album/"+encodeURIComponent(album))}>
                                 <ListItemText primary={album} classes={{ primary: classes.nestedText }} />
                             </ListItem>
                             )}
@@ -88,10 +87,10 @@ export class HomeLayout extends Component {
                     <ListItem button onClick={this.genresClick} >
                         <ListItemText primary="Genre" />
                     </ListItem>
-                    <Collapse in={this.state.genresOpen} disablePadding>
-                        <List component="div" disablePadding >
+                    <Collapse in={this.state.genresOpen} disablepadding="true">
+                        <List component="div" disablepadding="true" >
                             {context.getAllTrackPropValues("genre").sort((a,b)=>a<b?-1:1).map(genre =>
-                            <ListItem className={classes.nestedItem} button onClick={() => context.linkTo("/genre/"+encodeURIComponent(genre))}>
+                            <ListItem key={genre} className={classes.nestedItem} button onClick={() => context.linkTo("/genre/"+encodeURIComponent(genre))}>
                                 <ListItemText primary={genre} classes={{ primary: classes.nestedText }} />
                             </ListItem>
                             )}
@@ -99,48 +98,6 @@ export class HomeLayout extends Component {
                     </Collapse>
                 </List>
                 </div>
-                <PLDrawer />
-                
-                <Dialog
-                    open={context.state.createPlaylistOpen}
-                    onClose={() => context.onCreatePlaylistClose()}
-                    aria-labelledby="create playlist"
-                    aria-describedby="create a new playlist to store your tracks"
-                    >
-                    <DialogTitle id="alert-dialog-title">Create a playlist</DialogTitle>
-                    <DialogContent>
-                        <input placeholder="Enter a name" value={context.state.createPlaylistName} onChange={(e) => context.onPlaylistNameChange(e.target.value)}></input>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => context.onCreatePlaylistClose()} color="secondary">
-                        Cancel
-                        </Button>
-                        <Button onClick={() => context.createPlaylist()} color="primary" autoFocus>
-                        Create
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-                <Dialog
-                    open={context.state.importOpen}
-                    onClose={() => context.setImportOpen(false)}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    >
-                    <DialogTitle id="alert-dialog-title">Import media</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                        Select files from your local storage
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => context.setImportOpen(false)} color="primary">
-                        Cancel
-                        </Button>
-                        <Button onClick={() => context.setImportOpen(false)} color="primary" autoFocus>
-                        Browse
-                        </Button>
-                    </DialogActions>
-                </Dialog>
             </React.Fragment>
             )}</PlaylistContext.Consumer>
         

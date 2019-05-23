@@ -5,10 +5,14 @@ import { Route,Switch } from "react-router-dom";
 import {PlaylistProvider } from './PlaylistContext';
 import APAppBar from './APAppBar';
 import PLAppBar from './PLAppBar';
+import PLDrawer from './PLDrawer';
 import createBrowserHistory from 'history/createBrowserHistory'
 import ReactGA from 'react-ga';
 import { createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import { Router} from "react-router-dom";
+import CreatePLDialog from './CreatePLDialog';
+import AddToPLDialog from './AddToPLDialog';
+import ImportDialog from './ImportDialog';
 
 ReactGA.initialize('UA-52487002-2');
 
@@ -22,6 +26,7 @@ history.listen(location => {
 const theme = createMuiTheme({
     typography: {
       useNextVariants: true,
+      //htmlFontSize: 16,
     },
     palette: {
         type: 'dark',
@@ -71,7 +76,12 @@ export default class App extends React.Component{
             
             <Route exact strict path='/folder/*' render={(props) => <FolderLayout {...props} />} />
             </Switch>
+
+            <PLDrawer />
             <APAppBar />
+            <CreatePLDialog />
+            <AddToPLDialog />
+            <ImportDialog />
           </React.Fragment>
         </PlaylistProvider>
       </Router>

@@ -21,13 +21,13 @@ const getColor = (theme, type, opacity) => {
 };
 const styles = theme => ({
     search: {
-        margin: isMobile ? '0em 0.2em' : '0em 0.5em',
+        margin: isMobile ? '0rem 0.2rem' : '0rem 0.5rem',
         padding: '0',
         display: 'flex',
         alignItems: 'center',
         right: 0,
-        minWidth: '7em',
-        maxWidth: '20em',
+        minWidth: '7rem',
+        maxWidth: '20rem',
         width: isMobile ? '20%' : '20%',
         transition:'width 300ms cubic-bezier(0.4, 0, 0.2, 1) 150ms',
     },
@@ -38,14 +38,14 @@ const styles = theme => ({
         flexGrow: 1,
     },
     searchIcon: {
-        padding: '0.3em',
+        padding: '0.3rem',
     },
     input: {
-        marginLeft: '0.3em',
+        marginLeft: '0.3rem',
         flex: 1,
     },
     menuButton: {
-        padding: isMobile ? '0em 1.5em' : '0em 1em',
+        padding: isMobile ? '0rem 1.5rem' : '0rem 1rem',
         margin: '0px',
         
         width: isMobile ? '20px' : '27px',
@@ -58,11 +58,11 @@ const styles = theme => ({
         },
     },
     appBarTitle:{
-        padding: '0px 0.3em',
+        padding: '0px 0.3rem',
         color:theme.palette.primary.contrastText,
     },
     toolBar:{
-        padding: isMobile ? '0em 0.3em' : '0em 1em',
+        padding: isMobile ? '0rem 0.3rem' : '0em 1rem',
     },
     appBar: {
         zIndex:'1200',
