@@ -8,8 +8,7 @@ import AudioPlayer from './AudioPlayer/AudioPlayer.js';
 
 const styles = theme => ({
     appBar: {
-        top: 'auto',
-        bottom: 0,
+        flexShrink: '0',
         backgroundColor: theme.palette.background.default,
     },
 });
@@ -25,7 +24,7 @@ class APAppBar extends Component {
         } = this.props;
         return(
         <PlaylistContext.Consumer>{(context) => (
-        <AppBar position="fixed" className={classes.appBar}>
+        <AppBar position="relative" className={classes.appBar}>
             <AudioPlayer
                 autoPlay={false}
                 rounded={true}

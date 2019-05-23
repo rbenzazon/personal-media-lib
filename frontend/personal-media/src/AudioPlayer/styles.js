@@ -33,14 +33,32 @@ export default theme => ({
     paddingTop: "10px",
     paddingBottom: "10px"
   },
+  gridDefaultIcons:{
+    textAlign:"center",
+  },
+  gridSeek:{
+    margin:'0 0 0.2rem 0',
+  },
   'player-container': {
     backgroundColor:'transparent',
-    padding: '0',
+    padding: '0.3rem',
     borderRadius:'0px !important'
   },
-  'player-default-icon': {
+  'player-volume-icon': {
     padding: '0px 10px',
-    margin: '0px',
+    margin: '0',
+    width: '27px',
+    height: '27px',
+    fill: `${getColor(theme, 'primary')} !important`,
+    color: `${getColor(theme, 'primary')} !important`,
+    '&:hover': {
+      fill: `${getColor(theme, 'primary', 0.25)} !important`,
+      color: `${getColor(theme, 'primary', 0.25)} !important`,
+    },
+  },
+  'player-default-icon': {
+    padding: '0.4rem 0',
+    margin: '0',
     width: '27px',
     height: '27px',
     fill: `${getColor(theme, 'primary')} !important`,

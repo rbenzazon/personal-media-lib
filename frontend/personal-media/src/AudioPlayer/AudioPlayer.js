@@ -147,10 +147,10 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
           <source src={context.state.selected.url} />
         </audio>
         
-        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" spacing={8} container>
+        <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" container>
           
-          <Grid item xs={isMobile ? 5 : 3} alignContent="center" justify="center" alignItems="center" container >
-            <Grid xs={3} item>
+          <Grid item sm={isMobile ? 5 : 3} xs={10} alignContent="center" justify="center" alignItems="center" container >
+            <Grid xs={3} item className={classes.gridDefaultIcons}>
               {(context.state.playerLoopStatus === Player.Status.LOOP_LIST || context.state.playerLoopStatus === Player.Status.NO_LOOP) && <LoopPlaylistIcon
                 className={css({
                   [classes['player-default-icon']]: context.state.playerLoopStatus === Player.Status.LOOP_LIST,
@@ -172,7 +172,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                 focusable="true"
               />}
             </Grid>
-            <Grid xs={3} item onClick={() => context.onPrevClick()} focusable="true">
+            <Grid xs={3} className={classes.gridDefaultIcons} item onClick={() => context.onPrevClick()} focusable="true">
               <SkipPrevIcon
                 className={css(
                   classes['player-default-icon'],
@@ -181,7 +181,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                 )}
               />
             </Grid>
-            <Grid xs={3} item onClick={() => this.triggerAction(Player.Status.PLAY)} focusable="true">
+            <Grid xs={3} className={classes.gridDefaultIcons} item onClick={() => this.triggerAction(Player.Status.PLAY)} focusable="true">
               {context.state.playerStatus === Player.Status.PAUSE &&
               <PlayStatusIcon
                 className={css(
@@ -197,7 +197,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                 )}
               />}
             </Grid>
-            <Grid xs={3} item onClick={() => context.onNextClick()} focusable="true">
+            <Grid xs={3} className={classes.gridDefaultIcons} item onClick={() => context.onNextClick()} focusable="true">
               <SkipNextIcon
                 className={css(
                   classes['player-default-icon'],
@@ -207,7 +207,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               />
             </Grid>
           </Grid>
-          <Grid item xs={isMobile ? 5 : 7} container  alignContent="center" justify="center" alignItems="center" >
+          <Grid item sm={isMobile ? 5 : 7} className={classes.gridSeek} xs={8} container  alignContent="center" justify="center" alignItems="center" >
             <Grid item xs={12} container alignContent="center" justify="flex-start" alignItems="flex-start"  >
               <Grid xs={7} item>
                 <Typography
@@ -261,7 +261,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
               
             </Grid>
           </Grid>
-          <Grid xs={isMobile ? 2 : 2} item>
+          <Grid xs={isMobile ? 1 : 1} className={classes.gridDefaultIcons} sm={2} item>
           <Tooltip
           {... isMobile ? {disableHoverListener:true,enterTouchDelay:50}:{}}
           interactive
@@ -289,7 +289,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
           }>
             <MuteStatusIcon
               className={css(classes['player-icon-disabled'], muteIcon, {
-                [classes['player-default-icon']]: isMuteEnable,
+                [classes['player-volume-icon']]: isMuteEnable,
               })}
             />
             </Tooltip>

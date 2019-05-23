@@ -60,6 +60,9 @@ export default class App extends React.Component{
       <Router history={history} >
         <PlaylistProvider >
           <React.Fragment>
+            <div style={{width: '100%',height: '100%',display: 'flex',flexDirection: 'column',flexWrap: 'nowrap'}}>
+            
+            <div style={{flexGrow: '1',overflow: 'auto',minHeight: '2em'}}>
             <PLAppBar />
             <Switch>
             <Route exact path='/' render={(props) => <HomeLayout {...props} />} />
@@ -76,9 +79,10 @@ export default class App extends React.Component{
             
             <Route exact strict path='/folder/*' render={(props) => <FolderLayout {...props} />} />
             </Switch>
-
-            <PLDrawer />
+            </div>
             <APAppBar />
+            </div>
+            <PLDrawer />
             <CreatePLDialog />
             <AddToPLDialog />
             <ImportDialog />

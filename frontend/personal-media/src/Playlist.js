@@ -110,7 +110,7 @@ const styles = theme => ({
         },
     },
     table:{
-        marginBottom: '4rem',
+        //marginBottom: '7rem',
         backgroundColor: theme.palette.background.paper,
     },
     tableHeadTr:{
@@ -143,9 +143,9 @@ export class Playlist extends Component {
     }
     
     resize() {
-        
-        this.setState({hideAlbums: window.innerWidth <= 600});
-        console.log(this.state.hideAlbums);
+        if(this.state.hideAlbums != (window.innerWidth <= 600)){
+            this.setState({hideAlbums: window.innerWidth <= 600});
+        }
     }
     render() {
     const {

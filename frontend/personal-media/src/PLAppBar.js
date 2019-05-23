@@ -65,6 +65,7 @@ const styles = theme => ({
         padding: isMobile ? '0rem 0.3rem' : '0em 1rem',
     },
     appBar: {
+        flexShrink:0,
         zIndex:'1200',
         boxShadow: 'none',
         backgroundColor: theme.palette.background.default,
