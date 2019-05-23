@@ -237,6 +237,7 @@ export class PlaylistProvider extends React.Component {
   onSearchKeyPress(e){
     if (e.key === 'Enter') {
       this.displaySearch();
+      e.target.blur();
     }
   }
   displaySearch(){

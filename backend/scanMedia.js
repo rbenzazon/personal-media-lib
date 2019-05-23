@@ -90,6 +90,7 @@ async function scanRecursive (folderPath,children){
             const url = folderPath+"/"+item.name;
             const tags = await mm.parseFile(url);
             mapToProps(itemDesc,tags.common);
+            itemDesc.title = itemDesc.title?itemDesc.title:item.name;
             /*itemDesc = {
                 title:tags.common.title?tags.common.title:item.name,
                 album:tags.common.album,

@@ -7,6 +7,7 @@ import RouteDispatch from './RouteDispatch';
 import { Route } from "react-router-dom";
 import ArtistCard from './ArtistCard'
 import AlbumCard from './AlbumCard'
+import SearchCard from './SearchCard';
 
 const styles = theme => ({
 });
@@ -28,6 +29,7 @@ export class FolderLayout extends Component {
                 
                 <Route strict exact path='/artist/:artistName' render={(props) => <ArtistCard {...props} />} />
                 <Route strict exact path='/album/:albumName' render={(props) => <AlbumCard {...props} />} />
+                <Route strict exact path='/search/:searchKeyword' render={(props) => <SearchCard {...props} />} />
                 <Playlist />
                 
                 
