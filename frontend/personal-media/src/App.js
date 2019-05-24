@@ -13,6 +13,7 @@ import { Router} from "react-router-dom";
 import CreatePLDialog from './CreatePLDialog';
 import AddToPLDialog from './AddToPLDialog';
 import ImportDialog from './ImportDialog';
+import LoginDialog from './LoginDialog';
 
 ReactGA.initialize('UA-52487002-2');
 
@@ -84,6 +85,7 @@ export default class App extends React.Component{
             </div>
             <PLDrawer />
             <CreatePLDialog />
+            <LoginDialog />
             <AddToPLDialog />
             <ImportDialog />
           </React.Fragment>

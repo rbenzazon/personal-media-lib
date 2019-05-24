@@ -1,8 +1,33 @@
-const express = require("express")
-const app = express()
+const express = require("express");
+const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
+const app = express();
+app.use(cookieParser());
+//import routes
+const authRoutes = require('./auth.js');
+dotenv.config();
+
+const verify = require('./verifyToken');
+
+const mongoose = require('mongoose');
+
+mongoose.connect(
+    process.env.DB_CONNECT,
+    {useNewUrlParser:true},
+    ()=>console.log("db connected"),
+);
+
+//Middleware
+app.use(express.json());
+
 /*app.get("/", function(req, res) {
     res.send("Hello World")
 })*/
+
+//add route middelware to app
+app.use("/api/user",authRoutes);
+
+
 app.get('', function(request, response){    
     response.sendFile(__dirname + '/public/index.html');
 });
@@ -25,4 +50,6 @@ app.get('/genre*', function(request, response){
     response.sendFile(__dirname + '/public/index.html');
 });
 app.use(express.static('public'));
+app.use(verify,express.static('media'));
+
 app.listen(3000);

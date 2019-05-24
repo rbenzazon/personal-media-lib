@@ -32,6 +32,7 @@ export class PlaylistProvider extends React.Component {
     playlistToAdd:null,
     playlistAddOpen:false,
     createPlaylistName:'',
+    loginOpen:false,
   }
   constructor(props){
     super(props);
@@ -69,6 +70,7 @@ export class PlaylistProvider extends React.Component {
     this.getAllTracks = this.getAllTracks.bind(this);
     this.getAllTrackPropValues = this.getAllTrackPropValues.bind(this);
     this.displaySearch = this.displaySearch.bind(this);
+    this.onLoginOpenClose = this.onLoginOpenClose.bind(this);
   }
   /**
    * Playlists
@@ -79,6 +81,10 @@ export class PlaylistProvider extends React.Component {
   }
   onCreatePlaylistOpenClose(value){
     this.setState({createPlaylistOpen:value});
+  }
+  
+  onLoginOpenClose(value){
+    this.setState({loginOpen:value});
   }
   onPlaylistNameChange(name){
     this.setState({createPlaylistName:name});
@@ -498,6 +504,7 @@ export class PlaylistProvider extends React.Component {
         linkTo:this.linkTo,
         getAllTrackPropValues:this.getAllTrackPropValues,
         displaySearch:this.displaySearch,
+        onLoginOpenClose:this.onLoginOpenClose,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>

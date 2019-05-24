@@ -9,3 +9,6 @@ node_modules
 *.flac
 *.cue
 /backend/public
+/backend/.env
+/frontend/personal-media/public/tracks.json
+/frontend/personal-media/src/data.json
