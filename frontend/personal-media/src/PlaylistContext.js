@@ -33,6 +33,8 @@ export class PlaylistProvider extends React.Component {
     playlistAddOpen:false,
     createPlaylistName:'',
     loginOpen:false,
+    loggedIn:this.getCookieValue('auth-token') !== '',
+    loginName:'',
   }
   constructor(props){
     super(props);
@@ -71,6 +73,20 @@ export class PlaylistProvider extends React.Component {
     this.getAllTrackPropValues = this.getAllTrackPropValues.bind(this);
     this.displaySearch = this.displaySearch.bind(this);
     this.onLoginOpenClose = this.onLoginOpenClose.bind(this);
+    this.checkLoggedIn = this.checkLoggedIn.bind(this);
+  }
+
+  checkLoggedIn(name){
+      if(name !== undefined){
+        this.setState({loggedIn:true,loginName:name});
+      }else{
+        this.setState({loggedIn:false,loginName:''});
+      }
+    
+  }
+  getCookieValue(a) {
+    var b = document.cookie.match('(^|[^;]+)\\s*' + a + '\\s*=\\s*([^;]+)');
+    return b ? b.pop() : '';
   }
   /**
    * Playlists
@@ -83,8 +99,15 @@ export class PlaylistProvider extends React.Component {
     this.setState({createPlaylistOpen:value});
   }
   
-  onLoginOpenClose(value){
-    this.setState({loginOpen:value});
+  async onLoginOpenClose(value){
+    if(value && this.state.loggedIn){
+      const res = await fetch('/api/user/logoff', {
+          method: 'POST'
+      });
+      this.setState({loggedIn:false,loginName:''});
+    }else{
+      this.setState({loginOpen:value});
+    }
   }
   onPlaylistNameChange(name){
     this.setState({createPlaylistName:name});
@@ -505,6 +528,7 @@ export class PlaylistProvider extends React.Component {
         getAllTrackPropValues:this.getAllTrackPropValues,
         displaySearch:this.displaySearch,
         onLoginOpenClose:this.onLoginOpenClose,
+        checkLoggedIn:this.checkLoggedIn,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>

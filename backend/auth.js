@@ -42,16 +42,24 @@ router.post('/login', async (req,res)=>{
     }
     //checking if existing user
     const user = await User.findOne({email:req.body.email});
-    if(!user) return res.status(400).send("email or password invalid");
+    if(!user) return res.status(400).send({message:"email or password invalid"});
 
     const validPass = await bcrypt.compare(req.body.password,user.password);
-    if(!validPass) return res.status(400).send("email or password invalid");
+    if(!validPass) return res.status(400).send({message:"email or password invalid"});
     
     //create token
     const token = jwt.sign({_id:user._id},process.env.TOKEN_SECRET);
-    res.header('auth-token',token).cookie('auth-token',token,{ maxAge: 900000, httpOnly: true }).send(token);
+    res.header('auth-token',token).cookie('auth-token',token,{ maxAge: 1000*60*60*24, httpOnly: true }).send({name:user.name});
 
     //return res.send('logged in');
+});
+router.post('/logoff', async (req,res)=>{
+    const cookie = req.cookies['auth-token'];
+    if(cookie){
+        return res.cookie('auth-token','',{ maxAge: 0, httpOnly: true }).send("logged off");
+    }else{
+        return res.send("isn't logged in");
+    }
 });
 
 module.exports = router;

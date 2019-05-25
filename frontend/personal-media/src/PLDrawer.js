@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {List,ListItem,ListItemIcon,ListItemText,Drawer} from '@material-ui/core';
-import {VerifiedUser as UserIcon,Home as HomeIcon,Folder as FilesIcon, PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
+import {AccountCircle as LoginIcon,VerifiedUser as UserIcon,Home as HomeIcon,Folder as FilesIcon, PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import {PlaylistContext} from './PlaylistContext';
@@ -32,7 +32,7 @@ export class PLDrawer extends Component {
                         {text:'My Files',icon:<FilesIcon />,click:"/folder/"},
                         {text:'Favorite tracks',icon:<FavorIcon />,click:"/favorite"},
                         {text:'Add media',icon:<ScanIcon/>,click:() => context.setImportOpen(true)},
-                        {text:'Login',icon:<UserIcon/>,click:() => context.onLoginOpenClose(true)},
+                        {text:context.state.loggedIn?'Logoff '+context.state.loginName:"Login",icon:context.state.loggedIn?<UserIcon/>:<LoginIcon/>,click:() => context.onLoginOpenClose(true)},
                         {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.onCreatePlaylistOpenClose(true)}
                         ].map((item) => {
                         if(typeof item.click == "function"){
