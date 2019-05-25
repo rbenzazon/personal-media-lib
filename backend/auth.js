@@ -7,15 +7,19 @@ const {registerValidation,loginValidation} = require('./validation');
 const verify = require('./verifyToken');
 
 router.post('/register',verify, async (req,res)=>{
-    
+    //can't create account if not admin
+    const userExist = await User.findOne({_id:req.user._id});
+    if(!userExist && userExist.type !== 0){
+        return res.status(400).send({message:'Access restricted',user:userExist});
+    }
     //validate
     const {error} = registerValidation(req.body);
     if(error){
-        return res.status(400).send(error.details[0].message);
+        return res.status(400).send({message:error.details[0].message});
     }
     //checking if existing user
     const emailExist = await User.findOne({email:req.body.email});
-    if(emailExist) return res.status(400).send("email already exist");
+    if(emailExist) return res.status(400).send({message:"email already exist"});
 
     //hash the password
     const salt = await bcrypt.genSalt(10);
@@ -31,7 +35,7 @@ router.post('/register',verify, async (req,res)=>{
         const savedUser = await user.save();
 		res.send({user:savedUser._id});
     }catch(err){
-        res.status(400).send(err)
+        res.status(400).send({message:err})
     }
 });
 router.post('/login', async (req,res)=>{
@@ -49,7 +53,7 @@ router.post('/login', async (req,res)=>{
     
     //create token
     const token = jwt.sign({_id:user._id},process.env.TOKEN_SECRET);
-    res.header('auth-token',token).cookie('auth-token',token,{ maxAge: 1000*60*60*24, httpOnly: true }).send({name:user.name});
+    res.header('auth-token',token).cookie('auth-token',token,{ maxAge: 1000*60*60*24, httpOnly: true }).send({name:user.name,type:user.type});
 
     //return res.send('logged in');
 });

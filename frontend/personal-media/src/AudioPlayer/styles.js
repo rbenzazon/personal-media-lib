@@ -40,6 +40,7 @@ export default theme => ({
     margin:'0 0 0.2rem 0',
   },
   'player-container': {
+    overflow:"hidden",
     backgroundColor:'transparent',
     padding: '0.3rem',
     borderRadius:'0px !important'

@@ -35,6 +35,8 @@ export class PlaylistProvider extends React.Component {
     loginOpen:false,
     loggedIn:this.getCookieValue('auth-token') !== '',
     loginName:'',
+    loginType:null,
+    createUserOpen:false,
   }
   constructor(props){
     super(props);
@@ -74,13 +76,18 @@ export class PlaylistProvider extends React.Component {
     this.displaySearch = this.displaySearch.bind(this);
     this.onLoginOpenClose = this.onLoginOpenClose.bind(this);
     this.checkLoggedIn = this.checkLoggedIn.bind(this);
+    this.onCreateUserOpenClose = this.onCreateUserOpenClose.bind(this);
   }
 
-  checkLoggedIn(name){
+  onCreateUserOpenClose(value){
+    this.setState({createUserOpen:value});
+  }
+
+  checkLoggedIn(name,type){
       if(name !== undefined){
-        this.setState({loggedIn:true,loginName:name});
+        this.setState({loggedIn:true,loginName:name,loginType:type});
       }else{
-        this.setState({loggedIn:false,loginName:''});
+        this.setState({loggedIn:false,loginName:'',loginType:null});
       }
     
   }
@@ -529,6 +536,7 @@ export class PlaylistProvider extends React.Component {
         displaySearch:this.displaySearch,
         onLoginOpenClose:this.onLoginOpenClose,
         checkLoggedIn:this.checkLoggedIn,
+        onCreateUserOpenClose:this.onCreateUserOpenClose,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>

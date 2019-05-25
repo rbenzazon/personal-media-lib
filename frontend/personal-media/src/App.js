@@ -14,6 +14,7 @@ import CreatePLDialog from './CreatePLDialog';
 import AddToPLDialog from './AddToPLDialog';
 import ImportDialog from './ImportDialog';
 import LoginDialog from './LoginDialog';
+import { CreateUserDialog } from './CreateUserDialog';
 
 ReactGA.initialize('UA-52487002-2');
 
@@ -84,6 +85,7 @@ export default class App extends React.Component{
             <APAppBar />
             </div>
             <PLDrawer />
+            <CreateUserDialog />
             <CreatePLDialog />
             <LoginDialog />
             <AddToPLDialog />

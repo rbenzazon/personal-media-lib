@@ -23,22 +23,31 @@ const styles = theme => ({
     },
 });
 
-export class LoginDialog extends Component {
+export class CreateUserDialog extends Component {
     static defaultProps = {
         classes: {},
     };
 
     state = {
+        name:"",
         email:"",
         password:"",
+        confirmPassword:"",
         error:"",
+        userId:"",
     }
     
     constructor(props){
         super(props);
-        this.login = this.login.bind(this);
+        this.createUser = this.createUser.bind(this);
+        this.onNameChange = this.onNameChange.bind(this);
         this.onEmailChange = this.onEmailChange.bind(this);
         this.onPasswordChange = this.onPasswordChange.bind(this);
+        this.onConfirmPasswordChange = this.onConfirmPasswordChange.bind(this);
+        this.closeDialog = this.closeDialog.bind(this);
+    }
+    onNameChange(newValue){
+        this.setState({name:newValue});
     }
     onEmailChange(newValue){
         this.setState({email:newValue});
@@ -46,16 +55,29 @@ export class LoginDialog extends Component {
     onPasswordChange(newValue){
         this.setState({password:newValue});
     }
-    async login(context){
-        const res = await fetch('/api/user/login', {
+    onConfirmPasswordChange(newValue){
+        this.setState({confirmPassword:newValue});
+    }
+    closeDialog(context){
+        context.onCreateUserOpenClose(false);
+        this.setState({name:"",email:"",password:"",confirmPassword:"",userId:"",error:""});
+    }
+    async createUser(context){
+        if(this.state.password !== this.state.confirmPassword){
+            this.setState({error:"password and confirm password must be identical"});
+            return;
+        }
+        const res = await fetch('/api/user/register', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                name: this.state.name,
                 email: this.state.email,
                 password: this.state.password,
+                type:1,
             })
         })
         
@@ -64,8 +86,8 @@ export class LoginDialog extends Component {
             const errorDetail = jsonBody.message ? jsonBody.message : "";
             this.setState({error:"status "+res.status+"\n"+errorDetail});
         }else{
-            this.setState({error:""});
-            context.checkLoggedIn(jsonBody.name,jsonBody.type);
+            this.setState({error:"",userId:jsonBody.user});
+            //context.checkLoggedIn(jsonBody.name,jsonBody.type);
         }
     }
     render() {
@@ -75,15 +97,21 @@ export class LoginDialog extends Component {
         return (
             <PlaylistContext.Consumer>{(context) => (
                 <Dialog
-                    open={context.state.loginOpen}
-                    onClose={() => context.onLoginOpenClose(false)}
+                    open={context.state.createUserOpen}
+                    onClose={() => this.closeDialog(context)}
                     aria-labelledby="login"
                     aria-describedby="login"
                     >
                     <DialogTitle id="alert-dialog-title">Login</DialogTitle>
                     <DialogContent>
-                        {!context.state.loggedIn &&
+                        
                         <form noValidate autoComplete="off">
+                            <TextField 
+                                label="name"
+                                value={this.state.name}
+                                onChange={(e) => this.onNameChange(e.target.value)}
+                                className={classes.input}
+                            />
                             <TextField 
                                 label="email"
                                 value={this.state.email}
@@ -98,20 +126,28 @@ export class LoginDialog extends Component {
                                 style={{width:'100%'}}
                                 className={classes.input}
                             />
+                            <TextField
+                                label="confirm password"
+                                value={this.state.confirmPassword}
+                                type="password"
+                                onChange={(e) => this.onConfirmPasswordChange(e.target.value)}
+                                style={{width:'100%'}}
+                                className={classes.input}
+                            />
                         </form>
+                        
+                        {(this.state.error === '' && this.state.userId !== '' ) &&
+                            <p className={classes.status} >User id : {this.state.userId}</p>
                         }
-                        {context.state.loggedIn &&
-                            <p className={classes.status} >Logged in as {context.state.loginName}</p>
-                        }
-                        {this.state.error != '' &&
+                        {this.state.error !== '' &&
                             <p className={classes.errorStatus} >{this.state.error}</p>
                         }
                     </DialogContent>
                     <DialogActions>
-                        <Button className={classes.cancelButton} onClick={() => context.onLoginOpenClose(false)} color="secondary">
+                        <Button className={classes.cancelButton} onClick={() => this.closeDialog(context)} color="secondary">
                         Cancel
                         </Button>
-                        <Button onClick={() => this.login(context)} color="primary" autoFocus>
+                        <Button onClick={() => this.createUser(context)} color="primary" autoFocus>
                         Connect
                         </Button>
                     </DialogActions>
@@ -120,7 +156,7 @@ export class LoginDialog extends Component {
         )
     }
 }
-LoginDialog.propTypes = {
+CreateUserDialog.propTypes = {
     classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(LoginDialog);
+export default withStyles(styles)(CreateUserDialog);

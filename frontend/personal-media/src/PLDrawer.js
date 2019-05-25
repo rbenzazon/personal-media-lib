@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {List,ListItem,ListItemIcon,ListItemText,Drawer} from '@material-ui/core';
-import {AccountCircle as LoginIcon,VerifiedUser as UserIcon,Home as HomeIcon,Folder as FilesIcon, PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
+import {PersonAdd as AddUserIcon,AccountCircle as LoginIcon,VerifiedUser as UserIcon,Home as HomeIcon,Folder as FilesIcon, PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import {PlaylistContext} from './PlaylistContext';
@@ -16,6 +16,7 @@ export class PLDrawer extends Component {
     };
 
     render() {
+        
     return (
         <PlaylistContext.Consumer>{(context) => (
             <Drawer open={context.state.sideDrawer} onClose={() => context.toggleDrawer(false)}>
@@ -28,12 +29,12 @@ export class PLDrawer extends Component {
                     <List>
                     {
                         [
-                        {text:'Home',icon:<HomeIcon />,click:"/"},
-                        {text:'My Files',icon:<FilesIcon />,click:"/folder/"},
-                        {text:'Favorite tracks',icon:<FavorIcon />,click:"/favorite"},
-                        {text:'Add media',icon:<ScanIcon/>,click:() => context.setImportOpen(true)},
-                        {text:context.state.loggedIn?'Logoff '+context.state.loginName:"Login",icon:context.state.loggedIn?<UserIcon/>:<LoginIcon/>,click:() => context.onLoginOpenClose(true)},
-                        {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.onCreatePlaylistOpenClose(true)}
+                            {text:'Home',icon:<HomeIcon />,click:"/"},
+                            {text:'My Files',icon:<FilesIcon />,click:"/folder/"},
+                            {text:'Favorite tracks',icon:<FavorIcon />,click:"/favorite"},
+                            {text:'Add media',icon:<ScanIcon/>,click:() => context.setImportOpen(true)},
+                            {text:context.state.loggedIn?'Logoff '+context.state.loginName:"Login",icon:context.state.loggedIn?<UserIcon/>:<LoginIcon/>,click:() => context.onLoginOpenClose(true)},
+                            {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.onCreatePlaylistOpenClose(true)}
                         ].map((item) => {
                         if(typeof item.click == "function"){
                             return (
@@ -53,6 +54,16 @@ export class PLDrawer extends Component {
                             )
                         }
                     })
+                    }
+                    {(context.state.loggedIn && context.state.loginType === 0) &&
+                        [
+                            {text:'Create user',icon:<AddUserIcon/>,click:() => context.onCreateUserOpenClose(true)},
+                        ].map((item) => {return (
+                                <ListItem button key={item.text} onClick={item.click}>
+                                    <ListItemIcon>{item.icon}</ListItemIcon>
+                                    <ListItemText primary={item.text} />
+                                </ListItem>
+                            )})
                     }
                     {context.state.playLists.map(item=>{
                             return (
