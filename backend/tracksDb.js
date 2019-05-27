@@ -12,15 +12,15 @@ const pathToScan = './media';
 var rootNode;
 
 
-router.post('/getAllTracks', async (req,res)=>{
-    const rootFile = await File.findOne({title:"Bad"}).exec();
+router.post('/getAllTracks',verify, async (req,res)=>{
+    const rootFile = await File.findOne({title:"My media"}).exec();
     const populated = await Node.findOne({file:rootFile._id}).exec();
     const model = {};
     modelNodeStructure(populated,model);
     return res.send(model);
 });
 
-router.post('/getAlbum', async (req,res)=>{
+router.post('/getAlbum',verify, async (req,res)=>{
     
     const files = await File.find({album:req.body.albumName}).exec();
     //const populated = await Node.findOne({file:rootFile._id}).exec();
@@ -30,31 +30,31 @@ router.post('/getAlbum', async (req,res)=>{
         modelFile(file,model);
         album.push(model);
     }*/
-    return res.send({album:req.body.albumName,tracks:files});
+    return res.send({album:req.body.albumName,files:files});
 });
 
-router.post('/getAlbumList', async (req,res)=>{
+router.post('/getAlbumList',verify, async (req,res)=>{
     const albumList = await File.distinct("album").exec();
     return res.send(albumList);
 });
 
-router.post('/getArtistList', async (req,res)=>{
+router.post('/getArtistList',verify, async (req,res)=>{
     const artistList = await File.distinct("artist").exec();
     return res.send(artistList);
 });
 
-router.post('/getArtist', async (req,res)=>{
+router.post('/getArtist',verify, async (req,res)=>{
     const files = await File.find({artist:req.body.artistName}).exec();
-    return res.send({artist:req.body.artistName,tracks:files});
+    return res.send({artist:req.body.artistName,files:files});
 });
 
-router.post('/getGenreList', async (req,res)=>{
+router.post('/getGenreList',verify, async (req,res)=>{
     const genreList = await File.distinct("genre").exec();
     return res.send(genreList);
 });
-router.post('/getGenre', async (req,res)=>{
+router.post('/getGenre',verify, async (req,res)=>{
     const files = await File.find({genre:req.body.genreName}).exec();
-    return res.send({genre:req.body.genreName,tracks:files});
+    return res.send({genre:req.body.genreName,files:files});
 });
 
 router.post('/createFileList',verify, async (req,res)=>{
@@ -132,7 +132,7 @@ router.post('/addToFileList',verify, async (req,res)=>{
     }
     fileListExist.files.push(fileExist);
     await fileListExist.save();
-    return res.send(fileListExist.files);
+    return res.send({files:fileListExist.files});
 });
 
 router.post('/getFileList',verify, async (req,res)=>{
@@ -145,7 +145,12 @@ router.post('/getFileList',verify, async (req,res)=>{
         return res.status(400).send({message:"can't get playlist without a name"});
     }
     const filesList = await FileList.findOne({owner:req.user._id,name:req.body.fileListName}).populate("files").exec();
-    return res.send({files:filesList.files});
+    if(filesList){
+        return res.send({files:filesList.files});
+    }else{
+        return res.status(400).send({message:'FileList not found'});
+    }
+    
 });
 
 
@@ -269,6 +274,8 @@ router.post('/scanToDb',verify, async (req,res)=>{
 });
 const legalFileProps = [
     "title",
+    "_id",
+    'node',
     "url",
     "album",
     "year",
