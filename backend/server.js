@@ -5,6 +5,7 @@ const app = express();
 app.use(cookieParser());
 //import routes
 const authRoutes = require('./auth.js');
+const tracksRoutes = require('./tracksDb');
 dotenv.config();
 
 const verify = require('./verifyToken');
@@ -25,6 +26,7 @@ app.use(express.json());
 })*/
 
 //add route middelware to app
+app.use("/api",tracksRoutes);
 app.use("/api/user",authRoutes);
 
 

@@ -10,7 +10,8 @@ router.post('/register',verify, async (req,res)=>{
     //can't create account if not admin
     const userExist = await User.findOne({_id:req.user._id});
     if(!userExist && userExist.type !== 0){
-        return res.status(400).send({message:'Access restricted',user:userExist});
+        return res.status(400).send({message:'Access restricted'});
+        console.log("failed attempt at executing register route with insufficient privileges "+userExist);
     }
     //validate
     const {error} = registerValidation(req.body);
@@ -51,6 +52,7 @@ router.post('/login', async (req,res)=>{
     const validPass = await bcrypt.compare(req.body.password,user.password);
     if(!validPass) return res.status(400).send({message:"email or password invalid"});
     
+    console.log(user.name+" logged in");
     //create token
     const token = jwt.sign({_id:user._id},process.env.TOKEN_SECRET);
     res.header('auth-token',token).cookie('auth-token',token,{ maxAge: 1000*60*60*24, httpOnly: true }).send({name:user.name,type:user.type});
