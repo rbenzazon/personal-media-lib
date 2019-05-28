@@ -11,15 +11,73 @@ const mm = require('music-metadata');
 const pathToScan = './media';
 var rootNode;
 
+router.post('/getFolder',verify, async (req,res)=>{
+    //add id ref to root file from .env
+    let targetFile = await File.findOne({title:"My media"}).exec();
+    let targetNode = await Node.findOne({_id:targetFile.node});
+    //when looking for a folder name in a children list, if it's not found, status 400 and send error
+    let notFound;
+    for (let folderName of req.body.path.split("/")){
+        //for each current folder, populate node data to access children file
+        await targetNode.populate("children").execPopulate();
+        children = targetNode.children;
+        found = false;
+        for(let child of children) {
+            //pass if not folder
+            if(!child.children || !child.children.length > 0){
+                continue;
+            }
+            //populate with File data to check the node name
+            let populated = await child.populate("file").execPopulate();
+            if(child.file.title === folderName){
+                //set the main loop on a new Node instance
+                targetFile = child;
+                targetNode = await Node.findOne({_id:targetFile.file.node}).exec();
+                //flag to not res status 400 after breaking
+                found = true;
+                break;
+            }
+        }
+        //one of the folder in the path have not been found, sent the request as error
+        if(!found){
+            return res.status(400).send({message:"can't find "+folderName+" in "+targetFile.title});
+        }
+    }
+    //populate File data in the last target node of the path to get the children info to send
+    await targetNode.populate("children").execPopulate();
+    const model = [];
+    //filter the props
+    modelNodeList(targetNode.children,model);
+    return res.send(model);
+});
 
 router.post('/getAllTracks',verify, async (req,res)=>{
-    const rootFile = await File.findOne({title:"My media"}).exec();
-    const populated = await Node.findOne({file:rootFile._id}).exec();
+    //filters Files from url (folder don't have url)
+    return res.send(await File.find({"url":{$exists:true}}));
+});
+/*
+router.post('/getAllTracksFromNode',verify, async (req,res)=>{
+    //const rootFile = await File.findOne({title:"testFolder"}).exec();
+    const allNotFolder = await Node.find({"children.0":{$exists:false}}).exec();
+    //console.log(allNotFolder);
+    allNotFolder.forEach(async element => {
+        await element.populate("file");
+    });
+    console.log(allNotFolder);
+    const model = [];
+    modelNodeList(allNotFolder,model);
+    return res.send(model);
+});
+
+
+router.post('/getCompleteTree',verify, async (req,res)=>{
+    const rootFile = await File.findOne({title:"testFolder"}).exec();
+    const populated = await Node.findOne({file:rootFile._id});
     const model = {};
     modelNodeStructure(populated,model);
     return res.send(model);
 });
-
+*/
 router.post('/getAlbum',verify, async (req,res)=>{
     
     const files = await File.find({album:req.body.albumName}).exec();
@@ -222,6 +280,13 @@ async function scanFiles(pathToScan){
     files.push(rootFile);
     rootNode.children = await scanRecursive(pathToScan,nodes,files);
     return {nodes:nodes,files:files};
+}
+function modelNodeList(nodeList,result){
+    for(let node of nodeList){
+        let nodeModel = {}
+        result.push(nodeModel);
+        modelFile(node.file,nodeModel);
+    }
 }
 function modelNodeStructure(node,result){
     modelFile(node.file,result);
