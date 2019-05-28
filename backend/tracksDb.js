@@ -55,6 +55,15 @@ router.post('/getAllTracks',verify, async (req,res)=>{
     //filters Files from url (folder don't have url)
     return res.send(await File.find({"url":{$exists:true}}));
 });
+router.post('/getSearch',verify, async (req,res)=>{
+    const {searchKeyword} = req.body;
+    //filters Files from url (folder don't have url)
+    return res.send(await File.find({$or:[
+        {"title":{ $regex : new RegExp(searchKeyword, "i") }},
+        {"artist":{ $regex : new RegExp(searchKeyword, "i") }},
+        {"album":{ $regex : new RegExp(searchKeyword, "i") }}
+    ]}));
+});
 /*
 router.post('/getAllTracksFromNode',verify, async (req,res)=>{
     //const rootFile = await File.findOne({title:"testFolder"}).exec();
