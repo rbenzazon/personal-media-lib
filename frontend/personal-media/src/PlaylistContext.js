@@ -1,8 +1,8 @@
 import React, { createContext } from 'react';
 import myData from './data.json';
 import Player from './AudioPlayer/utils/constants';
-import constants from './ContextConstant'
-const {tracks} = myData;
+import constants from './ContextConstant';
+//const {tracks} = myData;
 
 /**
  * theaudiodb.com art data
@@ -14,12 +14,13 @@ export const PlaylistContext = createContext();
 export class PlaylistProvider extends React.Component {
   state = {
     route:null,
-    currentFolder:tracks,
+    currentFolder:null,
+    favorites:[],
     parentFolders:[],
-    selected:tracks.children.filter(track=>!track.children)[0],
+    selected:null,
     displayedItemMode:constants.PLAYLIST_MODE,
     displayedItems:[],
-    playLists:[{title:'my playlist',children:[]}],
+    playLists:[],
     playerLoopStatus:Player.Status.LOOP_LIST,
     playerStatus:Player.Status.PAUSE,
     playerRef:undefined,
@@ -33,14 +34,13 @@ export class PlaylistProvider extends React.Component {
     playlistAddOpen:false,
     createPlaylistName:'',
     loginOpen:false,
-    loggedIn:this.getCookieValue('auth-token') !== '',
+    loggedIn:false,
     loginName:'',
     loginType:null,
     createUserOpen:false,
   }
   constructor(props){
     super(props);
-    this.mapRecursive = this.mapRecursive.bind(this);
     this.onPlaylistToAddChange = this.onPlaylistToAddChange.bind(this);
     this.onCreatePlaylistOpenClose = this.onCreatePlaylistOpenClose.bind(this);
     this.onPlaylistNameChange = this.onPlaylistNameChange.bind(this);
@@ -58,7 +58,6 @@ export class PlaylistProvider extends React.Component {
     this.restartPlayer = this.restartPlayer.bind(this);
     this.onAudioEnd = this.onAudioEnd.bind(this);
     this.toggleLoopStatus = this.toggleLoopStatus.bind(this);
-    this.setFavoriteTracks = this.setFavoriteTracks.bind(this);
     this.setImportOpen = this.setImportOpen.bind(this);
     this.onListFavoriteClick = this.onListFavoriteClick.bind(this);
     this.onSearchKeyPress = this.onSearchKeyPress.bind(this);
@@ -66,30 +65,92 @@ export class PlaylistProvider extends React.Component {
     this.clearSearch = this.clearSearch.bind(this);
     this.onSearchOpen = this.onSearchOpen.bind(this)
     this.onRouteMount = this.onRouteMount.bind(this);
-    this.getPlaylistRef = this.getPlaylistRef.bind(this);
     this.playRandomTrack = this.playRandomTrack.bind(this);
     this.getParentPath = this.getParentPath.bind(this);
     this.getFolderPath = this.getFolderPath.bind(this);
     this.linkTo = this.linkTo.bind(this);
-    this.getAllTracks = this.getAllTracks.bind(this);
-    this.getAllTrackPropValues = this.getAllTrackPropValues.bind(this);
     this.displaySearch = this.displaySearch.bind(this);
     this.onLoginOpenClose = this.onLoginOpenClose.bind(this);
-    this.checkLoggedIn = this.checkLoggedIn.bind(this);
+    this.onLoggedIn = this.onLoggedIn.bind(this);
+    this.checkLogin = this.checkLogin.bind(this);
     this.onCreateUserOpenClose = this.onCreateUserOpenClose.bind(this);
+    this.onHomeRoute = this.onHomeRoute.bind(this);
+    this.onFavoriteRoute = this.onFavoriteRoute.bind(this);
+    this.isFavorite = this.isFavorite.bind(this);
+    this.refreshFavorite = this.refreshFavorite.bind(this);
+    this.refreshPlaylists = this.refreshPlaylists.bind(this);
+
+    this.checkLogin();
   }
 
   onCreateUserOpenClose(value){
     this.setState({createUserOpen:value});
   }
 
-  checkLoggedIn(name,type){
-      if(name !== undefined){
-        this.setState({loggedIn:true,loginName:name,loginType:type});
-      }else{
-        this.setState({loggedIn:false,loginName:'',loginType:null});
-      }
+  async checkLogin(){
+    const url = process.env.REACT_APP_SERV_URL+"api/user/checkLogin";
+    const options = {
+      method: 'POST',
+      crossDomain:true,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+    const res = await fetch(url,options);
+    if(res.status >=400) {
+      console.log("toto");
+      return;
+    }
+    const user = await res.json();
+    if(user.name === null){
+        return;
+    }
+    this.onLoggedIn(user.name,user.type);
+  }
+
+  isFavorite(fileId){
+    return this.state.favorites.indexOf(fileId) !== -1;
+  }
+
+  async refreshFavorite(){
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({fileListName:"favorite",})
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFileListIds",config);
+    const fileList = await res.json();
+    if(fileList.files === null) return;
+    this.setState({favorites:fileList.files});
+  }
+  async refreshPlaylists(){
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFileListList",config);
+    const filesListList = await res.json();
+    if(filesListList.files === null) return;
+    this.setState({playLists:filesListList.files.map((filesList)=>{return {title:filesList.name}})});
+  }
+
+  async onLoggedIn(name,type){
     
+    await this.refreshFavorite();
+    await this.refreshPlaylists();
+    
+    if(name !== undefined){
+      this.setState({loggedIn:true,loginName:name,loginType:type,loginOpen:false});
+    }else{
+      this.setState({loggedIn:false,loginName:'',loginType:null});
+    }
   }
   getCookieValue(a) {
     var b = document.cookie.match('(^|[^;]+)\\s*' + a + '\\s*=\\s*([^;]+)');
@@ -108,7 +169,7 @@ export class PlaylistProvider extends React.Component {
   
   async onLoginOpenClose(value){
     if(value && this.state.loggedIn){
-      const res = await fetch('/api/user/logoff', {
+      const res = await fetch(process.env.REACT_APP_SERV_URL+'api/user/logoff', {
           method: 'POST'
       });
       this.setState({loggedIn:false,loginName:''});
@@ -127,15 +188,31 @@ export class PlaylistProvider extends React.Component {
     const newPlaylists = [...this.state.playLists,newPlaylist];
     this.setState({playLists:newPlaylists,trackToAdd:null,createPlaylistName:'',createPlaylistOpen:false});
   }
-  addToPlaylist(){
-    this.state.playlistToAdd.children.push(this.state.trackToAdd);
-    let newPlayLists = [...this.state.playLists];
-    //let newPlaylist = {title:this.state.playlistToAdd.title,children:[...this.state.playlistToAdd,[this.state.trackToAdd]]}
-    this.setState({playLists:newPlayLists,trackToAdd:null,playlistToAdd:null,playlistAddOpen:false});
+  async addToPlaylist(){
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({fileListName:this.state.playlistToAdd.title,fileId:this.state.trackToAdd._id})
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/addToFileList",config);
+    const fileList = await res.json();
+    if(!fileList.files){
+      return;
+    }
+    this.setState({trackToAdd:null,playlistToAdd:null,playlistAddOpen:false});
   }
+  /**
+   * closes the add to playlist dialog
+   */
   onAddToPlaylistClose(){
     this.setState({playlistAddOpen:false});
   }
+  /**
+   * stores which track has been clicked to open the add playlist dialog
+   */
   onAddToPlaylist(track){
     this.setState({trackToAdd:track,playlistAddOpen:true});
   }
@@ -143,7 +220,7 @@ export class PlaylistProvider extends React.Component {
    * file list nav
    */
   onListClick(track){
-    if(track && !track.children){
+    if(track && track.url){
       this.setState({selected:track});
       this.restartPlayer();
     }
@@ -171,7 +248,7 @@ export class PlaylistProvider extends React.Component {
       const index = children.indexOf(this.state.selected)+1;
       const boundaries = index === children.length ? 0 : index;
       for(let newIndex = boundaries;newIndex < children.length;newIndex++){
-          if(!children[newIndex].children){
+          if(children[newIndex].url){
               this.setState({selected:children[newIndex]});
               this.restartPlayer();
               return;
@@ -180,11 +257,11 @@ export class PlaylistProvider extends React.Component {
     }
   }
   onPrevClick(){
-    const children = this.state.displayedItems.filter(track => !track.children);
+    const children = this.state.displayedItems.filter(track => track.url);
     const index = children.indexOf(this.state.selected) -1;
     const boundaries = index < 0 ? children.length-1 : index;
     for(let newIndex = boundaries;newIndex >= 0;newIndex--){
-        if(!children[newIndex].children){
+        if(children[newIndex].url){
             this.setState({selected:children[newIndex]});
             this.restartPlayer();
             return;
@@ -192,7 +269,7 @@ export class PlaylistProvider extends React.Component {
     }
   }
   playRandomTrack(){
-    const children = this.state.displayedItems.filter(track=>track !== this.state.selected && !track.children);
+    const children = this.state.displayedItems.filter(track=>track !== this.state.selected && track.url);
     if(children.length === 0){
       return;
     }
@@ -245,23 +322,47 @@ export class PlaylistProvider extends React.Component {
     this.setState({playerLoopStatus:newLoopStatus});
   }
 
-  /**
-   * Favorite
-   */
-  setFavoriteTracks(value){
-    this.setState(state=>({
-      favoriteTracks:value,
-      displayedItems:[...state.displayedItems],
-    }))
-  }
   setImportOpen(value){
     this.setState({importOpen:value});
   }
-  onListFavoriteClick(track){
-    track.favorite = track.favorite ?!track.favorite : true;
-    this.setState(state =>({
-      displayedItems:[...state.displayedItems],
-    }));
+  async onListFavoriteClick(track){
+    //track.favorite = track.favorite ?!track.favorite : true;
+    if(this.isFavorite(track._id)){
+      const config = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({fileListName:"favorite",fileId:track._id})
+      }
+      const res = await fetch(process.env.REACT_APP_SERV_URL+"api/removeFromFileList",config);
+      const fileList = await res.json();
+      if(!fileList.files){
+        return;
+      }
+      this.setState(state =>({
+        favorites:fileList.files,
+      }));
+    }else{
+      const config = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({fileListName:"favorite",fileId:track._id})
+      }
+      const res = await fetch(process.env.REACT_APP_SERV_URL+"api/addToFileList",config);
+      const fileList = await res.json();
+      if(!fileList.files){
+        return;
+      }
+      this.setState(state =>({
+        favorites:fileList.files,
+      }));
+    }
+    
   }
   /**
    * Search
@@ -294,7 +395,182 @@ export class PlaylistProvider extends React.Component {
     }
     
   }
+  onHomeRoute(route,match){
+    this.setState(state => ({
+      route:route,
+      title:"Home",
+      displayedItems:[],
+      parentFolders:[],
+    }));
+  }
+  async onFavoriteRoute(route,match){
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({fileListName:"favorite",})
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFileList",config);
+    const fileList = await res.json();
+    if(fileList[0] === null){
+      return;
+    }
+    this.setState(state => ({
+      displayedItemMode:constants.FAVORITE_MODE,
+      route:route,
+      displayedItems:fileList.files,
+      title:"Favorite",
+      parentFolders:[],
+    }));
+  }
+  async onPlaylistRoute(route,match){
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({fileListName:match.params.playlistName,})
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFileList",config);
+    const fileList = await res.json();
+    if(fileList.files === null){
+      return;
+    }
+    this.setState(state => ({
+      displayedItemMode:constants.FAVORITE_MODE,
+      route:route,
+      displayedItems:fileList.files,
+      title:match.params.playlistName,
+      parentFolders:[],
+    }));
+  }
 
+  /**
+   * @route current route object to save in the state
+   * @match optional, match contains matching parameters from the route,
+   * if not passed, root folder should be received
+   */
+  async onFolderRoute(route,match){
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({path:match?match.params[0]:""})
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFolder",config);
+    const fileList = await res.json();
+    if(fileList.title === null){
+      return;
+    }
+    this.setState(state => ({
+      displayedItemMode:constants.FOLDER_MODE,
+      route:route,
+      displayedItems:fileList.children,
+      title:fileList.title,
+      parentFolders:fileList.parents.concat([{_id:fileList._id,title:fileList.title}]),
+    }));
+  }
+
+  async onSearchRoute(route,match){
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({searchKeyword:match.params.searchKeyword})
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getSearch",config);
+    const fileList = await res.json();
+    if(fileList[0] === null){
+      return;
+    }
+    this.setState(state => ({
+      displayedItemMode:constants.SEARCH_MODE,
+      route:route,
+      displayedItems:fileList,
+      title:match.params.searchKeyword,
+      parentFolders:[],
+    }));
+  }
+
+  async onArtistRoute(route,match){
+    const artistName = decodeURIComponent(match.params.artistName);
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({artistName:artistName})
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getArtist",config);
+    const fileList = await res.json();
+    if(fileList.files === null){
+      return;
+    }
+    this.setState(state => ({
+      displayedItemMode:constants.ARTIST_MODE,
+      route:route,
+      displayedItems:fileList.files,
+      title:artistName,
+      parentFolders:[],
+    }));
+  }
+  
+  async onAlbumRoute(route,match){
+    const albumName = decodeURIComponent(match.params.albumName);
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({albumName:albumName})
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getAlbum",config);
+    const fileList = await res.json();
+    if(fileList.files === null){
+      return;
+    }
+    this.setState(state => ({
+      displayedItemMode:constants.ALBUM_MODE,
+      route:route,
+      displayedItems:fileList.files,
+      title:albumName,
+      parentFolders:[],
+    }));
+  }
+  
+  async onGenreRoute(route,match){
+    const genreName = decodeURIComponent(match.params.genreName);
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({genreName:genreName})
+    }
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getGenre",config);
+    const fileList = await res.json();
+    if(fileList.files === null){
+      return;
+    }
+    this.setState(state => ({
+      displayedItemMode:constants.ALBUM_MODE,
+      route:route,
+      displayedItems:fileList.files,
+      title:genreName,
+      parentFolders:[],
+    }));
+  }
+  
   /**
    * Init / route event
    * 
@@ -307,194 +583,52 @@ export class PlaylistProvider extends React.Component {
     let currentMatch = match? match:this.state.route;
     switch(currentMatch.path){
       case "/" :
-        newTracks = [...tracks.children];
-        newMode = null;
-        newTitle = "Home";
+        return this.onHomeRoute(route,currentMatch);
       break;
       case "/"+constants.FAVORITE_MODE :
-        newTracks = this.mapRecursive(tracks.children).filter((track)=>track.favorite);
-        newMode = constants.FAVORITE_MODE;
-        newTitle = "Favorite";
+        return this.onFavoriteRoute(route,currentMatch);
       break;
       case "/"+constants.PLAYLIST_MODE+"/:playlistName" :
-        const playListRef = this.getPlaylistRef(currentMatch.params.playlistName,this.state.playLists);
-        newTracks = [...playListRef.children];
-        newMode = constants.PLAYLIST_MODE;
-        newTitle = playListRef.title;
+        return this.onPlaylistRoute(route,currentMatch);
       break;
       case "/"+constants.FOLDER_MODE+"/*" :
-        const folderStructure = this.getFolderStructure(currentMatch.params[0]);
-        newTracks = [...folderStructure.newFolder.children];
-        newMode = constants.FOLDER_MODE;
-        newTitle = folderStructure.newFolder.title;
-        this.setState(state => ({
-          displayedItemMode:newMode,
-          route:route,
-          displayedItems:newTracks,
-          title:newTitle,
-          parentFolders:folderStructure.parentFolders,
-        }));
-        return;//special case, don't wanna share the setState with other cases to add parent parentFolders
-      
+        return this.onFolderRoute(route,currentMatch);
+      break;
       case "/"+constants.FOLDER_MODE+"/" :
       case "/"+constants.FOLDER_MODE :
-        newTracks = [...tracks.children];
-        newMode = constants.FOLDER_MODE;
-        newTitle = tracks.title;
-        this.setState(state => ({
-          displayedItemMode:newMode,
-          route:route,
-          displayedItems:newTracks,
-          title:newTitle,
-          parentFolders:[],
-        }));
-        return;//special case, don't wanna share the setState with other cases to add parent parentFolders
-      
+        return this.onFolderRoute(route);
+      break;
       case "/"+constants.SEARCH_MODE+"/:searchKeyword" :
-        let searchKeyword = currentMatch.params.searchKeyword;
-        newTracks = this.mapRecursive(tracks.children).filter(track=>{
-          let result = false;
-          let searchableFields = track.children ? ['title'] : ['title','artist','album'];
-          for(let prop of searchableFields){
-            result = result || track[prop] && track[prop].search(new RegExp(searchKeyword, "i")) !== -1;
-          }
-          return result;
-        });
-        newMode = constants.SEARCH_MODE;
-        newTitle = "";
+        return this.onSearchRoute(route,currentMatch);
       break;
       case "/"+constants.ARTIST_MODE+"/:artistName" :
-        let artistName = decodeURIComponent(currentMatch.params.artistName);
-        newTracks = this.getAllTracks({artist:artistName}).artist;
-        newMode = constants.ARTIST_MODE;
-        newTitle = "";
+        return this.onArtistRoute(route,currentMatch);
       break;
       case "/"+constants.ALBUM_MODE+"/:albumName" :
-        let albumName = decodeURIComponent(currentMatch.params.albumName);
-        newTracks = this.getAllTracks({album:albumName}).album;
-        newMode = constants.ALBUM_MODE;
-        newTitle = "";
+        return this.onAlbumRoute(route,currentMatch);
       break;
       case "/"+constants.GENRE_MODE+"/:genreName" :
-        let genreName = decodeURIComponent(currentMatch.params.genreName);
-        newTracks = this.getAllTracks({genre:genreName}).genre;
-        newMode = constants.GENRE_MODE;
-        newTitle = "genre : "+genreName;
+        return this.onGenreRoute(route,currentMatch);
       break;
       default:
       break;
     }
-    //const selected = newTracks.length>0?newTracks[0]:tracks.children[0];
-    this.setState(state => ({
-      //selected:selected,
-      displayedItemMode:newMode,
-      route:route,
-      displayedItems:newTracks,
-      title:newTitle,
-    }));
   }
-  getAllTracks(props){
-    const allTracks = this.mapRecursive(tracks.children).filter(track=>!track.children);
-    if(props.album || props.artist || props.genre){
-      let result = {};
-      for(let prop in props){
-        let propValueMap = {};
-        allTracks.forEach(function(track){
-          if(track[prop]){
-            if(propValueMap[track[prop]]){
-              propValueMap[track[prop]].push(track);
-            }else{
-              propValueMap[track[prop]] = [track];
-            }
-          }
-        });
-        if(propValueMap[props[prop]]){
-          result[prop] = propValueMap[props[prop]];
-        }
-      }
-      return result;
-    }else{
-      return allTracks;
-    }
-  }
-  getAllTrackPropValues(prop){
-    const allTracks = this.mapRecursive(tracks.children).filter(track=>!track.children && track[prop]);
-    if(prop === "album" || prop === "artist" || prop === "genre"){
-      let propValueMap = {};
-      allTracks.forEach(track=>{
-          propValueMap[track[prop]] = true;
-      });
-      let propResultList = [];
-      for(let propValue in propValueMap){
-        propResultList.push(propValue);
-      }
-      return propResultList;
-    }else{
-      return null;
-    }
-  }
-  getPlaylistRef(name,playLists){
-    for(let playlist of playLists){
-      if(name === playlist.title){
-        return playlist;
-      }
-    }
-    return false;
-  }
+
   getParentPath(){
-    return "/folder/"+this.state.parentFolders.slice(1).map(folder=>folder.title).join("/");
+    return "/folder/"+this.state.parentFolders.slice(1,-1).map(folder=>folder.title).join("/");
   }
   getFolderPath(track){
-    let parents = [];
+    /*let parents = [];
     if(this.state.parentFolders.length === 1){
-      parents = [this.state.parentFolders[0].children.filter(track=>track.title === this.state.title)[0]];
+      parents = [this.state.currentFolder.title];
     }else if(this.state.parentFolders.length > 1){
 
       parents = [...this.state.parentFolders.slice(1),this.state.parentFolders[this.state.parentFolders.length-1].children.filter(track=>track.title === this.state.title)];
-    }
-    let parentFolderNames = parents.map(folder=>folder.title);
+    }*/
+    let parentFolderNames = this.state.parentFolders.slice(1).map(folder=>folder.title);
     let parentFolderReduced = parentFolderNames.reduce((concat,prev,idx)=>concat +prev+"/","");
     return "/folder/"+parentFolderReduced+track.title;
-  }
-  getFolderStructure(path){
-    const folders = path.split("/");
-    
-    //route /folder/
-    if(folders.length === 0){
-      return {newFolder:tracks,parentFolders:[]};
-    }
-    /*if(folders[folders.length-1] === ""){
-      folders.length = folders.length-1;
-    }*/
-    //route folder/folderPath
-    //TODO check for slash support in url param
-    let parentFolders = [tracks];
-    let newFolder = tracks;
-    for(let folder of folders){
-      let tmpTracks = newFolder.children.filter(track=>track.children && track.title === folder);
-      //no folder found with the corresponding name
-      if(tmpTracks.length === 0){
-        console.log("can't find "+folder+" in "+newFolder.title)
-        return {newFolder:tracks,parentFolders:[]};
-      }
-      newFolder = tmpTracks[0];
-      if(folders.indexOf(folder) < folders.length -1){
-        parentFolders.push(newFolder);
-      }
-    }
-    return {newFolder:newFolder,parentFolders:parentFolders};
-  }
-
-  mapRecursive(trackList){
-    let output = [];
-    trackList.forEach((track)=>{
-        if(!track.children){
-          output.push(track);
-        }else{
-          output = [...output,...this.mapRecursive(track.children)];
-        }
-    });
-    return output;
   }
 
   linkTo(route){
@@ -520,7 +654,6 @@ export class PlaylistProvider extends React.Component {
         restartPlayer:this.restartPlayer,
         onAudioEnd:this.onAudioEnd,
         toggleLoopStatus:this.toggleLoopStatus,
-        setFavoriteTracks:this.setFavoriteTracks,
         setImportOpen:this.setImportOpen,
         onListFavoriteClick:this.onListFavoriteClick,
         onSearchKeyPress:this.onSearchKeyPress,
@@ -530,13 +663,12 @@ export class PlaylistProvider extends React.Component {
         onSearchOpen:this.onSearchOpen,
         getParentPath:this.getParentPath,
         getFolderPath:this.getFolderPath,
-        getAllTracks:this.getAllTracks,
         linkTo:this.linkTo,
-        getAllTrackPropValues:this.getAllTrackPropValues,
         displaySearch:this.displaySearch,
         onLoginOpenClose:this.onLoginOpenClose,
-        checkLoggedIn:this.checkLoggedIn,
+        onLoggedIn:this.onLoggedIn,
         onCreateUserOpenClose:this.onCreateUserOpenClose,
+        isFavorite:this.isFavorite,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>

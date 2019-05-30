@@ -4,6 +4,7 @@ import {PlaylistContext} from './PlaylistContext';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import constants from './ContextConstant';
 
 const styles = theme => ({
     input:{
@@ -47,7 +48,8 @@ export class LoginDialog extends Component {
         this.setState({password:newValue});
     }
     async login(context){
-        const res = await fetch('/api/user/login', {
+        const res = await fetch(process.env.REACT_APP_SERV_URL+'api/user/login', {
+            crossDomain:true,
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -65,7 +67,7 @@ export class LoginDialog extends Component {
             this.setState({error:"status "+res.status+"\n"+errorDetail});
         }else{
             this.setState({error:""});
-            context.checkLoggedIn(jsonBody.name,jsonBody.type);
+            context.onLoggedIn(jsonBody.name,jsonBody.type);
         }
     }
     render() {

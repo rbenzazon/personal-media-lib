@@ -59,6 +59,32 @@ router.post('/login', async (req,res)=>{
 
     //return res.send('logged in');
 });
+router.post('/checkLogin', async (req,res)=>{
+    let userToken;
+    const token = req.header('auth-token') ? req.header('auth-token') : req.cookies['auth-token'];
+    console.log("checkLogin");
+    if(!token){
+        console.log("no token found");
+        return res.status(400).send('Access restricted');
+    }
+    try{
+        userToken = jwt.verify(token,process.env.TOKEN_SECRET);
+    }catch(error){
+        console.log("token is not good");
+        return res.status(400).send('Access restricted');
+    }
+    if(!userToken) {
+        console.log("token doesn't good content");
+        return res.status(400).send('Access restricted');
+    }
+    //checking if existing user
+    const user = await User.findOne({_id:userToken._id})
+    if(!user) {
+        console.log("user not found");
+        return res.status(400).send('Access restricted');
+    }
+    res.send({name:user.name,type:user.type});
+});
 router.post('/logoff', async (req,res)=>{
     const cookie = req.cookies['auth-token'];
     if(cookie){

@@ -163,7 +163,7 @@ export class Playlist extends Component {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {context.state.displayedItemMode === constants.FOLDER_MODE && context.state.parentFolders.length >=1 &&
+                    {context.state.displayedItemMode === constants.FOLDER_MODE && context.state.parentFolders.length >=2 &&
                     <TableRow key={'back_folder'} >
                         <TableCell className={classes.mainCell} colSpan={this.state.hideAlbums?2:3}>
                             <Grid   alignContent="center"
@@ -176,31 +176,27 @@ export class Playlist extends Component {
                                     <BackIcon className={classes.trackIcon} />
                                 </Grid>
                                 <Grid item xs={isMobile?10:11} className={classes.backTitle}>
-                                    back to {context.state.parentFolders[context.state.parentFolders.length-1].title}
+                                    back to {context.state.parentFolders[context.state.parentFolders.length-2].title}
                                 </Grid>
                             </Grid>
                         </TableCell>
                     </TableRow>
                     }
-                    {(context.state.displayedItemMode === constants.FAVORITE_MODE  || context.state.displayedItemMode === constants.PLAYLIST_MODE) &&
-                    <TableRow key={'back_favorite'} hover>
-                        <TableCell className={classes.mainCell} colSpan={this.state.hideAlbums?2:3}>
-                                <Grid alignContent="center" justify="flex-start" alignItems="center" container onClick={()=>context.linkTo("/folder")}>
-                                    <Grid item xs={isMobile?2:1} className={classes.gridIcons}>
-                                        <BackIcon className={classes.trackIcon} />
-                                    </Grid>
-                                    <Grid item xs={isMobile?10:11} className={classes.backTitle}>
-                                        back to {context.state.currentFolder.title}
-                                    </Grid>
-                                </Grid>
-                        </TableCell>
-                    </TableRow>
-                    }
-                    {context.state.displayedItems.map((track) =>
+                    {context.state.displayedItems.sort((a,b) => {
+                        if(!a.url && b.url){
+                            return -1;
+                        }else if(a.url && !b.url){
+                            return 1;
+                        }else if(!a.url && !b.url){
+                            return a.title < b.title ? -1 : 1;
+                        }else if(a.album && b.album){
+                            return a.album < b.album ? -1 : 1;
+                        }
+                    }).map((track) =>
                     <TableRow key={track.id} selected={context.state.selected === track} hover>
-                        <TableCell className={classes.mainCell} colSpan={track.children ? (this.state.hideAlbums ? 2:3) : 1}>
+                        <TableCell className={classes.mainCell} colSpan={!track.url ? (this.state.hideAlbums ? 2:3) : 1}>
                             <Grid alignContent="center" justify="flex-start" alignItems="center" container>
-                                {!track.children && 
+                                {track.url && 
                                 <Grid item 
                                     xs={2}
                                     onClick={() => context.onListClick(track)}
@@ -211,7 +207,7 @@ export class Playlist extends Component {
                                     {!track.imageUrl &&
                                     <TrackIcon className={classes.trackIcon} />}
                                 </Grid>}
-                                {track.children && 
+                                {!track.url && 
                                 <Grid item 
                                 xs={2}
                                 onClick={()=>context.linkTo(context.getFolderPath(track))}
@@ -219,22 +215,22 @@ export class Playlist extends Component {
                                 >
                                     <FolderIcon className={classes.trackIcon} />
                                 </Grid>}
-                                {(!track.children && !this.state.hideAlbums) &&  
+                                {(track.url && !this.state.hideAlbums) &&  
                                 <Grid item xs={2} className={classes.gridIcons}>
                                     <FavorIcon 
                                         className={css(
-                                            {[classes['favoriteDisabled']]: !track.favorite},
-                                            {[classes['button']]: track.favorite},
+                                            {[classes['favoriteDisabled']]: !context.isFavorite(track._id)},
+                                            {[classes['button']]: context.isFavorite(track._id)},
                                         )} 
                                         onClick={() => context.onListFavoriteClick(track)} 
                                     />
                                 </Grid>
                                 }
-                                {!track.children &&
+                                {track.url &&
                                 <Grid item xs={2} className={classes.gridIcons}>
                                     <AddIcon className={classes.button} onClick={()=>context.onAddToPlaylist(track)} />
                                 </Grid>}
-                                {track.children &&
+                                {!track.url &&
                                 <Grid item className={classes.titleGrid} xs={10} onClick={()=>context.linkTo(context.getFolderPath(track))}>
                                     <span 
                                         className={css(
@@ -243,7 +239,7 @@ export class Playlist extends Component {
                                         )} 
                                     >{track.title}</span>
                                 </Grid>}
-                                {!track.children &&
+                                {track.url &&
                                 <Grid item className={classes.titleGrid} xs={6} onClick={() => context.onListClick(track)} >
                                     <span 
                                         className={css(
@@ -254,11 +250,11 @@ export class Playlist extends Component {
                                 </Grid>}
                             </Grid>
                         </TableCell>
-                        {!track.children &&
+                        {track.url &&
                         <TableCell className={classes.artistCell} >
                             <span className={classes.cellspan} onClick={()=>track.artist && context.linkTo("/artist/"+track.artist)} >{track.artist}</span>
                         </TableCell>}
-                        {(!track.children && !this.state.hideAlbums ) &&
+                        {(track.url && !this.state.hideAlbums ) &&
                         <TableCell className={classes.albumCell} >
                             <span className={classes.cellspan} onClick={()=>track.album && context.linkTo("/album/"+track.album)} >{track.album}</span>
                         </TableCell>}

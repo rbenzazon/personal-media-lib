@@ -13,41 +13,53 @@ var rootNode;
 
 router.post('/getFolder',verify, async (req,res)=>{
     //add id ref to root file from .env
+    let parents = [];
     let targetFile = await File.findOne({title:"My media"}).exec();
     let targetNode = await Node.findOne({_id:targetFile.node});
+    parents.push(targetFile);
     //when looking for a folder name in a children list, if it's not found, status 400 and send error
     let notFound;
-    for (let folderName of req.body.path.split("/")){
-        //for each current folder, populate node data to access children file
-        await targetNode.populate("children").execPopulate();
-        children = targetNode.children;
-        found = false;
-        for(let child of children) {
-            //pass if not folder
-            if(!child.children || !child.children.length > 0){
-                continue;
+    //skip child folder selecting if request is on root node which is already selected
+    if(req.body.path.length>=1){
+        for (let folderName of req.body.path.split("/")){
+            //for each current folder, populate node data to access children file
+            await targetNode.populate("children").execPopulate();
+            children = targetNode.children;
+            found = false;
+            for(let child of children) {
+                //pass if not folder
+                if(!child.children || !child.children.length > 0){
+                    continue;
+                }
+                //populate with File data to check the node name
+                let populated = await child.populate("file").execPopulate();
+                if(child.file.title === folderName){
+                    //set the main loop on a new Node instance
+                    targetFile = child;
+                    parents.push(targetFile.file);
+                    targetNode = await Node.findOne({_id:targetFile.file.node}).exec();
+                    //flag to not res status 400 after breaking
+                    found = true;
+                    break;
+                }
             }
-            //populate with File data to check the node name
-            let populated = await child.populate("file").execPopulate();
-            if(child.file.title === folderName){
-                //set the main loop on a new Node instance
-                targetFile = child;
-                targetNode = await Node.findOne({_id:targetFile.file.node}).exec();
-                //flag to not res status 400 after breaking
-                found = true;
-                break;
+            //one of the folder in the path have not been found, sent the request as error
+            if(!found){
+                return res.status(400).send({message:"can't find "+folderName+" in "+targetFile.title});
             }
-        }
-        //one of the folder in the path have not been found, sent the request as error
-        if(!found){
-            return res.status(400).send({message:"can't find "+folderName+" in "+targetFile.title});
         }
     }
     //populate File data in the last target node of the path to get the children info to send
     await targetNode.populate("children").execPopulate();
-    const model = [];
+
+    const model = {
+        title:targetFile.file?targetFile.file.title:targetFile.title,
+        _id:targetFile.file?targetFile.file._id:targetFile._id,
+        children:[],
+        parents:parents.slice(0,parents.length-1),
+    };
     //filter the props
-    modelNodeList(targetNode.children,model);
+    modelNodeList(targetNode.children,model.children);
     return res.send(model);
 });
 
@@ -62,7 +74,7 @@ router.post('/getSearch',verify, async (req,res)=>{
         {"title":{ $regex : new RegExp(searchKeyword, "i") }},
         {"artist":{ $regex : new RegExp(searchKeyword, "i") }},
         {"album":{ $regex : new RegExp(searchKeyword, "i") }}
-    ]}));
+    ],"url":{$exists:true}}));
 });
 /*
 router.post('/getAllTracksFromNode',verify, async (req,res)=>{
@@ -102,12 +114,12 @@ router.post('/getAlbum',verify, async (req,res)=>{
 
 router.post('/getAlbumList',verify, async (req,res)=>{
     const albumList = await File.distinct("album").exec();
-    return res.send(albumList);
+    return res.send(albumList.filter(album => album !== ""));
 });
 
 router.post('/getArtistList',verify, async (req,res)=>{
     const artistList = await File.distinct("artist").exec();
-    return res.send(artistList);
+    return res.send(artistList.filter(artist => artist !== ""));
 });
 
 router.post('/getArtist',verify, async (req,res)=>{
@@ -117,7 +129,7 @@ router.post('/getArtist',verify, async (req,res)=>{
 
 router.post('/getGenreList',verify, async (req,res)=>{
     const genreList = await File.distinct("genre").exec();
-    return res.send(genreList);
+    return res.send(genreList.filter(genre => genre !== ""));
 });
 router.post('/getGenre',verify, async (req,res)=>{
     const files = await File.find({genre:req.body.genreName}).exec();
@@ -172,7 +184,7 @@ router.post('/removeFromFileList',verify, async (req,res)=>{
         fileListExist.files.splice(fileIndex,1);
     }
     await fileListExist.save();
-    return res.send(fileListExist.files);
+    return res.send({files:fileListExist.files});
 });
 
 router.post('/addToFileList',verify, async (req,res)=>{
@@ -197,6 +209,9 @@ router.post('/addToFileList',verify, async (req,res)=>{
         return res.status(400).send({message:"file to add not found"});
         console.log("failed attempt at executing addToFileList route without an existing file id");
     }
+    if(fileListExist.files.indexOf(req.body.fileId) !== -1){
+        return res.send({files:fileListExist.files,message:"file already there"});
+    }
     fileListExist.files.push(fileExist);
     await fileListExist.save();
     return res.send({files:fileListExist.files});
@@ -219,7 +234,39 @@ router.post('/getFileList',verify, async (req,res)=>{
     }
     
 });
+router.post('/getFileListList',verify, async (req,res)=>{
+    const userExist = await User.findOne({_id:req.user._id});
+    if(!userExist){
+        return res.status(400).send({message:'Access restricted'});
+        console.log("failed attempt at executing getFileList route without being logged as an existing user");
+    }
+    
+    const filesListList = await FileList.find({owner:req.user._id,name:{ $ne: "favorite" }}).exec();
+    if(filesListList){
+        return res.send({files:filesListList});
+    }else{
+        return res.status(400).send({message:"can't find any playlist for this user"});
+    }
+    
+});
 
+router.post('/getFileListIds',verify, async (req,res)=>{
+    const userExist = await User.findOne({_id:req.user._id});
+    if(!userExist){
+        return res.status(400).send({message:'Access restricted'});
+        console.log("failed attempt at executing getFileList route without being logged as an existing user");
+    }
+    if(!req.body.fileListName){
+        return res.status(400).send({message:"can't get playlist without a name"});
+    }
+    const filesList = await FileList.findOne({owner:req.user._id,name:req.body.fileListName}).exec();
+    if(filesList){
+        return res.send({files:filesList.files});
+    }else{
+        return res.status(400).send({message:'FileList not found'});
+    }
+    
+});
 
 
 //lists and filters files to scan
@@ -310,7 +357,6 @@ function modelNodeStructure(node,result){
 }
 function modelFile(file,result){
     for(let propName of legalFileProps){
-        //console.log("propName "+propName);
         if(file[propName]){
             result[propName] = file[propName];
         }
@@ -396,6 +442,7 @@ function mapToProps(obj,meta){
         if(metaProp.constructor === Array){
             obj[propName] = metaProp.join(",");
         }else if(typeof metaProp === "string"){
+            //ugly, solves pb on one album title not recognized on theaudiodb.com
             metaProp = metaProp.replace("´","'");
             obj[propName] = metaProp;
         }

@@ -144,7 +144,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
           hidden
           volume={volume/100}
         >
-          <source src={context.state.selected.url} />
+          <source src={context.state.selected?context.state.selected.url:""} />
         </audio>
         
         <Grid className={css(classes['player-container'], player)}  elevation={elevation} rounded={rounded.toString()} component={Paper} alignContent="center" justify="center" alignItems="center" container>
@@ -214,7 +214,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                     className={css(classes['player-text'], text)}
                     noWrap
                   >
-                  {context.state.selected.title}
+                  {context.state.selected?context.state.selected.title:""}
                 </Typography>
               </Grid>
               {!isMobile && <Grid xs={5} item>
@@ -222,7 +222,7 @@ class AudioPlayer extends React.Component {//<PROPS_WITH_STYLES>
                     className={css(classes['player-text'], text)}
                     noWrap
                   >
-                  {context.state.selected.artist}
+                  {context.state.selected?context.state.selected.artist:""}
                 </Typography>
               </Grid>}
               {isMobile && <Grid xs={5} item>
