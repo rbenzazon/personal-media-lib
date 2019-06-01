@@ -87,7 +87,6 @@ export class CreateUserDialog extends Component {
             this.setState({error:"status "+res.status+"\n"+errorDetail});
         }else{
             this.setState({error:"",userId:jsonBody.user});
-            //context.onLoggedIn(jsonBody.name,jsonBody.type);
         }
     }
     render() {

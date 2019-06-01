@@ -1,5 +1,5 @@
 import React, { createContext } from 'react';
-import myData from './data.json';
+//import myData from './data.json';
 import Player from './AudioPlayer/utils/constants';
 import constants from './ContextConstant';
 //const {tracks} = myData;
