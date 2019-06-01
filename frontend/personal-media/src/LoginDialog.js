@@ -51,6 +51,7 @@ export class LoginDialog extends Component {
         const res = await fetch(process.env.REACT_APP_SERV_URL+'api/user/login', {
             crossDomain:true,
             method: 'POST',
+            credentials:'include',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -62,10 +63,12 @@ export class LoginDialog extends Component {
         })
         
         const jsonBody = await res.json();
-        if(res.status >= 400){
+        if(!res.ok){
+            console.log(res.headers);
             const errorDetail = jsonBody.message ? jsonBody.message : "";
             this.setState({error:"status "+res.status+"\n"+errorDetail});
         }else{
+            console.log(res.headers);
             this.setState({error:""});
             context.onLoggedIn(jsonBody.name,jsonBody.type);
         }

@@ -92,6 +92,7 @@ export class PlaylistProvider extends React.Component {
     const options = {
       method: 'POST',
       crossDomain:true,
+      credentials:'include',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -116,6 +117,7 @@ export class PlaylistProvider extends React.Component {
   async refreshFavorite(){
     const config = {
       method: 'POST',
+      credentials:'include',
       headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -123,21 +125,22 @@ export class PlaylistProvider extends React.Component {
       body: JSON.stringify({fileListName:"favorite",})
     }
     const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFileListIds",config);
+    if(!res.ok) return;
     const fileList = await res.json();
-    if(fileList.files === null) return;
     this.setState({favorites:fileList.files});
   }
   async refreshPlaylists(){
     const config = {
       method: 'POST',
+      credentials:'include',
       headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
       },
     }
     const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFileListList",config);
+    if(!res.ok) return;
     const filesListList = await res.json();
-    if(filesListList.files === null) return;
     this.setState({playLists:filesListList.files.map((filesList)=>{return {title:filesList.name}})});
   }
 
@@ -584,32 +587,23 @@ export class PlaylistProvider extends React.Component {
     switch(currentMatch.path){
       case "/" :
         return this.onHomeRoute(route,currentMatch);
-      break;
       case "/"+constants.FAVORITE_MODE :
         return this.onFavoriteRoute(route,currentMatch);
-      break;
       case "/"+constants.PLAYLIST_MODE+"/:playlistName" :
         return this.onPlaylistRoute(route,currentMatch);
-      break;
       case "/"+constants.FOLDER_MODE+"/*" :
         return this.onFolderRoute(route,currentMatch);
-      break;
       case "/"+constants.FOLDER_MODE+"/" :
       case "/"+constants.FOLDER_MODE :
         return this.onFolderRoute(route);
-      break;
       case "/"+constants.SEARCH_MODE+"/:searchKeyword" :
         return this.onSearchRoute(route,currentMatch);
-      break;
       case "/"+constants.ARTIST_MODE+"/:artistName" :
         return this.onArtistRoute(route,currentMatch);
-      break;
       case "/"+constants.ALBUM_MODE+"/:albumName" :
         return this.onAlbumRoute(route,currentMatch);
-      break;
       case "/"+constants.GENRE_MODE+"/:genreName" :
         return this.onGenreRoute(route,currentMatch);
-      break;
       default:
       break;
     }

@@ -49,10 +49,11 @@ export class HomeLayout extends Component {
                 'Content-Type': 'application/json',
             },
         });
-        const jsonBody = await res.json();
-        if(res.status >= 400){
+        
+        if(!res.ok){
             return;
         }else{
+            const jsonBody = await res.json();
             this.setState({artists:jsonBody});
         }
     }
@@ -65,10 +66,10 @@ export class HomeLayout extends Component {
                 'Content-Type': 'application/json',
             },
         });
-        const jsonBody = await res.json();
-        if(res.status >= 400){
+        if(!res.ok){
             return;
         }else{
+            const jsonBody = await res.json();
             this.setState({albums:jsonBody});
         }
     }
@@ -81,10 +82,10 @@ export class HomeLayout extends Component {
                 'Content-Type': 'application/json',
             },
         });
-        const jsonBody = await res.json();
-        if(res.status >= 400){
+        if(!res.ok){
             return;
         }else{
+            const jsonBody = await res.json();
             this.setState({genres:jsonBody});
         }
     }

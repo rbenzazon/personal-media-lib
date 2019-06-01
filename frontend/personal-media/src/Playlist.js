@@ -193,7 +193,7 @@ export class Playlist extends Component {
                             return a.album < b.album ? -1 : 1;
                         }
                     }).map((track) =>
-                    <TableRow key={track.id} selected={context.state.selected === track} hover>
+                    <TableRow key={track._id} selected={context.state.selected === track} hover>
                         <TableCell className={classes.mainCell} colSpan={!track.url ? (this.state.hideAlbums ? 2:3) : 1}>
                             <Grid alignContent="center" justify="flex-start" alignItems="center" container>
                                 {track.url && 
