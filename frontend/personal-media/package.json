@@ -27,7 +27,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "buildstage": "react-scripts build && rm -rf ../../backend/public && mv build ../../backend\\public",
+    "buildstage": "react-scripts build && rm -rf ../../backend/public && mv build ../../backend/public",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
