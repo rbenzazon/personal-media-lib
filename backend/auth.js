@@ -6,7 +6,7 @@ const Joi = require("@hapi/joi");
 const {registerValidation,loginValidation} = require('./validation');
 const verify = require('./verifyToken');
 
-router.post('/register',verify, async (req,res)=>{
+router.post('/register', verify, async (req,res)=>{
     //can't create account if not admin
     const userExist = await User.findOne({_id:req.user._id});
     if(!userExist && userExist.type !== 0){
@@ -21,7 +21,7 @@ router.post('/register',verify, async (req,res)=>{
     //checking if existing user
     const emailExist = await User.findOne({email:req.body.email});
     if(emailExist) return res.status(400).send({message:"email already exist"});
-
+    
     //hash the password
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(req.body.password,salt);

@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const sharp = require('sharp');
 const File = require("./model/File");
 const Node = require("./model/Node");
 const User = require('./model/User');
@@ -305,9 +306,19 @@ async function scanRecursive (folderPath,nodes,files){
             const url = folderPath+"/"+item.name;
             const tags = await mm.parseFile(url);
             file = new File({
-                title : tags.title?tags.title : item.name,
+                title : tags.common.title?tags.common.title : item.name,
                 url:url.substring(pathToScan.length),
             });
+            if(tags.common.picture && tags.common.picture[0] && tags.common.picture[0].data){
+                try{
+                    sharp(tags.common.picture[0].data)
+                    .resize(256,256,{fit:"inside"})
+                    .toFile(url+".jpg");
+                    file.imageUrl = file.url+".jpg";
+                }catch(err){
+                    console.log("error reading image from file :"+url+"\\n"+err)
+                }
+            }
             mapToProps(file,tags.common);
             node = new Node({
                 file:file,
@@ -401,6 +412,7 @@ const legalFileProps = [
     "year",
     "artist",
     "publisher",
+    "imageUrl",
     "track",
     "genre",
     "composer"

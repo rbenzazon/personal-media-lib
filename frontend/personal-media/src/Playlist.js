@@ -182,17 +182,7 @@ export class Playlist extends Component {
                         </TableCell>
                     </TableRow>
                     }
-                    {context.state.displayedItems.sort((a,b) => {
-                        if(!a.url && b.url){
-                            return -1;
-                        }else if(a.url && !b.url){
-                            return 1;
-                        }else if(!a.url && !b.url){
-                            return a.title < b.title ? -1 : 1;
-                        }else if(a.album && b.album){
-                            return a.album < b.album ? -1 : 1;
-                        }
-                    }).map((track) =>
+                    {context.state.displayedItems.map((track) =>
                     <TableRow key={track._id} selected={context.state.selected === track} hover>
                         <TableCell className={classes.mainCell} colSpan={!track.url ? (this.state.hideAlbums ? 2:3) : 1}>
                             <Grid alignContent="center" justify="flex-start" alignItems="center" container>

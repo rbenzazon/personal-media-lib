@@ -15,7 +15,7 @@ export class PlaylistProvider extends React.Component {
   state = {
     route:null,
     currentFolder:null,
-    favorites:[],
+    favorites:{},
     parentFolders:[],
     selected:null,
     displayedItemMode:constants.PLAYLIST_MODE,
@@ -111,7 +111,7 @@ export class PlaylistProvider extends React.Component {
   }
 
   isFavorite(fileId){
-    return this.state.favorites.indexOf(fileId) !== -1;
+    return this.state.favorites[fileId];
   }
 
   async refreshFavorite(){
@@ -127,8 +127,14 @@ export class PlaylistProvider extends React.Component {
     const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFileListIds",config);
     if(!res.ok) return;
     const fileList = await res.json();
-    this.setState({favorites:fileList.files});
+    this.setState({favorites:fileList.files.reduce(this.reduceFavoriteToHashmap,{})});
   }
+
+  reduceFavoriteToHashmap(map, obj) {
+      map[obj] = true;
+      return map;
+  }
+  
   async refreshPlaylists(){
     const config = {
       method: 'POST',
@@ -345,7 +351,7 @@ export class PlaylistProvider extends React.Component {
         return;
       }
       this.setState(state =>({
-        favorites:fileList.files,
+        favorites:fileList.files.reduce(this.reduceFavoriteToHashmap,{}),
       }));
     }else{
       const config = {
@@ -362,7 +368,7 @@ export class PlaylistProvider extends React.Component {
         return;
       }
       this.setState(state =>({
-        favorites:fileList.files,
+        favorites:fileList.files.reduce(this.reduceFavoriteToHashmap,{}),
       }));
     }
     
@@ -445,11 +451,23 @@ export class PlaylistProvider extends React.Component {
     this.setState(state => ({
       displayedItemMode:constants.FAVORITE_MODE,
       route:route,
-      displayedItems:fileList.files,
+      displayedItems:fileList.files.sort(this.sortDisplayedItems),
       title:match.params.playlistName,
       parentFolders:[],
     }));
   }
+
+  sortDisplayedItems(a,b) {
+    if(!a.url && b.url){//folder up
+        return -1;
+    }else if(a.url && !b.url){//files down
+        return 1;
+    }else if(!a.url && !b.url ){//folder sort
+        return a.title < b.title ? -1 : 1;
+    }else if(a.url && b.url){//file sort
+        return a.title < b.title ? -1 : 1;
+    }
+  } 
 
   /**
    * @route current route object to save in the state
@@ -473,7 +491,7 @@ export class PlaylistProvider extends React.Component {
     this.setState(state => ({
       displayedItemMode:constants.FOLDER_MODE,
       route:route,
-      displayedItems:fileList.children,
+      displayedItems:fileList.children.sort(this.sortDisplayedItems),
       title:fileList.title,
       parentFolders:fileList.parents.concat([{_id:fileList._id,title:fileList.title}]),
     }));
@@ -496,7 +514,7 @@ export class PlaylistProvider extends React.Component {
     this.setState(state => ({
       displayedItemMode:constants.SEARCH_MODE,
       route:route,
-      displayedItems:fileList,
+      displayedItems:fileList.sort(this.sortDisplayedItems),
       title:match.params.searchKeyword,
       parentFolders:[],
     }));
@@ -520,7 +538,7 @@ export class PlaylistProvider extends React.Component {
     this.setState(state => ({
       displayedItemMode:constants.ARTIST_MODE,
       route:route,
-      displayedItems:fileList.files,
+      displayedItems:fileList.files.sort(this.sortDisplayedItems),
       title:artistName,
       parentFolders:[],
     }));
@@ -544,7 +562,7 @@ export class PlaylistProvider extends React.Component {
     this.setState(state => ({
       displayedItemMode:constants.ALBUM_MODE,
       route:route,
-      displayedItems:fileList.files,
+      displayedItems:fileList.files.sort(this.sortDisplayedItems),
       title:albumName,
       parentFolders:[],
     }));
@@ -568,7 +586,7 @@ export class PlaylistProvider extends React.Component {
     this.setState(state => ({
       displayedItemMode:constants.ALBUM_MODE,
       route:route,
-      displayedItems:fileList.files,
+      displayedItems:fileList.files.sort(this.sortDisplayedItems),
       title:genreName,
       parentFolders:[],
     }));
