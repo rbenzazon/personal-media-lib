@@ -4,6 +4,7 @@ import {PersonAdd as AddUserIcon,AccountCircle as LoginIcon,VerifiedUser as User
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import {PlaylistContext} from '../PlaylistContext';
+import Divider from '@material-ui/core/Divider';
 
 const styles = theme => ({
 });
@@ -31,10 +32,7 @@ export class PLDrawer extends Component {
                         [
                             {text:'Home',icon:<HomeIcon />,click:"/"},
                             {text:'My Files',icon:<FilesIcon />,click:"/folder/"},
-                            {text:'Favorite tracks',icon:<FavorIcon />,click:"/favorite"},
-                            {text:'Add media',icon:<ScanIcon/>,click:() => context.setImportOpen(true)},
                             {text:context.state.loggedIn?'Logoff '+context.state.loginName:"Login",icon:context.state.loggedIn?<UserIcon/>:<LoginIcon/>,click:() => context.onLoginOpenClose(true)},
-                            {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.onCreatePlaylistOpenClose(true)}
                         ].map((item) => {
                         if(typeof item.click == "function"){
                             return (
@@ -46,7 +44,7 @@ export class PLDrawer extends Component {
                         }else{
                             return (
                             <Link to={item.click} key={item.text} style={{ textDecoration: 'none' }}>
-                                <ListItem button >
+                                <ListItem button selected={context.isRoute(item.click)}>
                                     <ListItemIcon>{item.icon}</ListItemIcon>
                                     <ListItemText primary={item.text} />
                                 </ListItem>
@@ -55,9 +53,48 @@ export class PLDrawer extends Component {
                         }
                     })
                     }
+                    <Divider />
+                    {
+                        [
+                            {text:'Favorite tracks',icon:<FavorIcon />,click:"/favorite"},
+                            {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.onCreatePlaylistOpenClose(true)},
+                        ].map((item) => {
+                            if(typeof item.click == "function"){
+                                return (
+                                <ListItem button key={item.text} onClick={item.click} >
+                                    <ListItemIcon>{item.icon}</ListItemIcon>
+                                    <ListItemText primary={item.text} />
+                                </ListItem>
+                                )
+                            }else{
+                                return (
+                                <Link to={item.click} key={item.text} style={{ textDecoration: 'none' }} >
+                                    <ListItem button selected={context.isRoute(item.click)}>
+                                        <ListItemIcon>{item.icon}</ListItemIcon>
+                                        <ListItemText primary={item.text} />
+                                    </ListItem>
+                                </Link>
+                                )
+                            }
+                        })
+                    }
+                    {context.state.playLists.map(item=>{
+                            return (
+                            <Link to={"/playlist/"+item.title} key={item.title} style={{ textDecoration: 'none' }} >
+                                <ListItem button selected={context.isRoute("/playlist/"+item.title)}>
+                                    <ListItemIcon><PlaylistIcon /></ListItemIcon>
+                                    <ListItemText primary={item.title} ></ListItemText>
+                                </ListItem>
+                            </Link>
+                            )
+                    })}
+                    {(context.state.loggedIn && context.state.loginType === 0) &&
+                        <Divider />
+                    }
                     {(context.state.loggedIn && context.state.loginType === 0) &&
                         [
                             {text:'Create user',icon:<AddUserIcon/>,click:() => context.onCreateUserOpenClose(true)},
+                            {text:'Add media',icon:<ScanIcon/>,click:() => context.setImportOpen(true)},
                         ].map((item) => {return (
                                 <ListItem button key={item.text} onClick={item.click}>
                                     <ListItemIcon>{item.icon}</ListItemIcon>
@@ -65,16 +102,6 @@ export class PLDrawer extends Component {
                                 </ListItem>
                             )})
                     }
-                    {context.state.playLists.map(item=>{
-                            return (
-                            <Link to={"/playlist/"+item.title} key={item.title} style={{ textDecoration: 'none' }}>
-                                <ListItem button >
-                                    <ListItemIcon><PlaylistIcon /></ListItemIcon>
-                                    <ListItemText primary={item.title} ></ListItemText>
-                                </ListItem>
-                            </Link>
-                            )
-                    })}
                     </List>
                 </div>
             </Drawer>

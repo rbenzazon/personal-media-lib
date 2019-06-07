@@ -85,10 +85,34 @@ export class PlaylistProvider extends React.Component {
     this.loadArtists = this.loadArtists.bind(this);
     this.loadAlbums = this.loadAlbums.bind(this);
     this.loadGenres = this.loadGenres.bind(this);
+    this.isRoute = this.isRoute.bind(this);
 
     this.checkLogin();
   }
 
+  isRoute(route){
+    if(!this.state.route) return false;
+    switch(this.state.route.match.path){
+      case "/" :
+        return route === this.state.route.match.path;
+      case "/"+constants.FAVORITE_MODE :
+        return route === this.state.route.match.path;
+      case "/"+constants.PLAYLIST_MODE+"/:playlistName" :
+        const currentUrl = "/"+constants.PLAYLIST_MODE+"/"+this.state.route.match.params.playlistName;
+        if(currentUrl === route){
+          console.log("same");
+          console.log("route "+route);
+        }
+        return currentUrl === route;
+      case "/"+constants.FOLDER_MODE+"/*" :
+        return route.includes("/"+constants.FOLDER_MODE);
+      case "/"+constants.FOLDER_MODE+"/" :
+      case "/"+constants.FOLDER_MODE :
+        return route.includes("/"+constants.FOLDER_MODE);
+      default:
+        return false;
+    }
+  }
   async loadArtists(){
     const res = await fetch(process.env.REACT_APP_SERV_URL+'api/getArtistList', {
         crossDomain:true,
@@ -250,13 +274,21 @@ export class PlaylistProvider extends React.Component {
   onPlaylistNameChange(name){
     this.setState({createPlaylistName:name});
   }
-  createPlaylist(){
-    let newPlaylist = {title:this.state.createPlaylistName,children:[]};
-    if(this.state.trackToAdd !== null){
-      newPlaylist.children.push(this.state.trackToAdd);
+  async createPlaylist(){
+    const config = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({fileListName:this.state.createPlaylistName})
     }
-    const newPlaylists = [...this.state.playLists,newPlaylist];
-    this.setState({playLists:newPlaylists,trackToAdd:null,createPlaylistName:'',createPlaylistOpen:false});
+    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/createFileList",config);
+    if(!res.ok) return;
+    const succes = await res.json();
+    await this.refreshPlaylists();
+    this.linkTo("/playlist/"+this.state.createPlaylistName);
+    this.setState({trackToAdd:null,createPlaylistName:'',createPlaylistOpen:false});
   }
   async addToPlaylist(){
     const config = {
@@ -742,6 +774,7 @@ export class PlaylistProvider extends React.Component {
         onLoggedIn:this.onLoggedIn,
         onCreateUserOpenClose:this.onCreateUserOpenClose,
         isFavorite:this.isFavorite,
+        isRoute:this.isRoute,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>

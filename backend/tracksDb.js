@@ -138,6 +138,7 @@ router.post('/getGenre',verify, async (req,res)=>{
 });
 
 router.post('/createFileList',verify, async (req,res)=>{
+    console.log("createFileList");
     const userExist = await User.findOne({_id:req.user._id});
     if(!userExist){
         return res.status(400).send({message:'Access restricted'});
