@@ -2,8 +2,8 @@ import React, { Component} from 'react';
 import {List,ListItem,Collapse,ListItemText} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import {PlaylistContext} from './PlaylistContext';
-import RouteDispatch from './RouteDispatch';
+import {PlaylistContext} from '../PlaylistContext';
+import RouteDispatch from '../RouteDispatch';
 
 const styles = theme => ({
     nestedItem:{

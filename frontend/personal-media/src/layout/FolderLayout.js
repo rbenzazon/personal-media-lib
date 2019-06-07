@@ -1,13 +1,13 @@
 import React, { Component} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import {PlaylistContext} from './PlaylistContext';
+import {PlaylistContext} from '../PlaylistContext';
 import Playlist from './Playlist';
-import RouteDispatch from './RouteDispatch';
+import RouteDispatch from '../RouteDispatch';
 import { Route } from "react-router-dom";
-import ArtistCard from './ArtistCard'
-import AlbumCard from './AlbumCard'
-import SearchCard from './SearchCard';
+import ArtistCard from '../cards/ArtistCard'
+import AlbumCard from '../cards/AlbumCard'
+import SearchCard from '../cards/SearchCard';
 
 const styles = theme => ({
 });

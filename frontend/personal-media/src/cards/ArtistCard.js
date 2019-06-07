@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import {Link} from '@material-ui/icons'
 import css from 'classnames';
+import {PlaylistContext} from '../PlaylistContext';
 
 function Twitter(props) {
     return (

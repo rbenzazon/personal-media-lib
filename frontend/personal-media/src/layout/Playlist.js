@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import {PlaylistContext} from './PlaylistContext';
+import {PlaylistContext} from '../PlaylistContext';
 import {Grid,Avatar, TableBody,Table,TableRow,TableCell,TableHead} from '@material-ui/core';
 import {Audiotrack as TrackIcon,Folder as FolderIcon, ArrowBack as BackIcon, Favorite as FavorIcon, AddCircle as AddIcon} from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import {isMobile} from "react-device-detect";
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import css from 'classnames';
-import constants from "./ContextConstant";
+import constants from "../ContextConstant";
 
 const getColor = (theme, type, opacity) => {
   const color =

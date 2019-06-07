@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import {PlaylistContext} from './PlaylistContext';
+import {PlaylistContext} from '../PlaylistContext';
 import {Clear as ClearIcon,Search as SearchIcon ,Menu as MenuIcon} from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import {Paper,InputBase,AppBar,Toolbar,Typography,IconButton} from '@material-ui/core';
 import {isMobile} from "react-device-detect";
 import css from 'classnames';
-import constants from './ContextConstant'
+import constants from '../ContextConstant'
 
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 

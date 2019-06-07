@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {Dialog,DialogActions,DialogContent,DialogTitle,Button} from '@material-ui/core';
-import {PlaylistContext} from './PlaylistContext';
+import {PlaylistContext} from '../PlaylistContext';
 
 export class CreatePLDialog extends Component {
     render() {

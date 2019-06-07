@@ -3,7 +3,7 @@ import {List,ListItem,ListItemIcon,ListItemText,Drawer} from '@material-ui/core'
 import {PersonAdd as AddUserIcon,AccountCircle as LoginIcon,VerifiedUser as UserIcon,Home as HomeIcon,Folder as FilesIcon, PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
-import {PlaylistContext} from './PlaylistContext';
+import {PlaylistContext} from '../PlaylistContext';
 
 const styles = theme => ({
 });

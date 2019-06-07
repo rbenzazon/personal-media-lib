@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {Dialog,DialogActions,DialogContent,DialogTitle,Button} from '@material-ui/core';
-import {PlaylistContext} from './PlaylistContext';
+import {PlaylistContext} from '../PlaylistContext';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
