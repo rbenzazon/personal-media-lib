@@ -33,69 +33,12 @@ export class HomeLayout extends Component {
         this.artistsClick = this.artistsClick.bind(this);
         this.albumsClick = this.albumsClick.bind(this);
         this.genresClick = this.genresClick.bind(this);
-        this.loadArtists = this.loadArtists.bind(this);
-        this.loadAlbum = this.loadAlbum.bind(this);
-        this.loadGenre = this.loadGenre.bind(this);
-        this.loadArtists();
-        this.loadAlbum();
-        this.loadGenre();
     }
-    async loadArtists(){
-        const res = await fetch(process.env.REACT_APP_SERV_URL+'api/getArtistList', {
-            crossDomain:true,
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-        });
-        
-        if(!res.ok){
-            return;
-        }else{
-            const jsonBody = await res.json();
-            this.setState({artists:jsonBody});
-        }
-    }
-    async loadAlbum(){
-        const res = await fetch(process.env.REACT_APP_SERV_URL+'api/getAlbumList', {
-            crossDomain:true,
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-        });
-        if(!res.ok){
-            return;
-        }else{
-            const jsonBody = await res.json();
-            this.setState({albums:jsonBody});
-        }
-    }
-    async loadGenre(){
-        const res = await fetch(process.env.REACT_APP_SERV_URL+'api/getGenreList', {
-            crossDomain:true,
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-        });
-        if(!res.ok){
-            return;
-        }else{
-            const jsonBody = await res.json();
-            this.setState({genres:jsonBody});
-        }
-    }
+    
     state = {
         albumsOpen:false,
         artistsOpen:false,
         genresOpen:false,
-        albums:[],
-        artists:[],
-        genres:[],
     }
     genresClick(){
         this.setState(state=>{return {genresOpen:!state.genresOpen,albumsOpen:false,artistsOpen:false}});
@@ -123,7 +66,7 @@ export class HomeLayout extends Component {
                     </ListItem>
                     <Collapse in={this.state.artistsOpen}>
                         <List component="div" disablepadding="true" >
-                            {this.state.artists.sort((a,b)=>a<b?-1:1).map(artist =>
+                            {this.context.state.artists.map(artist =>
                             <ListItem key={artist} className={classes.nestedItem} button onClick={() => context.linkTo("/artist/"+encodeURIComponent(artist))}>
                                 <ListItemText primary={artist} classes={{ primary: classes.nestedText }}/>
                             </ListItem>
@@ -135,7 +78,7 @@ export class HomeLayout extends Component {
                     </ListItem>
                     <Collapse in={this.state.albumsOpen} disablepadding="true">
                         <List component="div" disablepadding="true" >
-                            {this.state.albums.sort((a,b)=>a<b?-1:1).map(album =>
+                            {this.context.state.albums.map(album =>
                             <ListItem key={album} className={classes.nestedItem} button onClick={() => context.linkTo("/album/"+encodeURIComponent(album))}>
                                 <ListItemText primary={album} classes={{ primary: classes.nestedText }} />
                             </ListItem>
@@ -147,7 +90,7 @@ export class HomeLayout extends Component {
                     </ListItem>
                     <Collapse in={this.state.genresOpen} disablepadding="true">
                         <List component="div" disablepadding="true" >
-                            {this.state.genres.sort((a,b)=>a<b?-1:1).map(genre =>
+                            {this.context.state.genres.map(genre =>
                             <ListItem key={genre} className={classes.nestedItem} button onClick={() => context.linkTo("/genre/"+encodeURIComponent(genre))}>
                                 <ListItemText primary={genre} classes={{ primary: classes.nestedText }} />
                             </ListItem>

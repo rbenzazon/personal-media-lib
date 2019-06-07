@@ -16,6 +16,9 @@ export class PlaylistProvider extends React.Component {
     route:null,
     currentFolder:null,
     favorites:{},
+    artists:[],
+    albums:[],
+    genres:[],
     parentFolders:[],
     selected:null,
     displayedItemMode:constants.PLAYLIST_MODE,
@@ -79,8 +82,61 @@ export class PlaylistProvider extends React.Component {
     this.isFavorite = this.isFavorite.bind(this);
     this.refreshFavorite = this.refreshFavorite.bind(this);
     this.refreshPlaylists = this.refreshPlaylists.bind(this);
+    this.loadArtists = this.loadArtists.bind(this);
+    this.loadAlbums = this.loadAlbums.bind(this);
+    this.loadGenres = this.loadGenres.bind(this);
 
     this.checkLogin();
+  }
+
+  async loadArtists(){
+    const res = await fetch(process.env.REACT_APP_SERV_URL+'api/getArtistList', {
+        crossDomain:true,
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+    
+    if(!res.ok){
+        return;
+    }else{
+        const jsonBody = await res.json();
+        this.setState({artists:jsonBody.sort((a,b)=>a<b?-1:1)});
+    }
+  }
+  async loadAlbums(){
+      const res = await fetch(process.env.REACT_APP_SERV_URL+'api/getAlbumList', {
+          crossDomain:true,
+          method: 'POST',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+          },
+      });
+      if(!res.ok){
+          return;
+      }else{
+          const jsonBody = await res.json();
+          this.setState({albums:jsonBody.sort((a,b)=>a<b?-1:1)});
+      }
+  }
+  async loadGenres(){
+      const res = await fetch(process.env.REACT_APP_SERV_URL+'api/getGenreList', {
+          crossDomain:true,
+          method: 'POST',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+          },
+      });
+      if(!res.ok){
+          return;
+      }else{
+          const jsonBody = await res.json();
+          this.setState({genres:jsonBody.sort((a,b)=>a<b?-1:1)});
+      }
   }
 
   onCreateUserOpenClose(value){
@@ -154,6 +210,11 @@ export class PlaylistProvider extends React.Component {
     
     await this.refreshFavorite();
     await this.refreshPlaylists();
+    if(this.state.albums.length === 0){
+      await this.loadArtists();
+      await this.loadAlbums();
+      await this.loadGenres();
+    }
     
     if(name !== undefined){
       this.setState({loggedIn:true,loginName:name,loginType:type,loginOpen:false});
