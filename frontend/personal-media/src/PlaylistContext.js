@@ -27,56 +27,53 @@ export class PlaylistProvider extends React.Component {
     playerLoopStatus:Player.Status.LOOP_LIST,
     playerStatus:Player.Status.PAUSE,
     playerRef:undefined,
-    sideDrawer:false,
+
+    sideDrawerOpen:false,
     importOpen:false,
     searchOpen:false,
     createPlaylistOpen:false,
-    searchKeyword:'',
-    trackToAdd:null,
-    playlistToAdd:null,
     playlistAddOpen:false,
-    createPlaylistName:'',
     loginOpen:false,
+    createUserOpen:false,
+
+    trackToAdd:null,
+    
     loggedIn:false,
     loginName:'',
     loginType:null,
-    createUserOpen:false,
   }
   constructor(props){
     super(props);
-    this.onPlaylistToAddChange = this.onPlaylistToAddChange.bind(this);
-    this.onCreatePlaylistOpenClose = this.onCreatePlaylistOpenClose.bind(this);
-    this.onPlaylistNameChange = this.onPlaylistNameChange.bind(this);
-    this.createPlaylist = this.createPlaylist.bind(this);
+    
+    this.openCreatePlaylist = this.openCreatePlaylist.bind(this);
+    this.onCreatePlaylistSuccess = this.onCreatePlaylistSuccess.bind(this);
+    
     this.addToPlaylist = this.addToPlaylist.bind(this);
-    this.onAddToPlaylistClose = this.onAddToPlaylistClose.bind(this);
+    this.closeAddToPlaylist = this.closeAddToPlaylist.bind(this);
     this.onAddToPlaylist = this.onAddToPlaylist.bind(this);
+
     this.onListClick = this.onListClick.bind(this);
     /*this.navigateToFolder = this.navigateToFolder.bind(this);
     this.navigateUp = this.navigateUp.bind(this);*/
-    this.toggleDrawer = this.toggleDrawer.bind(this);
+    this.openDrawer = this.openDrawer.bind(this);
     this.onNextClick = this.onNextClick.bind(this);
     this.onPrevClick = this.onPrevClick.bind(this);
     this.setPlayerRef = this.setPlayerRef.bind(this);
     this.restartPlayer = this.restartPlayer.bind(this);
     this.onAudioEnd = this.onAudioEnd.bind(this);
     this.toggleLoopStatus = this.toggleLoopStatus.bind(this);
-    this.setImportOpen = this.setImportOpen.bind(this);
+    this.openImport = this.openImport.bind(this);
     this.onListFavoriteClick = this.onListFavoriteClick.bind(this);
-    this.onSearchKeyPress = this.onSearchKeyPress.bind(this);
-    this.onSearchChange = this.onSearchChange.bind(this);
-    this.clearSearch = this.clearSearch.bind(this);
-    this.onSearchOpen = this.onSearchOpen.bind(this)
     this.onRouteMount = this.onRouteMount.bind(this);
     this.playRandomTrack = this.playRandomTrack.bind(this);
     this.getParentPath = this.getParentPath.bind(this);
     this.getFolderPath = this.getFolderPath.bind(this);
     this.linkTo = this.linkTo.bind(this);
     this.displaySearch = this.displaySearch.bind(this);
-    this.onLoginOpenClose = this.onLoginOpenClose.bind(this);
+    this.openLogin = this.openLogin.bind(this);
     this.onLoggedIn = this.onLoggedIn.bind(this);
     this.checkLogin = this.checkLogin.bind(this);
-    this.onCreateUserOpenClose = this.onCreateUserOpenClose.bind(this);
+    this.openCreateUser = this.openCreateUser.bind(this);
     this.onHomeRoute = this.onHomeRoute.bind(this);
     this.onFavoriteRoute = this.onFavoriteRoute.bind(this);
     this.isFavorite = this.isFavorite.bind(this);
@@ -163,7 +160,7 @@ export class PlaylistProvider extends React.Component {
       }
   }
 
-  onCreateUserOpenClose(value){
+  openCreateUser(value){
     this.setState({createUserOpen:value});
   }
 
@@ -254,14 +251,12 @@ export class PlaylistProvider extends React.Component {
    * Playlists
    * 
    */
-  onPlaylistToAddChange(value){
-    this.setState({playlistToAdd:value});
-  }
-  onCreatePlaylistOpenClose(value){
+  
+  openCreatePlaylist(value){
     this.setState({createPlaylistOpen:value});
   }
   
-  async onLoginOpenClose(value){
+  async openLogin(value){
     if(value && this.state.loggedIn){
       const res = await fetch(process.env.REACT_APP_SERV_URL+'api/user/logoff', {
           method: 'POST'
@@ -271,45 +266,31 @@ export class PlaylistProvider extends React.Component {
       this.setState({loginOpen:value});
     }
   }
-  onPlaylistNameChange(name){
-    this.setState({createPlaylistName:name});
-  }
-  async createPlaylist(){
-    const config = {
-      method: 'POST',
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({fileListName:this.state.createPlaylistName})
-    }
-    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/createFileList",config);
-    if(!res.ok) return;
-    const succes = await res.json();
+  async onCreatePlaylistSuccess(createPlaylistName){
+    this.openCreatePlaylist(false);
     await this.refreshPlaylists();
-    this.linkTo("/playlist/"+this.state.createPlaylistName);
-    this.setState({trackToAdd:null,createPlaylistName:'',createPlaylistOpen:false});
+    this.linkTo("/playlist/"+createPlaylistName);
   }
-  async addToPlaylist(){
+  async addToPlaylist(playlistToAdd){
     const config = {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
       },
-      body: JSON.stringify({fileListName:this.state.playlistToAdd.title,fileId:this.state.trackToAdd._id})
+      body: JSON.stringify({fileListName:playlistToAdd.title,fileId:this.state.trackToAdd._id})
     }
     const res = await fetch(process.env.REACT_APP_SERV_URL+"api/addToFileList",config);
     const fileList = await res.json();
     if(!fileList.files){
       return;
     }
-    this.setState({trackToAdd:null,playlistToAdd:null,playlistAddOpen:false});
+    this.setState({trackToAdd:null,playlistAddOpen:false});
   }
   /**
    * closes the add to playlist dialog
    */
-  onAddToPlaylistClose(){
+  closeAddToPlaylist(){
     this.setState({playlistAddOpen:false});
   }
   /**
@@ -328,12 +309,10 @@ export class PlaylistProvider extends React.Component {
     }
   }
 
-  toggleDrawer(open){
-    //if(this.state.sideDrawer !== open){
-
-        this.setState({sideDrawer: open});
-    //}
+  openDrawer(open){
+    this.setState({sideDrawerOpen: open});
   }
+
   /**
    * Playback
    */
@@ -424,7 +403,7 @@ export class PlaylistProvider extends React.Component {
     this.setState({playerLoopStatus:newLoopStatus});
   }
 
-  setImportOpen(value){
+  openImport(value){
     this.setState({importOpen:value});
   }
   async onListFavoriteClick(track){
@@ -466,37 +445,29 @@ export class PlaylistProvider extends React.Component {
     }
     
   }
+
   /**
    * Search
    * 
    */
-  onSearchOpen(value){
-    this.setState({searchOpen:value,searchKeyword:''});
-  }
-  onSearchKeyPress(e){
-    if (e.key === 'Enter') {
-      this.displaySearch();
-      e.target.blur();
+  
+  displaySearch(searchKeyword){
+    if(searchKeyword != ''){
+      this.state.route.history.push("/search/"+searchKeyword);
     }
   }
-  displaySearch(){
-    if(this.state.searchKeyword != ''){
-      this.state.route.history.push("/search/"+this.state.searchKeyword);
-    }
-  }
-  onSearchChange(value){
-    this.setState(state => ({searchKeyword:value}));
-  }
-  clearSearch() {
-    if(this.state.route.match.params.searchKeyword && this.state.displayedItemMode === constants.SEARCH_MODE){
-      this.state.route.history.push("/folder");
-      this.setState(state => ({
-        searchKeyword:'',
-        searchOpen:false,
-      }));
-    }
-    
-  }
+
+  /**
+   * Routes
+   * 
+   */
+
+  /**
+   * @route current route object to save in the state
+   * @match optional, match contains matching parameters from the route,
+   * if not passed, root folder should be received
+   */
+  
   onHomeRoute(route,match){
     this.setState(state => ({
       route:route,
@@ -561,12 +532,7 @@ export class PlaylistProvider extends React.Component {
         return a.title < b.title ? -1 : 1;
     }
   } 
-
-  /**
-   * @route current route object to save in the state
-   * @match optional, match contains matching parameters from the route,
-   * if not passed, root folder should be received
-   */
+  
   async onFolderRoute(route,match){
     const config = {
       method: 'POST',
@@ -724,13 +690,6 @@ export class PlaylistProvider extends React.Component {
     return "/folder/"+this.state.parentFolders.slice(1,-1).map(folder=>folder.title).join("/");
   }
   getFolderPath(track){
-    /*let parents = [];
-    if(this.state.parentFolders.length === 1){
-      parents = [this.state.currentFolder.title];
-    }else if(this.state.parentFolders.length > 1){
-
-      parents = [...this.state.parentFolders.slice(1),this.state.parentFolders[this.state.parentFolders.length-1].children.filter(track=>track.title === this.state.title)];
-    }*/
     let parentFolderNames = this.state.parentFolders.slice(1).map(folder=>folder.title);
     let parentFolderReduced = parentFolderNames.reduce((concat,prev,idx)=>concat +prev+"/","");
     return "/folder/"+parentFolderReduced+track.title;
@@ -744,35 +703,29 @@ export class PlaylistProvider extends React.Component {
     return (
       <PlaylistContext.Provider value={{
         state:this.state,
-        onPlaylistToAddChange:this.onPlaylistToAddChange,
-        onCreatePlaylistOpenClose:this.onCreatePlaylistOpenClose,
-        onPlaylistNameChange:this.onPlaylistNameChange,
-        createPlaylist:this.createPlaylist,
+        openCreatePlaylist:this.openCreatePlaylist,
+        onCreatePlaylistSuccess:this.onCreatePlaylistSuccess,
         addToPlaylist:this.addToPlaylist,
-        onAddToPlaylistClose:this.onAddToPlaylistClose,
+        closeAddToPlaylist:this.closeAddToPlaylist,
         onAddToPlaylist:this.onAddToPlaylist,
         onListClick:this.onListClick,
-        toggleDrawer:this.toggleDrawer,
+        openDrawer:this.openDrawer,
         onNextClick:this.onNextClick,
         onPrevClick:this.onPrevClick,
         setPlayerRef:this.setPlayerRef,
         restartPlayer:this.restartPlayer,
         onAudioEnd:this.onAudioEnd,
         toggleLoopStatus:this.toggleLoopStatus,
-        setImportOpen:this.setImportOpen,
+        openImport:this.openImport,
         onListFavoriteClick:this.onListFavoriteClick,
-        onSearchKeyPress:this.onSearchKeyPress,
-        onSearchChange:this.onSearchChange,
-        clearSearch:this.clearSearch,
         onRouteMount:this.onRouteMount,
-        onSearchOpen:this.onSearchOpen,
         getParentPath:this.getParentPath,
         getFolderPath:this.getFolderPath,
         linkTo:this.linkTo,
         displaySearch:this.displaySearch,
-        onLoginOpenClose:this.onLoginOpenClose,
+        openLogin:this.openLogin,
         onLoggedIn:this.onLoggedIn,
-        onCreateUserOpenClose:this.onCreateUserOpenClose,
+        openCreateUser:this.openCreateUser,
         isFavorite:this.isFavorite,
         isRoute:this.isRoute,
         }}>

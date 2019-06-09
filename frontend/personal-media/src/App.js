@@ -3,6 +3,7 @@ import FolderLayout from './layout/FolderLayout';
 import HomeLayout from './layout/HomeLayout';
 import { Route,Switch } from "react-router-dom";
 import {PlaylistProvider } from './PlaylistContext';
+import {PlaylistContext} from './PlaylistContext';
 import APAppBar from './layout/APAppBar';
 import PLAppBar from './layout/PLAppBar';
 import PLDrawer from './layout/PLDrawer';
@@ -65,7 +66,9 @@ export default class App extends React.Component{
             <div style={{width: '100%',height: '100%',display: 'flex',flexDirection: 'column',flexWrap: 'nowrap'}}>
             
             <div style={{flexGrow: '1',overflow: 'auto',minHeight: '2em'}}>
-            <PLAppBar />
+            <PlaylistContext.Consumer>{(context) => (
+            <PLAppBar displaySearch={context.displaySearch} />
+            )}</PlaylistContext.Consumer>
             <Switch>
             <Route exact path='/' render={(props) => <HomeLayout {...props} />} />
             <Route exact strict path={[
@@ -86,7 +89,9 @@ export default class App extends React.Component{
             </div>
             <PLDrawer />
             <CreateUserDialog />
-            <CreatePLDialog />
+            <PlaylistContext.Consumer>{(context) => (
+              <CreatePLDialog onCreatePlaylistSuccess={context.onCreatePlaylistSuccess}/>
+            )}</PlaylistContext.Consumer>
             <LoginDialog />
             <AddToPLDialog />
             <ImportDialog />

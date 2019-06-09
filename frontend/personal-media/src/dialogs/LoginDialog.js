@@ -81,7 +81,7 @@ export class LoginDialog extends Component {
             <PlaylistContext.Consumer>{(context) => (
                 <Dialog
                     open={context.state.loginOpen}
-                    onClose={() => context.onLoginOpenClose(false)}
+                    onClose={() => context.openLogin(false)}
                     aria-labelledby="login"
                     aria-describedby="login"
                     >
@@ -113,7 +113,7 @@ export class LoginDialog extends Component {
                         }
                     </DialogContent>
                     <DialogActions>
-                        <Button className={classes.cancelButton} onClick={() => context.onLoginOpenClose(false)} color="secondary">
+                        <Button className={classes.cancelButton} onClick={() => context.openLogin(false)} color="secondary">
                         Cancel
                         </Button>
                         <Button onClick={() => this.login(context)} color="primary" autoFocus>

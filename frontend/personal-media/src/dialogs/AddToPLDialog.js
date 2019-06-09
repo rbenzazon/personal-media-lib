@@ -4,12 +4,22 @@ import {PlaylistContext} from '../PlaylistContext';
 
 
 export class AddToPLDialog extends Component {
+    constructor(props){
+        super(props);
+        this.state={
+            playlistToAdd:null,
+        }
+        this.onPlaylistToAddChange = this.onPlaylistToAddChange.bind(this);
+    }
+    onPlaylistToAddChange(value){
+        this.setState({playlistToAdd:value});
+    }
     render() {
         return (
             <PlaylistContext.Consumer>{(context) => (
                 <Dialog
                     open={context.state.playlistAddOpen}
-                    onClose={() => context.onAddToPlaylistClose()}
+                    onClose={() => context.closeAddToPlaylist()}
                     aria-labelledby="add to playlist"
                     aria-describedby="add this track to a playlist"
                     >
@@ -20,25 +30,25 @@ export class AddToPLDialog extends Component {
                         </DialogContentText>
                         {context.state.playLists.length > 0 &&
                         <Select
-                            value={context.state.playlistToAdd}
-                            onChange={(e) => context.onPlaylistToAddChange(e.target.value)}
+                            value={this.state.playlistToAdd}
+                            onChange={(e) => this.onPlaylistToAddChange(e.target.value)}
                         >
                             {context.state.playLists.map((item)=>{return(
-                            <MenuItem key={item.title} selected={context.state.playlistToAdd === item} value={item}>{item.title}</MenuItem>
+                            <MenuItem key={item.title} selected={this.state.playlistToAdd === item} value={item}>{item.title}</MenuItem>
                             )})}
                         </Select>
                         }
                         {context.state.playLists.length === 0 &&
-                            <Button onClick={() => {context.onAddToPlaylistClose();context.onCreatePlaylistOpenClose(true)}} color="primary" autoFocus>
+                            <Button onClick={() => {context.closeAddToPlaylist()}} color="primary" autoFocus>
                             Create playlist
                             </Button>
                         }
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => context.onAddToPlaylistClose()} color="secondary">
+                        <Button onClick={() => context.closeAddToPlaylist()} color="secondary">
                         Cancel
                         </Button>
-                        <Button onClick={() => context.addToPlaylist()} color="primary" autoFocus>
+                        <Button onClick={() => context.addToPlaylist(this.state.playlistToAdd)} color="primary" autoFocus>
                         Add
                         </Button>
                     </DialogActions>

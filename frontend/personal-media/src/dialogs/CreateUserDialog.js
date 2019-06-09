@@ -59,7 +59,7 @@ export class CreateUserDialog extends Component {
         this.setState({confirmPassword:newValue});
     }
     closeDialog(context){
-        context.onCreateUserOpenClose(false);
+        context.openCreateUser(false);
         this.setState({name:"",email:"",password:"",confirmPassword:"",userId:"",error:""});
     }
     async createUser(context){

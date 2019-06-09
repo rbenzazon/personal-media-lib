@@ -77,6 +77,35 @@ export class PLAppBar extends Component {
     static defaultProps = {
         classes: {},
     };
+    constructor(props){
+        super(props);
+        this.state = {
+            searchKeyword:'',
+            searchOpen:false,
+        }
+        this.onSearchChange = this.onSearchChange.bind(this);
+        this.onSearchOpen = this.onSearchOpen.bind(this);
+        this.onSearchKeyPress = this.onSearchKeyPress.bind(this);
+        this.clearSearch = this.clearSearch.bind(this);
+    }
+    onSearchChange(value){
+        this.setState(state => ({searchKeyword:value}));
+    }
+    onSearchOpen(value){
+        this.setState({searchOpen:value,searchKeyword:''});
+    }
+    onSearchKeyPress(e){
+        if (e.key === 'Enter') {
+            this.props.displaySearch(this.state.searchKeyword);
+            //e.target.blur();
+        }
+    }
+    clearSearch(){
+        this.setState(state => ({
+            searchKeyword:'',
+            searchOpen:false,
+        }));
+    }
     render() {
         const {
             classes,
@@ -85,7 +114,7 @@ export class PLAppBar extends Component {
         <PlaylistContext.Consumer>{(context) => (
             <AppBar position="relative" className={classes.appBar} elevation={1}>
                 <Toolbar className={classes.toolBar}>
-                    {!context.state.searchOpen && <IconButton className={classes.menuButton} aria-label="Open menu" onClick={() => context.toggleDrawer(true)} >
+                    {!context.state.searchOpen && <IconButton className={classes.menuButton} aria-label="Open menu" onClick={() => context.openDrawer(true)} >
                         <MenuIcon />
                     </IconButton>}
                     {!context.state.searchOpen && <Typography className={classes.appBarTitle} variant="h6" color="inherit">
@@ -94,29 +123,30 @@ export class PLAppBar extends Component {
                     <div className={classes.grow} />
                     <Paper className={css(
                         classes['search'],
-                        {[classes['searchOpen']]:context.state.searchOpen},
+                        {[classes['searchOpen']]:this.state.searchOpen},
                     )} elevation={1}>
                         <IconButton 
                             className={classes.searchIcon}
                             aria-label="Search"
-                            onClick={() => context.displaySearch()}
+                            onClick={() => this.props.displaySearch(this.state.searchKeyword)}
                         >
                             <SearchIcon />
                         </IconButton>
                         <InputBase
-                            onKeyPress={(e) => context.onSearchKeyPress(e)}
-                            onChange={(e) => context.onSearchChange(e.target.value)}
-                            onFocus={() => context.onSearchOpen(true)}
-                            onBlur={() => context.onSearchOpen(false)}
-                            value={context.state.searchKeyword}
+                            onKeyPress={(e) => this.onSearchKeyPress(e)}
+                            onChange={(e) => this.onSearchChange(e.target.value)}
+                            onFocus={() => this.onSearchOpen(true)}
+                            onBlur={() => this.onSearchOpen(false)}
+                            value={this.state.searchKeyword}
                             placeholder="Search…"
                             className={classes.input}
                         />
-                        {context.state.displayedItemMode === constants.SEARCH_MODE && <IconButton color="primary"
-                            className={classes.searchIcon}
-                            aria-label="clear search"
-                            onClick={() => context.clearSearch()}
-                        >
+                        {(this.state.searchOpen && this.state.searchKeyword != '') &&
+                            <IconButton color="primary"
+                                className={classes.searchIcon}
+                                aria-label="clear search"
+                                onClick={() => this.clearSearch()}
+                            >
                             <ClearIcon />
                         </IconButton>}
                     </Paper>

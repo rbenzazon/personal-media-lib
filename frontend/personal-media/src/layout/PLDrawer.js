@@ -20,19 +20,19 @@ export class PLDrawer extends Component {
         
     return (
         <PlaylistContext.Consumer>{(context) => (
-            <Drawer open={context.state.sideDrawer} onClose={() => context.toggleDrawer(false)}>
+            <Drawer open={context.state.sideDrawerOpen} onClose={() => context.openDrawer(false)}>
                 <div
                     tabIndex={0}
                     role="button"
-                    onClick={() => context.toggleDrawer(false)}
-                    onKeyDown={() => context.toggleDrawer(false)}
+                    onClick={() => context.openDrawer(false)}
+                    onKeyDown={() => context.openDrawer(false)}
                 >
                     <List>
                     {
                         [
                             {text:'Home',icon:<HomeIcon />,click:"/"},
                             {text:'My Files',icon:<FilesIcon />,click:"/folder/"},
-                            {text:context.state.loggedIn?'Logoff '+context.state.loginName:"Login",icon:context.state.loggedIn?<UserIcon/>:<LoginIcon/>,click:() => context.onLoginOpenClose(true)},
+                            {text:context.state.loggedIn?'Logoff '+context.state.loginName:"Login",icon:context.state.loggedIn?<UserIcon/>:<LoginIcon/>,click:() => context.openLogin(true)},
                         ].map((item) => {
                         if(typeof item.click == "function"){
                             return (
@@ -57,7 +57,7 @@ export class PLDrawer extends Component {
                     {
                         [
                             {text:'Favorite tracks',icon:<FavorIcon />,click:"/favorite"},
-                            {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.onCreatePlaylistOpenClose(true)},
+                            {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.openCreatePlaylist(true)},
                         ].map((item) => {
                             if(typeof item.click == "function"){
                                 return (
@@ -93,8 +93,8 @@ export class PLDrawer extends Component {
                     }
                     {(context.state.loggedIn && context.state.loginType === 0) &&
                         [
-                            {text:'Create user',icon:<AddUserIcon/>,click:() => context.onCreateUserOpenClose(true)},
-                            {text:'Add media',icon:<ScanIcon/>,click:() => context.setImportOpen(true)},
+                            {text:'Create user',icon:<AddUserIcon/>,click:() => context.openCreateUser(true)},
+                            {text:'Add media',icon:<ScanIcon/>,click:() => context.openImport(true)},
                         ].map((item) => {return (
                                 <ListItem button key={item.text} onClick={item.click}>
                                     <ListItemIcon>{item.icon}</ListItemIcon>
