@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {PlaylistContext} from '../PlaylistContext';
-import {Clear as ClearIcon,Search as SearchIcon ,Menu as MenuIcon} from '@material-ui/icons';
+import {Clear as ClearIcon,Search as SearchIcon ,Menu as MenuIcon,Home as HomeIcon} from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import {Paper,InputBase,AppBar,Toolbar,Typography,IconButton} from '@material-ui/core';
 import {isMobile} from "react-device-detect";
@@ -44,12 +44,12 @@ const styles = theme => ({
         marginLeft: '0.3rem',
         flex: 1,
     },
-    menuButton: {
-        padding: isMobile ? '0rem 1.5rem' : '0rem 1rem',
-        margin: '0px',
-        
-        width: isMobile ? '20px' : '27px',
+    menuIcon:{
+        //width: isMobile ? '20px' : '27px',
         height: isMobile ? '20px' : '27px',
+    },
+    menuButton: {
+        margin: '0px',
         fill: `${getColor(theme, 'primary')} !important`,
         color: `${getColor(theme, 'primary')} !important`,
         '&:hover': {
@@ -114,12 +114,12 @@ export class PLAppBar extends Component {
         <PlaylistContext.Consumer>{(context) => (
             <AppBar position="relative" className={classes.appBar} elevation={1}>
                 <Toolbar className={classes.toolBar}>
-                    {!context.state.searchOpen && <IconButton className={classes.menuButton} aria-label="Open menu" onClick={() => context.openDrawer(true)} >
-                        <MenuIcon />
-                    </IconButton>}
-                    {!context.state.searchOpen && <Typography className={classes.appBarTitle} variant="h6" color="inherit">
-                    {context.state.title}
-                    </Typography>}
+                    <IconButton className={classes.menuButton} aria-label="Open menu" onClick={() => context.openDrawer(true)} >
+                        <MenuIcon className={classes.menuIcon}/>
+                    </IconButton>
+                    <IconButton className={classes.menuButton} aria-label="Home" onClick={() => context.linkTo("/")} >
+                        <HomeIcon className={classes.menuIcon}/>
+                    </IconButton>
                     <div className={classes.grow} />
                     <Paper className={css(
                         classes['search'],
