@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
-import {PlaylistContext} from './PlaylistContext';
+import {PlaylistContext} from '../PlaylistContext';
 import css from 'classnames';
 
 const getGreyColor = (theme, opacity) => {
@@ -44,9 +44,6 @@ export class SearchCard extends Component {
     };
     constructor(props){
         super(props);
-        this.state={
-            searchKeyword:decodeURIComponent(this.props.match.params.searchKeyword),
-        }
     }
     /*componentWillReceiveProps(nextProps, nextState){
         if(nextProps.match.params.searchKeyword != this.state.searchKeyword){
@@ -62,7 +59,7 @@ export class SearchCard extends Component {
                 <div className={classes.container} >
                     <p>
                         <span className={classes.label} >search results for </span>
-                        <span className={classes.searchKeyword} >{this.state.searchKeyword}</span>
+                        <span className={classes.searchKeyword} >{context.state.title}</span>
                         <span className={classes.value} >{context.state.displayedItems.length}</span>
                         <span className={classes.label} > results</span>
                     </p>

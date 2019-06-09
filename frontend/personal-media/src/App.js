@@ -1,20 +1,21 @@
 import React from 'react';
-import FolderLayout from './FolderLayout';
-import HomeLayout from './HomeLayout';
+import FolderLayout from './layout/FolderLayout';
+import HomeLayout from './layout/HomeLayout';
 import { Route,Switch } from "react-router-dom";
 import {PlaylistProvider } from './PlaylistContext';
-import APAppBar from './APAppBar';
-import PLAppBar from './PLAppBar';
-import PLDrawer from './PLDrawer';
+import {PlaylistContext} from './PlaylistContext';
+import APAppBar from './layout/APAppBar';
+import PLAppBar from './layout/PLAppBar';
+import PLDrawer from './layout/PLDrawer';
 import createBrowserHistory from 'history/createBrowserHistory'
 import ReactGA from 'react-ga';
 import { createMuiTheme,MuiThemeProvider } from '@material-ui/core/styles';
 import { Router} from "react-router-dom";
-import CreatePLDialog from './CreatePLDialog';
-import AddToPLDialog from './AddToPLDialog';
-import ImportDialog from './ImportDialog';
-import LoginDialog from './LoginDialog';
-import { CreateUserDialog } from './CreateUserDialog';
+import CreatePLDialog from './dialogs/CreatePLDialog';
+import AddToPLDialog from './dialogs/AddToPLDialog';
+import ImportDialog from './dialogs/ImportDialog';
+import LoginDialog from './dialogs/LoginDialog';
+import { CreateUserDialog } from './dialogs/CreateUserDialog';
 
 ReactGA.initialize('UA-52487002-2');
 
@@ -65,7 +66,9 @@ export default class App extends React.Component{
             <div style={{width: '100%',height: '100%',display: 'flex',flexDirection: 'column',flexWrap: 'nowrap'}}>
             
             <div style={{flexGrow: '1',overflow: 'auto',minHeight: '2em'}}>
-            <PLAppBar />
+            <PlaylistContext.Consumer>{(context) => (
+            <PLAppBar displaySearch={context.displaySearch} />
+            )}</PlaylistContext.Consumer>
             <Switch>
             <Route exact path='/' render={(props) => <HomeLayout {...props} />} />
             <Route exact strict path={[
@@ -86,7 +89,9 @@ export default class App extends React.Component{
             </div>
             <PLDrawer />
             <CreateUserDialog />
-            <CreatePLDialog />
+            <PlaylistContext.Consumer>{(context) => (
+              <CreatePLDialog onCreatePlaylistSuccess={context.onCreatePlaylistSuccess}/>
+            )}</PlaylistContext.Consumer>
             <LoginDialog />
             <AddToPLDialog />
             <ImportDialog />

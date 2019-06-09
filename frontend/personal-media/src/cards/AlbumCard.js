@@ -4,6 +4,7 @@ import {Grid} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import css from 'classnames';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
+import {PlaylistContext} from '../PlaylistContext';
 
 const getGreyColor = (theme, opacity) => {
       const greyColor = theme.palette.grey['500'];

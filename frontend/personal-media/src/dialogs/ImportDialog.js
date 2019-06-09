@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Button} from '@material-ui/core';
-import {PlaylistContext} from './PlaylistContext';
+import {PlaylistContext} from '../PlaylistContext';
 
 export class ImportDialog extends Component {
     render() {
@@ -8,7 +8,7 @@ export class ImportDialog extends Component {
             <PlaylistContext.Consumer>{(context) => (
                 <Dialog
                     open={context.state.importOpen}
-                    onClose={() => context.setImportOpen(false)}
+                    onClose={() => context.openImport(false)}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                     >
@@ -19,10 +19,10 @@ export class ImportDialog extends Component {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => context.setImportOpen(false)} color="primary">
+                        <Button onClick={() => context.openImport(false)} color="primary">
                         Cancel
                         </Button>
-                        <Button onClick={() => context.setImportOpen(false)} color="primary" autoFocus>
+                        <Button onClick={() => context.openImport(false)} color="primary" autoFocus>
                         Browse
                         </Button>
                     </DialogActions>

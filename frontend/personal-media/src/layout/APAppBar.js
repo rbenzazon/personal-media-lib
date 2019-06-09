@@ -2,8 +2,8 @@ import React,{ Component} from 'react';
 import {AppBar} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import {PlaylistContext} from './PlaylistContext';
-import AudioPlayer from './AudioPlayer/AudioPlayer.js';
+import {PlaylistContext} from '../PlaylistContext';
+import AudioPlayer from '../AudioPlayer/AudioPlayer.js';
 
 
 const styles = theme => ({
