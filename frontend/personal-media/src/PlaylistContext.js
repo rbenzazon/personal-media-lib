@@ -24,6 +24,7 @@ export class PlaylistProvider extends React.Component {
     displayedItemMode:constants.PLAYLIST_MODE,
     displayedItems:[],
     playLists:[],
+    
     playerLoopStatus:Player.Status.LOOP_LIST,
     playerStatus:Player.Status.PAUSE,
     playerRef:undefined,

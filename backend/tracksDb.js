@@ -9,7 +9,7 @@ const verify = require('./verifyToken');
 var fs = require('fs');
 var path = require('path');
 const mm = require('music-metadata');
-const pathToScan = './media';
+const PATH_TO_SCAN = './media';
 var rootNode;
 
 router.post('/getFolder',verify, async (req,res)=>{
@@ -308,7 +308,7 @@ async function scanRecursive (folderPath,nodes,files){
             const tags = await mm.parseFile(url);
             file = new File({
                 title : tags.common.title?tags.common.title : item.name,
-                url:url.substring(pathToScan.length),
+                url:url.substring(PATH_TO_SCAN.length),
             });
             if(tags.common.picture && tags.common.picture[0] && tags.common.picture[0].data){
                 try{
@@ -374,6 +374,234 @@ function modelFile(file,result){
         }
     }
 }
+function findChildNodeByFileName(node,fileName){
+    console.log("looking for "+fileName+" in node="+node._id);
+    for(let child of node.children) {
+        if(child.file.title === fileName){
+            console.log("found "+fileName+" in node="+node._id);
+            return child;
+        }
+    }
+    console.log("can't find "+fileName+" in node="+node._id);
+    return null;
+}
+
+function findChildNodeByUrl(node,title){
+    console.log("looking for "+title+" in node="+node._id);
+    for(let child of node.children) {
+        if(!child.file.url){
+            continue;
+        }
+        const fileName = child.file.url.substring(child.file.url.lastIndexOf("/")+1);
+        if(fileName === title){
+            console.log("found "+title+" in node="+node._id);
+            return child;
+        }
+    }
+    console.log("can't find "+title+" in node="+node._id);
+    return null;
+}
+
+async function removeOneNodeAndFile(node,child){
+    if(child.populated("file")){
+        child.depopulate("file");
+    }
+    const fileCheck = await File.findOneAndRemove({_id:child.file});
+    if(fileCheck){
+        console.log("file successfully deleted");
+    }else{
+        console.log("file deletion didn't work")
+    }
+    const previousLength = node.children.length;
+    await node.children.remove(child._id);
+    if(node.children.length === previousLength-1){
+        console.log("child has been removed from node.children");
+    }else{
+        console.log("child has NOT been removed from node.children");
+    }
+
+    const nodeCheck = await Node.findOneAndRemove({_id:child._id});
+    if(nodeCheck){
+        console.log("node successfully deleted");
+    }else{
+        console.log("node deletion didn't work")
+    }
+}
+
+async function removeRecursive(node){
+    console.log("removeRecursive node="+node._id);
+    await node.populate("children").execPopulate();
+    let toRemove = [];
+    while(node.children.length>0) {
+        let child = node.children[0];
+        console.log("iterating removeRecursive child="+child._id);
+        console.log(child);
+        await child.populate("file").execPopulate();
+        console.log("child="+child.file.title);
+        if(!child.file.url && child.children.length >=1){
+            console.log("child is folder")
+            await removeRecursive(child);
+        }
+        await removeOneNodeAndFile(node,child);
+    }
+}
+
+async function scanUpdateRecursive (node,folderPath,nodes,files){
+    console.log("sUR "+node._id+" "+folderPath+" "+nodes.length+" "+files.length);
+    //populate child nodes inside the current node
+    await node.populate("children").execPopulate();
+    if(node.children.length >= 1 && node.children[0].file){
+        console.log("node has populated children")
+    }
+    console.log("checking for deletion");
+    for(let child of node.children) {
+        console.log("iterating child node="+child._id);
+        //populate with File data to check the node name
+        let nodeWithFile = await child.populate("file").execPopulate();
+        if(nodeWithFile.file.title){
+            if(nodeWithFile.file.url){
+                console.log("node child has populated file file="+nodeWithFile.file.url);
+            }else{
+                console.log("node child has populated file file="+nodeWithFile.file.title);
+            }
+        }
+        let filePath = nodeWithFile.file.url? nodeWithFile.file.url.substring(1) : nodeWithFile.file.title;
+        //file is still there, do nothin
+        if(fs.existsSync(folderPath+"/"+filePath)){
+            console.log("file found");
+            continue;
+        }
+        else//file is gone, need to remove it from the db
+        {
+            if(!child.file.url && child.children.length >=1){
+                await removeRecursive(child);
+            }
+            console.log("file is missing, deteling");
+            await removeOneNodeAndFile(node,child);
+        }
+    }
+    console.log("end deletion checking");
+    console.log("addition checking folder"+folderPath);
+    let filesInPath = await readFolder(folderPath);
+    if(filesInPath.length>0){
+        console.log("found "+filesInPath.length+" files");
+    }
+    //let children = [];
+    for (let i=0; i<filesInPath.length; i++) {
+        const item = filesInPath[i];
+        //check if file is already referenced in the current node
+        const isDirectory = item.isDirectory();
+        console.log("fsfile="+item.name+" isDirectory="+isDirectory);
+        //if file exists and not a folder, no need to continue
+        let newFile;
+        let newNode;
+        if(isDirectory){
+            const existingFolderChildNode = findChildNodeByFileName(node,item.name);
+            if(existingFolderChildNode === null){
+                console.log("this folder is not referenced, creating new file and node");
+            }else{
+                continue;
+            }
+            
+            if(existingFolderChildNode === null){
+                
+                
+                newFile = new File({
+                    title: item.name
+                })
+                newNode = new Node({
+                    file:newFile,
+                });
+                newFile.node = newNode;
+            }else{
+                newNode = existingFolderChildNode;
+                console.log("this folder exists");
+            }
+            console.log("recursing");
+            await scanUpdateRecursive(newNode,folderPath+"/"+item.name,nodes,files);
+            
+           /*if(existingFolderChildNode === null){
+               node.children = tmpChildren;
+            }*/
+            //await node.children.push(newNode._id);
+            await Node.findOneAndUpdate({_id:node._id},{ $push: { children: newNode } });
+        }else { //redondent condition for clarity
+            const existingFileChildNode = findChildNodeByUrl(node,item.name);
+            if(existingFileChildNode === null){
+                console.log("found fsfile not referenced");
+            }else{
+                continue;
+            }
+            const url = folderPath+"/"+item.name;
+            const tags = await mm.parseFile(url);
+            //
+            
+            newFile = new File({
+                title : tags.common.title?tags.common.title : item.name,
+                url:url.substring(PATH_TO_SCAN.length),
+            });
+            if(tags.common.picture && tags.common.picture[0] && tags.common.picture[0].data){
+                try{
+                    sharp(tags.common.picture[0].data)
+                    .resize(256,256,{fit:"inside"})
+                    .toFile(url+".jpg");
+                    newFile.imageUrl = newFile.url+".jpg";
+                }catch(err){
+                    console.log("error reading image from file :"+url+"\\n"+err)
+                }
+            }
+            mapToProps(newFile,tags.common);
+            newNode = new Node({
+                file:newFile,
+            });
+            newFile.node = newNode;
+            console.log("created new file");
+            await Node.updateOne({_id:node._id},{ $push: { children: newNode } }).exec();
+            console.log("added new childnode to node");
+            
+        }
+        
+        nodes.push(newNode);
+        files.push(newFile);
+        
+    }
+    if(node.populated("children")){
+        node.depopulate("children");
+    }
+    console.log("saving children");
+    console.log(node.children);
+    //await Node.updateOne({_id:node._id},{ $set: { children: { $each: node.children } } });
+    //nodes.push(node);
+}
+
+async function scanUpdateFiles(pathToScan){
+    let rootFile = await File.findOne({title:"My media"}).exec();
+    if(!rootFile) {
+        console.log("01 can't find root file");
+        return;
+    }
+    console.log("01 rootFile = "+rootFile._id);
+    let rootNode = await Node.findOne({_id:rootFile.node});
+    if(!rootNode) {
+        console.log("01 can't find root node");
+        return;
+    }
+    console.log("01 rootNode = "+rootNode._id);
+    let files = [];
+    let nodes = [];
+    await scanUpdateRecursive(rootNode,pathToScan,nodes,files);
+    return {nodes:nodes,files:files};
+}
+
+router.post('/scanUpdateToDb',verify, async (req,res)=>{
+    const toSave = await scanUpdateFiles(PATH_TO_SCAN);
+    console.log(toSave.files.length + " files scanned");
+    await Node.collection.insertMany(toSave.nodes);
+    await File.collection.insertMany(toSave.files);
+    console.log("files and nodes are saved");
+    return res.send({filesScanned:toSave.files.length});
+});
+
 router.post('/scanToDb',verify, async (req,res)=>{
     //cleans the collections
 
@@ -397,7 +625,7 @@ router.post('/scanToDb',verify, async (req,res)=>{
     
     console.log("collection are empty");
 
-    const toSave = await scanFiles(pathToScan);
+    const toSave = await scanFiles(PATH_TO_SCAN);
     console.log(toSave.files.length + " files scanned");
     await Node.collection.insertMany(toSave.nodes);
     await File.collection.insertMany(toSave.files);
