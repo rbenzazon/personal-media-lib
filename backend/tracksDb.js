@@ -460,6 +460,16 @@ router.post('/scanToDb',verify, async (req,res)=>{
     }catch(err){
         console.log("collection 'nodes' can't be dropped")
     }
+    /*try{
+        await mongoose.connection.dropCollection("fileLists");
+    }catch(err){
+        console.log("collection 'fileLists' can't be dropped")
+    }*/
+    try{
+        await FileList.updateMany({}, { $set: {"files": []}}).exec();
+    }catch(err){
+        console.log("error trying to empty all fileLists err="+err);
+    }
     
     console.log("collection are empty");
 

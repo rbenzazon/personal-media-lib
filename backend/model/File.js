@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const FileList = require('./FileList');
 const fileSchema = new mongoose.Schema({
 	title:{
 		type:String,
@@ -68,6 +69,15 @@ const fileSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Node' 
 	},
+});
+
+fileSchema.pre('findOneAndDelete', async function() {
+	//var FileList = this.model('fileLists');/*
+	try{
+        await FileList.updateMany({}, { $pullAll: {"files": [this._id]}}).exec();
+    }catch(err){
+        console.log("error trying to remove file from fileLists files array err="+err);
+    }
 });
 
 module.exports = mongoose.model('File',fileSchema);
