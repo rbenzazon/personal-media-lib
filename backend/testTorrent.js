@@ -12,8 +12,13 @@ async function run(){
     });
 
     child.stdout.on('data', function(data) {
-        //Here is where the output goes
-        console.log('stdout: ' + data);
+        var str = data.toString(), lines = str.split(/(\r?\n)/g);
+        for (var i=lines.length-1; i>=0; i--) {
+            if(lines[i].getCharAt(0) === "["){
+                let line = lines[i].substring(1,-1);
+                console.log(lines[i]); // only prints one line
+            }
+        }   
     });
     
     /*  // Async Iteration available since Node 10
