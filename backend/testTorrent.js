@@ -14,9 +14,22 @@ async function run(){
     child.stdout.on('data', function(data) {
         var str = data.toString(), lines = str.split(/(\r?\n)/g);
         for (var i=lines.length-1; i>=0; i--) {
-            if(lines[i].getCharAt(0) === "["){
-                let line = lines[i].substring(1,-1);
-                console.log(lines[i]); // only prints one line
+            if(lines[i].charAt(0) === "["){
+		let progress = "";
+                let line = lines[i].slice(1,-1);
+		let args = line.split(" "); let id = args[0];
+		let bytesLoaded = args[1].split("/")[0];
+		let bytesTotal = args[1].split("/")[1];
+		let parenthesis = bytesTotal.indexOf("(");
+		if(parenthesis!=-1 ){
+			progress = bytesTotal.substring(parenthesis,bytesTotal.indexOf("%"));
+			bytesTotal = bytesTotal.substring(0,parenthesis);
+		}
+		let connections = args[2].split(":")[1];
+		let seeders = args[3].split(":")[1];
+		let dl = args[4].split(":")[1];
+                console.log(bytesLoaded,bytesTotal,connections,seeders,dl); // only prints one line
+		continue;
             }
         }   
     });
