@@ -10,11 +10,16 @@ async function run(){
     child.on('exit', code => {
         console.log(`Exit code is: ${code}`);
     });
+
+    child.stdout.on('data', function(data) {
+        //Here is where the output goes
+        console.log('stdout: ' + data);
+    });
     
-      // Async Iteration available since Node 10
+    /*  // Async Iteration available since Node 10
     for await (const data of child.stdout) {
         console.log(`stdout from the child: ${data}`);
-    };
+    };*/
 }
 
 run()
