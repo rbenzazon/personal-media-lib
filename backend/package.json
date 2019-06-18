@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "scanMedia.js",
+  "main": "server.js",
   "dependencies": {
     "@hapi/joi": "^15.0.3",
     "@tweenjs/tween.js": "^17.4.0",
