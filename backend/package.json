@@ -12,6 +12,7 @@
     "dotenv": "^8.0.0",
     "exif-parser": "^0.1.12",
     "express": "^4.17.0",
+    "fs-extra": "^8.0.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.11",
     "music-metadata": "^4.0.1",

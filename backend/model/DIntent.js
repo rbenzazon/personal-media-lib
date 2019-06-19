@@ -6,6 +6,12 @@ const dIntentSchema = new mongoose.Schema({
 		min:70,
 		max:512,
 	},
+	title:{
+		type:String,
+		required:true,
+		min:5,
+		max:255,
+	},
 	path:{
 		type:String,
 		required:true,
@@ -35,7 +41,7 @@ const dIntentSchema = new mongoose.Schema({
 	},
 	ariaId:{
 		type:String,
-		required:true,
+		required:false,
 		min:5,
 		max:12,
 	},

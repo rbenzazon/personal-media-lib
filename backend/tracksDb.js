@@ -9,8 +9,20 @@ const verify = require('./verifyToken');
 var fs = require('fs');
 var path = require('path');
 const mm = require('music-metadata');
+const {requestDIntent} = require('./DIntentLoader');
 const PATH_TO_SCAN = './media';
 var ROOT_TITLE = 'My media';
+
+router.post('/addDownload',verify,async (req,res)=>{
+    console.log("addDownload Route");
+    const userExist = await User.findOne({_id:req.user._id}).exec();
+    if(!userExist || userExist.type !== 0){
+        console.log("failed attempt at executing scanToDb route with insufficient privileges "+userExist);
+        return res.status(400).send({message:'Access restricted'});
+    }
+    requestDIntent(req.body.magnet,req.user._id);
+    return res.send(req.body);
+});
 
 router.post('/getFolder',verify, async (req,res)=>{
     //add id ref to root file from .env
@@ -781,7 +793,7 @@ async function scanUpdateFiles(){
     return {nodes:nodes,files:files};
 }
 
-router.post('/scanUpdateToDb',verify, async (req,res)=>{
+async function runScan(){
     const toSave = await scanUpdateFiles();
     console.log(toSave.files.length + " new files scanned");
     if(toSave.nodes.length > 0){
@@ -801,7 +813,18 @@ router.post('/scanUpdateToDb',verify, async (req,res)=>{
         }
     }
     console.log("db has been updated");
-    return res.send({filesScanned:toSave.files.length});
+    return toSave.files.length;
+}
+
+router.post('/scanUpdateToDb',verify, async (req,res)=>{
+    const userExist = await User.findOne({_id:req.user._id}).exec();
+    if(!userExist || userExist.type !== 0){
+        console.log("failed attempt at executing scanToDb route with insufficient privileges "+userExist);
+        return res.status(400).send({message:'Access restricted'});
+    }
+    let fileScanned = await runScan();
+    
+    return res.send({filesScanned:fileScanned});
 });
 
 /**
@@ -811,4 +834,4 @@ router.post('/scanUpdateToDb',verify, async (req,res)=>{
 
 
 
-module.exports = router;
+module.exports = {router,runScan};
