@@ -7,7 +7,7 @@ app.use(cookieParser());
 app.use(cors());
 //import routes
 const authRoutes = require('./auth.js');
-const tracksRoutes = require('./tracksDb').router;
+const tracksRoutes = require('./tracksDb');
 dotenv.config();
 
 const verify = require('./verifyToken');
