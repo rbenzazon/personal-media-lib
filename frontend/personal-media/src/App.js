@@ -1,6 +1,7 @@
 import React from 'react';
 import FolderLayout from './layout/FolderLayout';
 import HomeLayout from './layout/HomeLayout';
+import DownloadLayout from './layout/DownloadLayout';
 import { Route,Switch } from "react-router-dom";
 import {PlaylistProvider } from './PlaylistContext';
 import {PlaylistContext} from './PlaylistContext';
@@ -15,6 +16,7 @@ import CreatePLDialog from './dialogs/CreatePLDialog';
 import AddToPLDialog from './dialogs/AddToPLDialog';
 import ImportDialog from './dialogs/ImportDialog';
 import LoginDialog from './dialogs/LoginDialog';
+import DownloadDialog from './dialogs/DownloadDialog';
 import { CreateUserDialog } from './dialogs/CreateUserDialog';
 
 ReactGA.initialize('UA-52487002-2');
@@ -83,6 +85,7 @@ export default class App extends React.Component{
               ]} render={(props) => <FolderLayout {...props} />} />
             
             <Route exact strict path='/folder/*' render={(props) => <FolderLayout {...props} />} />
+            <Route exact strict path={['/download/','/download']} render={(props) => <DownloadLayout {...props} />} />
             </Switch>
             </div>
             <APAppBar />
@@ -94,6 +97,7 @@ export default class App extends React.Component{
             )}</PlaylistContext.Consumer>
             <LoginDialog />
             <AddToPLDialog />
+            <DownloadDialog />
             <ImportDialog />
           </React.Fragment>
         </PlaylistProvider>

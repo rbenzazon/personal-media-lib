@@ -507,14 +507,11 @@ router.post('/scanToDb',verify, async (req,res)=>{
   * @returns {Node} child node linking to File with .title equal to fileName
   */
 function findChildNodeByFileName(node,fileName){
-    console.log("looking for "+fileName+" in node="+node._id);
     for(let child of node.children) {
         if(child.file.title === fileName){
-            console.log("found "+fileName+" in node="+node._id);
             return child;
         }
     }
-    console.log("can't find "+fileName+" in node="+node._id);
     return null;
 }
 
@@ -527,18 +524,15 @@ function findChildNodeByFileName(node,fileName){
   * @returns {Node} child node linking to File with .url equals to fileName
   */
 function findChildNodeByUrl(node,fileName){
-    console.log("looking for "+fileName+" in node="+node._id);
     for(let child of node.children) {
         if(!child.file.url){
             continue;
         }
         const fileName = child.file.url.substring(child.file.url.lastIndexOf("/")+1);
         if(fileName === fileName){
-            console.log("found "+fileName+" in node="+node._id);
             return child;
         }
     }
-    console.log("can't find "+fileName+" in node="+node._id);
     return null;
 }
 
@@ -555,28 +549,16 @@ async function removeOneNodeAndFile(parentNode,childNode){
     if(childNode.populated("file")){
         await childNode.depopulate("file");
     }
-    console.log("removeOneNodeAndFile child.file="+childNode.file);
     try{
         await File.findOneAndDelete({_id:childNode.file}).exec();
     }catch(err){
         console.log("file deletion didn't work err="+err)
     }
-    
-    const previous = await Node.findOne({_id:parentNode._id}).exec();
-    const previousLength = previous.children.length;
     try{
         await Node.updateOne({_id:parentNode._id}, { $pull: {"children": { "_id":childNode.file}}}).exec();
     }catch(err){
         console.log("error trying to remove child from parent node err="+err);
     }
-    //await node.children.remove(childNode._id);
-    const next = await Node.findOne({_id:parentNode._id}).exec();
-    if(next.children.length === previousLength-1){
-        console.log("child has been removed from node.children");
-    }else{
-        console.log("child has been removed from node.children");
-    }
-
     try{
         await Node.findOneAndDelete({_id:childNode._id}).exec();
     }catch(err){
@@ -591,16 +573,11 @@ async function removeOneNodeAndFile(parentNode,childNode){
  */
 
 async function removeChildrenRecursive(parentNode){
-    console.log("removeChildrenRecursive node="+parentNode._id);
     parentNode = await parentNode.populate("children").execPopulate();
     while(parentNode.children.length>0) {
         let child = parentNode.children[0];
-        console.log("iterating removeChildrenRecursive child="+child._id);
-        console.log(child);
         let childWithFile = await child.populate("file").execPopulate();
-        console.log("child="+childWithFile.file.title);
         if(!childWithFile.file.url && child.children.length >=1){
-            console.log("child is folder")
             await removeChildrenRecursive(child);
         }
         await removeOneNodeAndFile(parentNode,child);
@@ -623,29 +600,16 @@ async function removeChildrenRecursive(parentNode){
  */
 
 async function scanUpdateRecursive (node,folderPath,nodes,files){
-    console.log("sUR "+node._id+" "+folderPath+" "+nodes.length+" "+files.length);
     //populate child nodes inside the current node
     await node.populate("children").execPopulate();
-    if(node.children.length >= 1 && node.children[0].file){
-        console.log("node has populated children length"+node.children.length)
-    }
-    console.log("checking for deletion");
+    //deletion
     for(let i=node.children.length-1;i>=0;i--) {
         let child = node.children[i];
-        console.log("iterating child node="+child._id);
         //populate with File data to check the node name
         let childWithFile = await child.populate("file").execPopulate();
-        if(childWithFile.file.title){
-            if(childWithFile.file.url){
-                console.log("node child has populated file file="+childWithFile.file.url);
-            }else{
-                console.log("node child has populated file file="+childWithFile.file.title);
-            }
-        }
         let filePath = childWithFile.file.url? childWithFile.file.url.substring(childWithFile.file.url.lastIndexOf("/")+1) : childWithFile.file.title;
         //file is still there, do nothin
         if(fs.existsSync(folderPath+"/"+filePath)){
-            console.log("file found");
             if(!childWithFile.file.url){
                 await scanUpdateRecursive(child,folderPath+"/"+filePath,nodes,files);
             }
@@ -655,35 +619,26 @@ async function scanUpdateRecursive (node,folderPath,nodes,files){
             if(!childWithFile.file.url && child.children.length >=1){
                 await removeChildrenRecursive(child);
             }
-            console.log("file is missing, deteling");
             await removeOneNodeAndFile(node,child);
         }
     }
-    console.log("end deletion checking");
-    console.log("addition checking folder"+folderPath);
+    //addition
     let filesInPath = await readFolder(folderPath);
-    if(filesInPath.length>0){
-        console.log("found "+filesInPath.length+" files");
-    }
-
-    //could add here a reload of node
-
     for (let i=0; i<filesInPath.length; i++) {
         const item = filesInPath[i];
         //check if file is already referenced in the current node
         const isDirectory = item.isDirectory();
-        console.log("iterating fsfile="+item.name+" isDirectory="+isDirectory);
         //if file exists and not a folder, no need to continue
         let newFile;
         let newNode;
         if(isDirectory){
             const existingFolderChildNode = findChildNodeByFileName(node,item.name);
-            if(existingFolderChildNode === null){
-                console.log("this folder is not referenced, creating new file and node");
+            if(existingFolderChildNode != null){
+                console.log("this folder exists "+item.name);
+                console.log("recursing");
+                await scanUpdateRecursive(existingFolderChildNode,folderPath+"/"+item.name,nodes,files);
             }else{
-                continue;
-            }
-            if(existingFolderChildNode === null){
+                console.log("this folder doesn't exists");
                 newFile = new File({
                     title: item.name
                 })
@@ -691,28 +646,19 @@ async function scanUpdateRecursive (node,folderPath,nodes,files){
                     file:newFile,
                 });
                 newFile.node = newNode;
-            }else{
-                newNode = existingFolderChildNode;
-                console.log("this folder exists");
+                console.log("saving");
+                await newNode.save();
+                console.log("recursing");
+                await scanUpdateRecursive(newNode,folderPath+"/"+item.name,nodes,files);
+                files.push(newFile);
+                try{
+                    await Node.findOneAndUpdate({_id:node._id},{ $push: { children: newNode._id } }).exec();
+                }catch(err){
+                    console.log("can't push new folder node to its parent err="+err);
+                    return;
+                }
             }
-            console.log("recursing");
-            await newNode.save();
-            await scanUpdateRecursive(newNode,folderPath+"/"+item.name,nodes,files);
-            
-           /*if(existingFolderChildNode === null){
-               node.children = tmpChildren;
-            }*/
-            //await node.children.push(newNode._id);
-            //nodes.push(newNode);
-            files.push(newFile);
-            
-            try{
-                await Node.findOneAndUpdate({_id:node._id},{ $push: { children: newNode._id } }).exec();
-            }catch(err){
-                console.log("can't push new folder node to its parent err="+err);
-                return;
-            }
-        }else { //redondent condition for clarity
+        }else {
             const existingFileChildNode = findChildNodeByUrl(node,item.name);
             if(existingFileChildNode === null){
                 console.log("found fsfile not referenced");
@@ -721,7 +667,6 @@ async function scanUpdateRecursive (node,folderPath,nodes,files){
             }
             const url = folderPath+"/"+item.name;
             const tags = await mm.parseFile(url);
-            //
             
             newFile = new File({
                 title : tags.common.title?tags.common.title : item.name,
@@ -750,21 +695,14 @@ async function scanUpdateRecursive (node,folderPath,nodes,files){
                 console.log("can't push new file node to its parent err="+err);
                 return;
             }
-            console.log("added new childnode to node");
+            console.log("added new childnode"+item.name+" to node "+node.file.title);
             nodes.push(newNode);
             files.push(newFile);
         }
-        
-        
-        
     }
     if(node.populated("children")){
         node.depopulate("children");
     }
-    console.log("saving children");
-    console.log(node.children);
-    //await Node.updateOne({_id:node._id},{ $set: { children: { $each: node.children } } });
-    //nodes.push(node);
 }
 
 async function scanUpdateFiles(){
@@ -841,6 +779,17 @@ router.post('/addDownload',verify,async (req,res)=>{
     }
     requestDIntent(req.body.magnet,req.user._id);
     return res.send(req.body);
+});
+
+router.post('/getDownloads',verify,async (req,res)=>{
+    console.log("getDownloads Route");
+    const userExist = await User.findOne({_id:req.user._id}).exec();
+    if(!userExist || userExist.type !== 0){
+        console.log("failed attempt at executing scanToDb route with insufficient privileges "+userExist);
+        return res.status(400).send({message:'Access restricted'});
+    }
+    const downloads = await DIntent.find({},"title bytesLoaded bytesTotal progress completed path").lean().exec();
+    return res.send({downloads:downloads});
 });
 
 
@@ -925,7 +874,15 @@ async function requestDIntent(magnet,ownerId){
             tmpPath = path.replace(/\//g,"\\");
             dest = dest.replace(/\//g,"\\");
         }
+
         await fsEx.move(tmpPath,dest);
+        try{
+            await DIntent.updateOne({magnet:magnet},{
+                path:dest,
+            }).exec();
+        }catch(err){
+            console.log("child process couldn't update DIntent path after move err="+err);
+        }
         await runScan();
         //lifecycle, RunDIntent again in case there is other intents to execute on DB
         requestDIntent();

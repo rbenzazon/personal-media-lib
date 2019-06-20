@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {List,ListItem,ListItemIcon,ListItemText,Drawer} from '@material-ui/core';
-import {PersonAdd as AddUserIcon,AccountCircle as LoginIcon,VerifiedUser as UserIcon,Home as HomeIcon,Folder as FilesIcon, PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
+import {Cloud as DownloadsIcon,CloudDownload as DownloadIcon,PersonAdd as AddUserIcon,AccountCircle as LoginIcon,VerifiedUser as UserIcon,Home as HomeIcon,Folder as FilesIcon, PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import {PlaylistContext} from '../PlaylistContext';
@@ -95,6 +95,8 @@ export class PLDrawer extends Component {
                         [
                             {text:'Create user',icon:<AddUserIcon/>,click:() => context.openCreateUser(true)},
                             {text:'Add media',icon:<ScanIcon/>,click:() => context.openImport(true)},
+                            {text:'Add download',icon:<DownloadIcon/>,click:() => context.openDownload(true)},
+                            {text:'Downloads',icon:<DownloadsIcon/>,click:() => context.linkTo("/download")},
                         ].map((item) => {return (
                                 <ListItem button key={item.text} onClick={item.click}>
                                     <ListItemIcon>{item.icon}</ListItemIcon>

@@ -31,6 +31,7 @@ export class PlaylistProvider extends React.Component {
 
     sideDrawerOpen:false,
     importOpen:false,
+    downloadOpen:false,
     searchOpen:false,
     createPlaylistOpen:false,
     playlistAddOpen:false,
@@ -84,6 +85,7 @@ export class PlaylistProvider extends React.Component {
     this.loadAlbums = this.loadAlbums.bind(this);
     this.loadGenres = this.loadGenres.bind(this);
     this.isRoute = this.isRoute.bind(this);
+    this.openDownload = this.openDownload.bind(this);
 
     this.checkLogin();
   }
@@ -404,6 +406,10 @@ export class PlaylistProvider extends React.Component {
     this.setState({playerLoopStatus:newLoopStatus});
   }
 
+  openDownload(value){
+    this.setState({downloadOpen:value});
+  }
+
   openImport(value){
     this.setState({importOpen:value});
   }
@@ -477,6 +483,16 @@ export class PlaylistProvider extends React.Component {
       parentFolders:[],
     }));
   }
+
+  onDownloadRoute(route,match){
+    this.setState(state => ({
+      route:route,
+      title:"Download",
+      displayedItems:[],
+      parentFolders:[],
+    }));
+  }
+  
   async onFavoriteRoute(route,match){
     const config = {
       method: 'POST',
@@ -682,6 +698,9 @@ export class PlaylistProvider extends React.Component {
         return this.onAlbumRoute(route,currentMatch);
       case "/"+constants.GENRE_MODE+"/:genreName" :
         return this.onGenreRoute(route,currentMatch);
+      case "/download/" :
+      case "/download" :
+        return this.onDownloadRoute(route,currentMatch);
       default:
       break;
     }
@@ -729,6 +748,7 @@ export class PlaylistProvider extends React.Component {
         openCreateUser:this.openCreateUser,
         isFavorite:this.isFavorite,
         isRoute:this.isRoute,
+        openDownload:this.openDownload,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>
