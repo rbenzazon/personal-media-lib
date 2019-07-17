@@ -17,7 +17,13 @@ const mongoose = require('mongoose');
 mongoose.connect(
     process.env.DB_CONNECT,
     {useNewUrlParser:true},
-    ()=>console.log("db connected"),
+    (err)=>{
+        if(err){
+            console.log("can't connect to db err="+err);
+        }else{
+            console.log("db connected");
+        }
+    },
 );
 
 //Middleware

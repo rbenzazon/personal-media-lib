@@ -197,7 +197,7 @@ export class DownloadList extends Component {
                                     <FolderIcon className={classes.trackIcon} />
                                 </Grid>
                                 
-                                <Grid item className={classes.titleGrid} xs={10} onClick={()=>context.linkTo(context.getFolderPath(download))}>
+                                <Grid item className={classes.titleGrid} xs={10} >
                                     <span 
                                         className={css(
                                             classes['trackTitle'],

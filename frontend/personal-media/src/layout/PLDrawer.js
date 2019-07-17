@@ -53,8 +53,10 @@ export class PLDrawer extends Component {
                         }
                     })
                     }
+                    {context.state.loggedIn &&
                     <Divider />
-                    {
+                    }
+                    {context.state.loggedIn &&
                         [
                             {text:'Favorite tracks',icon:<FavorIcon />,click:"/favorite"},
                             {text:'Create playlist',icon:<PlaylistAddIcon/>,click:() => context.openCreatePlaylist(true)},
@@ -78,7 +80,8 @@ export class PLDrawer extends Component {
                             }
                         })
                     }
-                    {context.state.playLists.map(item=>{
+                    {context.state.loggedIn &&
+                        context.state.playLists.map(item=>{
                             return (
                             <Link to={"/playlist/"+item.title} key={item.title} style={{ textDecoration: 'none' }} >
                                 <ListItem button selected={context.isRoute("/playlist/"+item.title)}>

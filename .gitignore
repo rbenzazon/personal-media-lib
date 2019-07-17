@@ -13,3 +13,5 @@ node_modules
 /frontend/personal-media/public/tracks.json
 /frontend/personal-media/src/data.json
 *.png
+download
+tmp

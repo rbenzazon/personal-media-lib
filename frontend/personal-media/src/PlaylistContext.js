@@ -190,6 +190,26 @@ export class PlaylistProvider extends React.Component {
     this.onLoggedIn(user.name,user.type);
   }
 
+  async onLoggedIn(name,type){
+    
+    await this.refreshFavorite();
+    await this.refreshPlaylists();
+    if(this.state.albums.length === 0){
+      await this.loadArtists();
+      await this.loadAlbums();
+      await this.loadGenres();
+    }
+    
+    if(name !== undefined){
+      this.setState({loggedIn:true,loginName:name,loginType:type,loginOpen:false});
+      this.onRouteMount(this.state.route);
+      //this.linkTo("/folder");
+    }else{
+      this.setState({loggedIn:false,loginName:'',loginType:null});
+    }
+    
+  }
+
   isFavorite(fileId){
     return this.state.favorites[fileId];
   }
@@ -230,22 +250,6 @@ export class PlaylistProvider extends React.Component {
     this.setState({playLists:filesListList.files.map((filesList)=>{return {title:filesList.name}})});
   }
 
-  async onLoggedIn(name,type){
-    
-    await this.refreshFavorite();
-    await this.refreshPlaylists();
-    if(this.state.albums.length === 0){
-      await this.loadArtists();
-      await this.loadAlbums();
-      await this.loadGenres();
-    }
-    
-    if(name !== undefined){
-      this.setState({loggedIn:true,loginName:name,loginType:type,loginOpen:false});
-    }else{
-      this.setState({loggedIn:false,loginName:'',loginType:null});
-    }
-  }
   getCookieValue(a) {
     var b = document.cookie.match('(^|[^;]+)\\s*' + a + '\\s*=\\s*([^;]+)');
     return b ? b.pop() : '';
@@ -559,7 +563,15 @@ export class PlaylistProvider extends React.Component {
       },
       body: JSON.stringify({path:match?match.params[0]:""})
     }
-    const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFolder",config);
+    
+      var res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFolder",config);
+    if(res.status >= 400 && res.status < 600){
+      console.log("error folderRoute");
+      this.setState(state => ({
+        displayedItemMode:constants.FOLDER_MODE,
+        route:route,
+      }));
+    }
     const fileList = await res.json();
     if(fileList.title === null){
       return;
@@ -585,6 +597,9 @@ export class PlaylistProvider extends React.Component {
     const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getSearch",config);
     const fileList = await res.json();
     if(fileList[0] === null){
+      this.setState(state => ({
+        route:route
+      }));
       return;
     }
     this.setState(state => ({
@@ -609,6 +624,9 @@ export class PlaylistProvider extends React.Component {
     const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getArtist",config);
     const fileList = await res.json();
     if(fileList.files === null){
+      this.setState(state => ({
+        route:route
+      }));
       return;
     }
     this.setState(state => ({
@@ -633,6 +651,9 @@ export class PlaylistProvider extends React.Component {
     const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getAlbum",config);
     const fileList = await res.json();
     if(fileList.files === null){
+      this.setState(state => ({
+        route:route
+      }));
       return;
     }
     this.setState(state => ({
@@ -657,6 +678,9 @@ export class PlaylistProvider extends React.Component {
     const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getGenre",config);
     const fileList = await res.json();
     if(fileList.files === null){
+      this.setState(state => ({
+        route:route
+      }));
       return;
     }
     this.setState(state => ({
@@ -673,6 +697,7 @@ export class PlaylistProvider extends React.Component {
    * 
    */
   onRouteMount(route){
+    console.log("onRouteMount");
     const match = route.match;
     let newTracks;
     let newMode;
