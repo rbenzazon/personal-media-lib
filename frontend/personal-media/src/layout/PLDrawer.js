@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {List,ListItem,ListItemIcon,ListItemText,Drawer} from '@material-ui/core';
-import {Cloud as DownloadsIcon,CloudDownload as DownloadIcon,PersonAdd as AddUserIcon,AccountCircle as LoginIcon,VerifiedUser as UserIcon,Home as HomeIcon,Folder as FilesIcon, PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
+import {Delete as DeleteIcon,Cloud as DownloadsIcon,CloudDownload as DownloadIcon,PersonAdd as AddUserIcon,AccountCircle as LoginIcon,VerifiedUser as UserIcon,Home as HomeIcon,Folder as FilesIcon, PermMedia as ScanIcon, Favorite as FavorIcon,PlaylistPlay as PlaylistIcon, PlaylistAdd as PlaylistAddIcon} from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import {PlaylistContext} from '../PlaylistContext';
@@ -83,12 +83,15 @@ export class PLDrawer extends Component {
                     {context.state.loggedIn &&
                         context.state.playLists.map(item=>{
                             return (
-                            <Link to={"/playlist/"+item.title} key={item.title} style={{ textDecoration: 'none' }} >
+                            
                                 <ListItem button selected={context.isRoute("/playlist/"+item.title)}>
                                     <ListItemIcon><PlaylistIcon /></ListItemIcon>
-                                    <ListItemText primary={item.title} ></ListItemText>
+                                    <Link to={"/playlist/"+item.title} key={item.title} style={{ textDecoration: 'none' }} >
+                                        <ListItemText primary={item.title} ></ListItemText>
+                                    </Link>
+                                    <ListItemIcon onClick={()=> context.onPlaylistDeleteClick(item)}><DeleteIcon /></ListItemIcon>
                                 </ListItem>
-                            </Link>
+                            
                             )
                     })}
                     {(context.state.loggedIn && context.state.loginType === 0) &&

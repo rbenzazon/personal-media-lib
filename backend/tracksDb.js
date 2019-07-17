@@ -167,6 +167,25 @@ router.post('/createFileList',verify, async (req,res)=>{
     return res.send({created:true});
 });
 
+router.post('/deleteFileList',verify, async (req,res)=>{
+    console.log("deleteFileList");
+    const userExist = await User.findOne({_id:req.user._id}).exec();
+    if(!userExist){
+        return res.status(400).send({message:'Access restricted'});
+        console.log("failed attempt at executing createFileList route without being logged as an existing user");
+    }
+    if(!req.body.fileListId){
+        return res.status(400).send({message:"can't delete a playlist without id"});
+    }
+    const fileListExist = await FileList.findOne({_id:req.body.fileListId,owner:userExist}).exec();
+    if(!fileListExist){
+        return res.status(400).send({message:"doesn't exists"});
+        console.log("failed attempt at executing deleteFileList route with a playlist not existing");
+    }
+    await FileList.findOneAndDelete({_id:fileListExist._id}).exec();
+    return res.send({message:fileListExist.name+" deleted"});
+});
+
 router.post('/removeFromFileList',verify, async (req,res)=>{
     const userExist = await User.findOne({_id:req.user._id}).exec();
     if(!userExist){
@@ -794,7 +813,7 @@ router.post('/getDownloads',verify,async (req,res)=>{
 
 
 /**
- * requires aria2c installed and added in PATH for windows
+ * requires aria2c installed and for windows : added in PATH 
  * @param {string} magnet 
  * @param {string} ownerId 
  */

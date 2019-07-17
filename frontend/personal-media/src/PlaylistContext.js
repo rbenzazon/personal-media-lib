@@ -86,6 +86,7 @@ export class PlaylistProvider extends React.Component {
     this.loadGenres = this.loadGenres.bind(this);
     this.isRoute = this.isRoute.bind(this);
     this.openDownload = this.openDownload.bind(this);
+    this.onPlaylistDeleteClick = this.onPlaylistDeleteClick.bind(this);
 
     this.checkLogin();
   }
@@ -258,6 +259,10 @@ export class PlaylistProvider extends React.Component {
    * Playlists
    * 
    */
+
+  onPlaylistDeleteClick(playList){
+    console.log("delete "+playList);
+  }
   
   openCreatePlaylist(value){
     this.setState({createPlaylistOpen:value});
@@ -774,6 +779,7 @@ export class PlaylistProvider extends React.Component {
         isFavorite:this.isFavorite,
         isRoute:this.isRoute,
         openDownload:this.openDownload,
+        onPlaylistDeleteClick:this.onPlaylistDeleteClick,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>
