@@ -26,8 +26,8 @@ export class CreatePLDialog extends Component {
         const res = await fetch(process.env.REACT_APP_SERV_URL+"api/createFileList",config);
         if(!res.ok) return;
         const succes = await res.json();
-        this.setState({createPlaylistName:''});
         this.props.onCreatePlaylistSuccess(this.state.createPlaylistName);
+        this.setState({createPlaylistName:''});
     }
     render() {
         return (

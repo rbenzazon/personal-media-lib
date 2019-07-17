@@ -37,12 +37,15 @@ export class PlaylistProvider extends React.Component {
     playlistAddOpen:false,
     loginOpen:false,
     createUserOpen:false,
+    confirmDeletePlaylistOpen:false,
 
     trackToAdd:null,
     
     loggedIn:false,
     loginName:'',
     loginType:null,
+
+    playlistToDelete:null,
   }
   constructor(props){
     super(props);
@@ -87,6 +90,9 @@ export class PlaylistProvider extends React.Component {
     this.isRoute = this.isRoute.bind(this);
     this.openDownload = this.openDownload.bind(this);
     this.onPlaylistDeleteClick = this.onPlaylistDeleteClick.bind(this);
+    this.openConfirmDeletePlaylist = this.openConfirmDeletePlaylist.bind(this);
+    this.confirmDeletePlaylist = this.confirmDeletePlaylist.bind(this);
+
 
     this.checkLogin();
   }
@@ -248,7 +254,7 @@ export class PlaylistProvider extends React.Component {
     const res = await fetch(process.env.REACT_APP_SERV_URL+"api/getFileListList",config);
     if(!res.ok) return;
     const filesListList = await res.json();
-    this.setState({playLists:filesListList.files.map((filesList)=>{return {title:filesList.name}})});
+    this.setState({playLists:filesListList.files.map((filesList)=>{return {title:filesList.name,_id:filesList._id}})});
   }
 
   getCookieValue(a) {
@@ -260,8 +266,28 @@ export class PlaylistProvider extends React.Component {
    * 
    */
 
-  onPlaylistDeleteClick(playList){
-    console.log("delete "+playList);
+  async confirmDeletePlaylist(){
+    const res = await fetch(process.env.REACT_APP_SERV_URL+'api/deleteFileList', {
+      method: 'POST',
+      credentials:'include',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body:JSON.stringify({fileListId:this.state.playlistToDelete._id})
+    });
+    this.setState({playlistToDelete:null});
+    this.openConfirmDeletePlaylist(false);
+    this.refreshPlaylists();
+  }
+
+  openConfirmDeletePlaylist(value){
+    this.setState({confirmDeletePlaylistOpen:value});
+  }
+
+  onPlaylistDeleteClick(playList){    
+    this.setState({playlistToDelete:playList});
+    this.openConfirmDeletePlaylist(true);
   }
   
   openCreatePlaylist(value){
@@ -780,6 +806,8 @@ export class PlaylistProvider extends React.Component {
         isRoute:this.isRoute,
         openDownload:this.openDownload,
         onPlaylistDeleteClick:this.onPlaylistDeleteClick,
+        openConfirmDeletePlaylist:this.openConfirmDeletePlaylist,
+        confirmDeletePlaylist:this.confirmDeletePlaylist,
         }}>
         {this.props.children}
       </PlaylistContext.Provider>

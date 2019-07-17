@@ -15,6 +15,7 @@ import { Router} from "react-router-dom";
 import CreatePLDialog from './dialogs/CreatePLDialog';
 import AddToPLDialog from './dialogs/AddToPLDialog';
 import ImportDialog from './dialogs/ImportDialog';
+import ConfirmDeletePlaylistDialog from './dialogs/ConfirmDeletePlaylistDialog';
 import LoginDialog from './dialogs/LoginDialog';
 import DownloadDialog from './dialogs/DownloadDialog';
 import { CreateUserDialog } from './dialogs/CreateUserDialog';
@@ -99,6 +100,7 @@ export default class App extends React.Component{
             <AddToPLDialog />
             <DownloadDialog />
             <ImportDialog />
+            <ConfirmDeletePlaylistDialog />
           </React.Fragment>
         </PlaylistProvider>
       </Router>
