@@ -342,11 +342,14 @@ async function readFolder(folderPath){
     for (var i=0; i<items.length; i++) {
         let item = items[i];
         var ext = path.extname(item.name);
-        if(ext == ".mp3" || ext == ".flac" || item.isDirectory()){
+        if(ext == ".mp3" || ext == ".flac" || ext == ".mkv" || ext == ".mp4" || item.isDirectory()){
             files.push(item);
         }
     }
     return files;
+}
+function getTrackExtension(fileName){
+    return fileName.match(/\.[0-9a-z]+$/i)[0];
 }
 
 async function scanRecursive (folderPath,nodes,files){
@@ -369,22 +372,31 @@ async function scanRecursive (folderPath,nodes,files){
             
         }else{
             const url = folderPath+"/"+item.name;
-            const tags = await mm.parseFile(url);
-            file = new File({
-                title : tags.common.title?tags.common.title : item.name,
-                url:url.substring(PATH_TO_SCAN.length),
-            });
-            if(tags.common.picture && tags.common.picture[0] && tags.common.picture[0].data){
-                try{
-                    sharp(tags.common.picture[0].data)
-                    .resize(256,256,{fit:"inside"})
-                    .toFile(url+".jpg");
-                    file.imageUrl = file.url+".jpg";
-                }catch(err){
-                    console.log("error reading image from file :"+url+"\\n"+err)
+            const extension = getTrackExtension(item.name);
+            console.log(extension);
+            if(extension === ".mp3"){
+                const tags = await mm.parseFile(url);
+                file = new File({
+                    title : tags.common.title?tags.common.title : item.name,
+                    url:url.substring(PATH_TO_SCAN.length),
+                });
+                if(tags.common.picture && tags.common.picture[0] && tags.common.picture[0].data){
+                    try{
+                        sharp(tags.common.picture[0].data)
+                        .resize(256,256,{fit:"inside"})
+                        .toFile(url+".jpg");
+                        file.imageUrl = file.url+".jpg";
+                    }catch(err){
+                        console.log("error reading image from file :"+url+"\\n"+err)
+                    }
                 }
+                mapToProps(file,tags.common);
+            }else{
+                file = new File({
+                    title : item.name,
+                    url:url.substring(PATH_TO_SCAN.length),
+                });
             }
-            mapToProps(file,tags.common);
             node = new Node({
                 file:file,
             });
@@ -685,24 +697,32 @@ async function scanUpdateRecursive (node,folderPath,nodes,files){
                 continue;
             }
             const url = folderPath+"/"+item.name;
-            const tags = await mm.parseFile(url);
-            
-            newFile = new File({
-                title : tags.common.title?tags.common.title : item.name,
-                url:url.substring(PATH_TO_SCAN.length),
-            });
-            if(tags.common.picture && tags.common.picture[0] && tags.common.picture[0].data){
-                try{
-                    sharp(tags.common.picture[0].data)
-                    .resize(256,256,{fit:"inside"})
-                    .toFile(url+".jpg");
-                    newFile.imageUrl = newFile.url+".jpg";
-                }catch(err){
-                    console.log("error reading image from file :"+url+"\\n"+err);
-                    return;
+            const extension = getTrackExtension(item.name);
+            console.log(extension);
+            if(extension === ".mp3"){
+                const tags = await mm.parseFile(url);
+                newFile = new File({
+                    title : tags.common.title?tags.common.title : item.name,
+                    url:url.substring(PATH_TO_SCAN.length),
+                });
+                if(tags.common.picture && tags.common.picture[0] && tags.common.picture[0].data){
+                    try{
+                        sharp(tags.common.picture[0].data)
+                        .resize(256,256,{fit:"inside"})
+                        .toFile(url+".jpg");
+                        newFile.imageUrl = newFile.url+".jpg";
+                    }catch(err){
+                        console.log("error reading image from file :"+url+"\\n"+err);
+                        return;
+                    }
                 }
+                mapToProps(newFile,tags.common);
+            }else{
+                newFile = new File({
+                    title : item.name,
+                    url:url.substring(PATH_TO_SCAN.length),
+                });
             }
-            mapToProps(newFile,tags.common);
             newNode = new Node({
                 file:newFile,
             });

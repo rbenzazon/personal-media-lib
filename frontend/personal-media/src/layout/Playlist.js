@@ -147,10 +147,34 @@ export class Playlist extends Component {
             this.setState({hideAlbums: window.innerWidth <= 600});
         }
     }
+    getColspan(track){
+        return !track.url ? (this.state.hideAlbums ? 2:3) : 1;
+    }
+    getTrackExtension(track){
+        return track.url ? track.url.match(/\.[0-9a-z]+$/i)[0]:"";
+    }
+    isAudio(track){
+        return [".mp3",".flac"].includes(this.getTrackExtension(track));
+    }
+    isVideo(track){
+        return [".mp4",".mkv"].includes(this.getTrackExtension(track));
+    }
+    onListClick(track,context){
+        if(this.isVideo(track)){
+            const baseUrl = process.env.REACT_APP_SERV_URL.length === 1 ? process.env.REACT_APP_SERV_URL_DEV : process.env.REACT_APP_SERV_URL;
+            const url = baseUrl.substring(0,baseUrl.length-1) +track.url;
+            console.log(process.env.REACT_APP_SERV_URL.length === 1);
+            console.log(url);
+            window.open(url, '_blank');
+        }else{
+            context.onListClick(track);
+        }
+    }
     render() {
     const {
         classes,
     } = this.props;
+
     return (
         <PlaylistContext.Consumer>{(context) => (
             <Table className={classes.table}>
@@ -184,18 +208,20 @@ export class Playlist extends Component {
                     }
                     {context.state.displayedItems.map((track) =>
                     <TableRow key={track._id} selected={context.state.selected === track} hover>
-                        <TableCell className={classes.mainCell} colSpan={!track.url ? (this.state.hideAlbums ? 2:3) : 1}>
+                        <TableCell className={classes.mainCell} colSpan={this.getColspan(track)}>
                             <Grid alignContent="center" justify="flex-start" alignItems="center" container>
                                 {track.url && 
                                 <Grid item 
                                     xs={2}
-                                    onClick={() => context.onListClick(track)}
+                                    onClick={() => this.onListClick(track,context)}
                                     className={classes.gridIcons}
                                     >
                                     {track.imageUrl &&
                                     <Avatar className={classes.trackImage} src={track.imageUrl} />}
-                                    {!track.imageUrl &&
-                                    <TrackIcon className={classes.trackIcon} />}
+                                    {this.isAudio(track) ?
+                                    <TrackIcon className={classes.trackIcon} /> : 
+                                    <TrackIcon className={classes.trackIcon} />
+                                    }
                                 </Grid>}
                                 {!track.url && 
                                 <Grid item 
