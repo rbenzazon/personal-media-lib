@@ -615,6 +615,34 @@ async function removeChildrenRecursive(parentNode){
     }
 }
 
+router.post('/deleteFile',verify, async (req,res)=>{
+    //cleans the collections
+
+    console.log("deleteFile Route");
+    const userExist = await User.findOne({_id:req.user._id}).exec();
+    if(!userExist || userExist.type !== 0){
+        return res.status(400).send({message:'Access restricted'});
+        console.log("failed attempt at executing scanToDb route with insufficient privileges "+userExist);
+    }
+
+    if(req.body.nodeId){
+        console.log(req.body);
+        const nodeToDelete = await Node.findOne({_id:req.body.nodeId}).exec();
+        console.log(nodeToDelete);
+        const parentNode = await Node.findOne({children:mongoose.Types.ObjectId(req.body.nodeId)}).exec();
+        console.log(parentNode);
+        await removeOneNodeAndFile(parentNode,nodeToDelete);
+        if(nodeToDelete && parentNode){
+            return res.send({ok:true});
+        }else{
+            return res.status(400).send({message:"can't find file to delete"});
+        }
+    }else{
+        return res.status(400).send({message:"invalid request"});
+    }
+    
+});
+
 /**
  * 
  * update the db where needed in one folder recursively, new Node and File
@@ -838,7 +866,6 @@ router.post('/getDownloads',verify,async (req,res)=>{
  * @param {string} ownerId 
  */
 async function requestDIntent(magnet,ownerId){
-    console.log(runScan);
     var path;
     //lifecycle, when called with arguments, prepare to abort if DLproc != undefined
     if(magnet != undefined){
