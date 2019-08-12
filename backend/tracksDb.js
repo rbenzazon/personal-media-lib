@@ -172,7 +172,7 @@ router.post('/deleteFileList',verify, async (req,res)=>{
     const userExist = await User.findOne({_id:req.user._id}).exec();
     if(!userExist){
         return res.status(400).send({message:'Access restricted'});
-        console.log("failed attempt at executing createFileList route without being logged as an existing user");
+        console.log("failed attempt at executing deleteFileList route without being logged as an existing user");
     }
     if(!req.body.fileListId){
         return res.status(400).send({message:"can't delete a playlist without id"});
@@ -267,7 +267,7 @@ router.post('/getFileListList',verify, async (req,res)=>{
     const userExist = await User.findOne({_id:req.user._id}).exec();
     if(!userExist){
         return res.status(400).send({message:'Access restricted'});
-        console.log("failed attempt at executing getFileList route without being logged as an existing user");
+        console.log("failed attempt at executing getFileListList route without being logged as an existing user");
     }
     
     const filesListList = await FileList.find({owner:req.user._id,name:{ $ne: "favorite" }}).exec();
@@ -283,7 +283,7 @@ router.post('/getFileListIds',verify, async (req,res)=>{
     const userExist = await User.findOne({_id:req.user._id}).exec();
     if(!userExist){
         return res.status(400).send({message:'Access restricted'});
-        console.log("failed attempt at executing getFileList route without being logged as an existing user");
+        console.log("failed attempt at executing getFileListIds route without being logged as an existing user");
     }
     if(!req.body.fileListName){
         return res.status(400).send({message:"can't get playlist without a name"});
@@ -622,24 +622,25 @@ router.post('/deleteFile',verify, async (req,res)=>{
     const userExist = await User.findOne({_id:req.user._id}).exec();
     if(!userExist || userExist.type !== 0){
         return res.status(400).send({message:'Access restricted'});
-        console.log("failed attempt at executing scanToDb route with insufficient privileges "+userExist);
+        console.log("failed attempt at executing deleteFile route with insufficient privileges "+userExist);
     }
 
-    if(req.body.nodeId){
-        console.log(req.body);
-        const nodeToDelete = await Node.findOne({_id:req.body.nodeId}).exec();
-        console.log(nodeToDelete);
-        const parentNode = await Node.findOne({children:mongoose.Types.ObjectId(req.body.nodeId)}).exec();
-        console.log(parentNode);
-        await removeOneNodeAndFile(parentNode,nodeToDelete);
-        if(nodeToDelete && parentNode){
-            return res.send({ok:true});
-        }else{
-            return res.status(400).send({message:"can't find file to delete"});
-        }
-    }else{
+    if(!req.body.nodeId){
         return res.status(400).send({message:"invalid request"});
     }
+    console.log(req.body);
+    const nodeToDelete = await Node.findOne({_id:req.body.nodeId}).exec();
+    if(!nodeToDelete){
+        return res.status(400).send({message:"can't find node"});
+    }
+    const parentNode = await Node.findOne({children:mongoose.Types.ObjectId(req.body.nodeId)}).exec();
+    if(!nodeToDelete){
+        return res.status(400).send({message:"can't find parent node"});
+    }
+    await removeOneNodeAndFile(parentNode,nodeToDelete);
+    
+
+    return res.send({ok:true});
     
 });
 
@@ -820,7 +821,7 @@ async function runScan(){
 router.post('/scanUpdateToDb',verify, async (req,res)=>{
     const userExist = await User.findOne({_id:req.user._id}).exec();
     if(!userExist || userExist.type !== 0){
-        console.log("failed attempt at executing scanToDb route with insufficient privileges "+userExist);
+        console.log("failed attempt at executing scanUpdateToDb route with insufficient privileges "+userExist);
         return res.status(400).send({message:'Access restricted'});
     }
     let fileScanned = await runScan();
@@ -841,7 +842,7 @@ router.post('/addDownload',verify,async (req,res)=>{
     console.log("addDownload Route");
     const userExist = await User.findOne({_id:req.user._id}).exec();
     if(!userExist || userExist.type !== 0){
-        console.log("failed attempt at executing scanToDb route with insufficient privileges "+userExist);
+        console.log("failed attempt at executing addDownload route with insufficient privileges "+userExist);
         return res.status(400).send({message:'Access restricted'});
     }
     requestDIntent(req.body.magnet,req.user._id);
@@ -852,7 +853,7 @@ router.post('/getDownloads',verify,async (req,res)=>{
     console.log("getDownloads Route");
     const userExist = await User.findOne({_id:req.user._id}).exec();
     if(!userExist || userExist.type !== 0){
-        console.log("failed attempt at executing scanToDb route with insufficient privileges "+userExist);
+        console.log("failed attempt at executing getDownloads route with insufficient privileges "+userExist);
         return res.status(400).send({message:'Access restricted'});
     }
     const downloads = await DIntent.find({},"title bytesLoaded bytesTotal progress completed path").lean().exec();

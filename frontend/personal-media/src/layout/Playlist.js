@@ -218,10 +218,10 @@ export class Playlist extends Component {
                                     >
                                     {track.imageUrl &&
                                     <Avatar className={classes.trackImage} src={track.imageUrl} />}
-                                    {this.isAudio(track) ?
+                                    {!track.imageUrl && (this.isAudio(track) ?
                                     <TrackIcon className={classes.trackIcon} /> : 
                                     <TrackIcon className={classes.trackIcon} />
-                                    }
+                                    )}
                                 </Grid>}
                                 {!track.url && 
                                 <Grid item 
