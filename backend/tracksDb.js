@@ -13,7 +13,6 @@ const { spawn } = require('child_process');
 const DIntent = require('./model/DIntent');
 const fsEx = require('fs-extra');
 
-
 const PATH_TO_SCAN = './media';
 var ROOT_TITLE = 'My media';
 var DLproc;
@@ -567,6 +566,25 @@ function findChildNodeByUrl(node,fileName){
     return null;
 }
 
+async function getFolderPath(node){
+
+    console.log("getFolderPath");
+    let hasParent = true;
+    let path = node.title;
+    console.log("path "+path);
+    while(hasParent){
+        let parentNode = await getParentNode(node._id);
+        console.log("parentNode "+parentNode);
+        if(parentNode){
+            hasParent = true;
+            path = hasParent.title +"/"+ path;
+        }else{
+            hasParent = false;
+        }
+    }
+    return path;
+}
+
 /**
  * removes child Node document from Node parent and deletes it,
  * including its associated File documents
@@ -575,7 +593,35 @@ function findChildNodeByUrl(node,fileName){
  * @param {Node} childNode child node to remove from @parentNode
  */
 
-async function removeOneNodeAndFile(parentNode,childNode){
+async function removeOneNodeAndFile(parentNode,childNode,fileSys){
+    console.log("removeOneNodeAndFile");
+    console.log("fileSys = ");
+    console.log(fileSys);
+    
+    if(fileSys){
+        let fileName;
+        if(!childNode.populated("file")){
+            await childNode.populate("file").execPopulate();
+        }
+        console.log(childNode);
+        if(childNode.file.url){
+            console.log("childNode.file.url");
+            fileName = childNode.file.url;
+        }else{
+            console.log("!childNode.file.url");
+            fileName = "/"+ await getFolderPath(childNode);
+        }
+        console.log(fileName);
+        try{
+            console.log("complete delete path");
+            console.log(PATH_TO_SCAN+fileName);
+
+            await fsEx.remove(PATH_TO_SCAN+fileName);
+        }catch(err){
+            console.log("couldn't remove file located at "+PATH_TO_SCAN+"/"+fileName+"error : "+err);
+        }
+
+    }
     parentNode.children.remove(childNode);
     if(childNode.populated("file")){
         await childNode.depopulate("file");
@@ -603,15 +649,15 @@ async function removeOneNodeAndFile(parentNode,childNode){
  * @param {Node} parentNode parent node from where to remove all the nodes
  */
 
-async function removeChildrenRecursive(parentNode){
+async function removeChildrenRecursive(parentNode,fileSys){
     parentNode = await parentNode.populate("children").execPopulate();
     while(parentNode.children.length>0) {
         let child = parentNode.children[0];
         let childWithFile = await child.populate("file").execPopulate();
         if(!childWithFile.file.url && child.children.length >=1){
-            await removeChildrenRecursive(child);
+            await removeChildrenRecursive(child,fileSys);
         }
-        await removeOneNodeAndFile(parentNode,child);
+        await removeOneNodeAndFile(parentNode,child,fileSys);
     }
 }
 
@@ -633,16 +679,24 @@ router.post('/deleteFile',verify, async (req,res)=>{
     if(!nodeToDelete){
         return res.status(400).send({message:"can't find node"});
     }
-    const parentNode = await Node.findOne({children:mongoose.Types.ObjectId(req.body.nodeId)}).exec();
+    //const parentNode = await Node.findOne({children:mongoose.Types.ObjectId(req.body.nodeId)}).exec();
+    const parentNode = await getParentNode(req.body.nodeId);
     if(!nodeToDelete){
         return res.status(400).send({message:"can't find parent node"});
     }
-    await removeOneNodeAndFile(parentNode,nodeToDelete);
+    if(nodeToDelete.children && nodeToDelete.children.length>=1){
+        await removeChildrenRecursive(nodeToDelete,true);
+    }
+    await removeOneNodeAndFile(parentNode,nodeToDelete,true);
     
 
     return res.send({ok:true});
     
 });
+
+async function getParentNode(nodeId){
+    return await Node.findOne({children:mongoose.Types.ObjectId(nodeId)}).exec();
+}
 
 /**
  * 

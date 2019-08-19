@@ -96,7 +96,7 @@ export class DownloadDialog extends Component {
                         Cancel
                         </Button>
                         <Button onClick={() => this.sendDownloadIntent(context)} color="primary" autoFocus>
-                        Browse
+                        Start downloading
                         </Button>
                     </DialogActions>
                 </Dialog>
